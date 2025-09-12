@@ -1,0 +1,65 @@
+{
+  "layer": "top",
+  "position": "top",
+  "name": "nixbar",
+  "height": "28px",
+  "reload_style_on_change": true,
+  "modules-left": [
+    "group/tray",
+    "custom/separator",
+    "hyprland/workspaces",
+    "custom/separator",
+    "hyprland/window"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "cpu",
+    "memory",
+    "disk",
+    "temperature",
+    "custom/gpu-temp",
+    "network#speed",
+    "custom/separator",
+    "wireplumber",
+    "backlight",
+    "bluetooth",
+    "network",
+    "idle_inhibitor",
+    "battery",
+    "custom/separator",
+    "group/power"
+  ],
+  "include": [
+    "~/.config/waybar/modules.jsonc"
+  ],
+  // SECTION: Groups
+  // -----------------
+  "group/tray": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": "500",
+      "transition-left-to-right": "true",
+      "children-class": "drawer-child"
+    },
+    "modules": [
+      "custom/trayicon",
+      "tray"
+    ]
+  },
+  "group/power": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 500,
+      "children-class": "not-power",
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/power", // First element is the "group leader" and won't ever be hidden
+      "custom/quit",
+      "custom/lock",
+      "custom/reboot"
+    ]
+  }
+}

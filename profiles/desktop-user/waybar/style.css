@@ -1,0 +1,492 @@
+/* ============================================================================
+ * SEMANTIC COLORS - Fixed pastel colors for status indicators (GTK syntax)
+ * ============================================================================ */
+
+@define-color success_color #90e0a3;
+/* Softer mint green for good/success states */
+@define-color warning_color #f4c79a;
+/* Warmer soft peach for warning states */
+@define-color danger_color #f5a3a3;
+/* Muted coral for critical/error states */
+@define-color info_color #a3c5f0;
+/* Soft periwinkle blue for info/charging states */
+@define-color neutral_color #b8bcc8;
+/* Muted gray for neutral/disabled states */
+
+/* ============================================================================
+ * BASE STYLES - Enhanced for better interactivity
+ * ============================================================================ */
+
+window#waybar {
+  padding: 2px;
+  background: @base00;
+  border: none;
+  background-color: transparent;
+  margin: 0px;
+  box-shadow: none;
+}
+
+
+tooltip,
+menu {
+  padding: 7px 8px;
+  margin: 2px;
+  border-radius: 6px;
+  background: @base01;
+  color: @base05;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+ * MODULE GROUP CONTAINERS
+ * ============================================================================ */
+
+.modules-left {
+  margin: 2px;
+  padding: 2px;
+}
+
+.modules-center {
+  margin: 2px;
+  padding: 2px;
+}
+
+.modules-right {
+  margin: 2px;
+  padding: 2px;
+}
+
+/* ============================================================================
+ * WORKSPACES
+ * ============================================================================ */
+
+#workspaces {
+  margin: 1px 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: @base01;
+  border: 1px solid @base03;
+  box-shadow: 0 2px 4px @base00;
+}
+
+#workspaces button {
+  color: @base04;
+  margin: 1px;
+  padding: 2px 6px 2px 2px;
+  border-radius: 6px;
+  border: none;
+  transition: all 0.2s ease;
+  min-width: 20px;
+  background: @base02;
+  box-shadow: 0 1px 2px @base00;
+}
+
+#workspaces button.active {
+  color: @base00;
+  background: @base0D;
+  opacity: 1;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+#workspaces button:hover {
+  color: @base0C;
+  background: @base03;
+  box-shadow: 0 2px 4px @base01;
+  border: 1px solid @base04;
+}
+
+/* ============================================================================
+ * SYSTEM MONITORING - Enhanced grouped styling
+ * ============================================================================ */
+
+#cpu {
+  color: @base05;
+  padding: 1px 4px 1px 6px;
+  margin-left: 1px;
+  border-radius: 8px 0 0 8px;
+  background: @base01;
+  border-top: 2px solid @base09;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: none;
+}
+
+#memory {
+  color: @base05;
+  padding: 1px 4px;
+  border-radius: 0;
+  background: @base01;
+  border-top: 2px solid @base0A;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: none;
+  border-right: none;
+}
+
+#disk {
+  color: @base05;
+  padding: 1px 4px;
+  border-radius: 0;
+  background: @base01;
+  border-top: 2px solid @base0C;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: none;
+  border-right: none;
+}
+
+#temperature {
+  color: @base05;
+  padding: 1px 4px;
+  border-radius: 0;
+  background: @base01;
+  border-top: 2px solid @base0B;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: none;
+  border-right: none;
+}
+
+#custom-gpu-temp {
+  color: @base05;
+  padding: 1px 6px 1px 4px;
+  margin-right: 1px;
+  border-radius: 0 8px 8px 0;
+  background: @base01;
+  border-top: 2px solid @base0E;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: none;
+}
+
+#temperature.gpu {
+  color: @base0E;
+  padding: 4px 8px;
+  margin-right: 2px;
+  border-radius: 8px;
+  background: @base01;
+  border-top: 2px solid @base0B;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 24px;
+}
+
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#temperature:hover,
+#custom-gpu-temp:hover {
+  color: @base05;
+  background: @base02;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease-in-out;
+}
+
+/* CPU states for performance monitoring */
+#cpu.warning {
+  color: @warning_color;
+}
+
+#cpu.critical {
+  color: @danger_color;
+}
+
+/* Memory states for usage monitoring */
+#memory.warning {
+  color: @warning_color;
+}
+
+#memory.critical {
+  color: @danger_color;
+}
+
+/* Disk states for storage monitoring */
+#disk.warning {
+  color: @warning_color;
+}
+
+#disk.critical {
+  color: @danger_color;
+}
+
+/* Temperature states for thermal monitoring */
+#temperature.warning,
+#temperature.nvme.warning {
+  color: @warning_color;
+}
+
+#temperature.critical,
+#temperature.nvme.critical {
+  color: @danger_color;
+  animation: blink 0.75s linear infinite alternate;
+}
+
+/* ============================================================================
+ * NETWORK & CONNECTIVITY
+ * ============================================================================ */
+
+#network {
+  color: @success_color;
+  min-width: 20px;
+  padding: 2px 6px 2px 2px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#network.disconnected {
+  color: @danger_color;
+}
+
+#network.ethernet {
+  color: @info_color;
+}
+
+#network.speed {
+  color: @base05;
+  min-width: 6px;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#bluetooth {
+  color: @info_color;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 18px;
+}
+
+#bluetooth.disabled {
+  color: @neutral_color;
+}
+
+#network:hover,
+#battery:hover,
+#network.speed:hover,
+#bluetooth:hover {
+  color: @base05;
+  background: @base02;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease-in-out;
+}
+
+/* ============================================================================
+ * AUDIO & BRIGHTNESS
+ * ============================================================================ */
+
+#wireplumber,
+#backlight {
+  color: @base05;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#wireplumber:hover,
+#backlight:hover {
+  color: @base05;
+  background: @base02;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease-in-out;
+}
+
+/* ============================================================================
+ * IDLE INHIBITOR
+ * ============================================================================ */
+
+#idle_inhibitor {
+  color: @neutral_color;
+  min-width: 20px;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#idle_inhibitor.activated {
+  color: @base00;
+  background: @base0A;
+}
+
+#idle_inhibitor:hover {
+  color: @base05;
+  background: @base02;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease-in-out;
+}
+
+/* ============================================================================
+ * BATTERY
+ * ============================================================================ */
+
+#battery {
+  color: @neutral_color;
+  min-width: 20px;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#battery.charging {
+  color: @info_color;
+}
+
+#battery.good:not(.charging) {
+  color: @success_color;
+}
+
+#battery.warning:not(.charging) {
+  color: @warning_color;
+}
+
+#battery.low:not(.charging) {
+  color: @danger_color;
+}
+
+#battery.critical:not(.charging) {
+  color: @base07;
+  background: @danger_color;
+  animation: blink 0.75s linear infinite alternate;
+}
+
+@keyframes blink {
+  to {
+    color: @base00;
+    background: @danger_color;
+  }
+}
+
+/* ============================================================================
+ * CLOCK & WINDOW - Enhanced centerpiece styling
+ * ============================================================================ */
+
+#clock {
+  color: @base05;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: @base01;
+  font-weight: 500;
+  box-shadow: 0 2px 4px @base00;
+  border: 1px solid @base03;
+}
+
+#clock:hover {
+  color: @base0D;
+  background: @base01;
+  transition: all 0.2s ease-in-out;
+}
+
+#window {
+  color: @base05;
+  padding: 1px 6px;
+  margin: 0 2px;
+  border-radius: 6px;
+  background: @base02;
+  opacity: 0.9;
+}
+
+/* ============================================================================
+ * CUSTOM MODULES
+ * ============================================================================ */
+
+#custom-trayicon {
+  color: @base05;
+  font-size: 24px;
+  padding: 0 0 0 8px;
+  margin: 0 4px 0px 2px;
+  border-radius: 6px;
+  background: @base01;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 4px @base00;
+  min-width: 30px;
+}
+
+#custom-trayicon:hover {
+  color: @base0A;
+  background: @base02;
+  transition: all 0.2s ease-in-out;
+}
+
+#custom-separator {
+  color: @base05;
+  padding: 0 4px;
+  margin: 0 2px;
+  border-radius: 6px;
+  opacity: 0.5;
+}
+
+#custom-transparency {
+  color: @base0C;
+  font-size: 18px;
+  padding: 0 10px;
+  margin-right: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================================================
+ * POWER CONTROLS - Enhanced drawer styling
+ * ============================================================================ */
+
+#group-power {
+  background: @base01;
+  border-radius: 8px;
+  padding: 1px;
+  margin: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#custom-power,
+#custom-lock,
+#custom-quit,
+#custom-reboot {
+  color: @base09;
+  background: @base01;
+  padding: 1px 4px;
+  margin: 1px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.2s ease-in-out;
+  min-width: 20px;
+}
+
+#custom-power:hover,
+#custom-lock:hover,
+#custom-quit:hover,
+#custom-reboot:hover {
+  background: @base0A;
+  color: @base00;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+ * UNUSED MODULES (for future reference)
+ * ============================================================================ */
+
+#custom-cava {
+  color: @base0E;
+  background: @base00;
+  font-family: "bargraph";
+  padding: 6px;
+  margin: 0 2px;
+  border-left: 0;
+  border-right: 0;
+}
+
+#custom-launcher {
+  color: @base05;
+  background: @base00;
+  font-size: 18px;
+  padding: 0 10px;
+  margin-right: 2px;
+  border-radius: 0 6px 6px 0;
+  transition: none;
+}

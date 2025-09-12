@@ -1,0 +1,31 @@
+keys:
+  # Admin key for emergency access (replace with your actual key)
+  - &admin age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
+
+  # Host keys (these will be generated from SSH host keys)
+  - &nixos-lt age1k2m2hjlr26pgxvtuesw6wpgxv5kx5je5egck9r3x7rujteh0a3hqypwxry
+
+  # User keys (these will be generated from user SSH keys)
+  - &lucas-user age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
+
+creation_rules:
+  # Host-specific secrets
+  - path_regex: secrets/nixos-lt\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *nixos-lt
+
+  # System shared secrets accessible by all hosts
+  - path_regex: secrets/shared\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *nixos-lt
+
+  # User-specific secrets
+  - path_regex: secrets/users/lucas\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *lucas-user
