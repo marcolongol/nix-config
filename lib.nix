@@ -68,6 +68,7 @@
                   inputs.nixos-generators.nixosModules.all-formats
                   inputs.stylix.nixosModules.stylix
                   inputs.sops-nix.nixosModules.sops
+                  inputs.comin.nixosModules.comin
                 ]
                 ++ (lib.attrValues nixosModules)
                 ++ (lib.attrValues roles)

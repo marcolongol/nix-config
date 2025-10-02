@@ -40,6 +40,16 @@ lib.mkIf (lib.elem "common" config.roles) {
     smartd.enable = true;
     udisks2.enable = true;
     devmon.enable = true;
+    comin = {
+      enable = true;
+      remotes = [
+        {
+          name = "origin";
+          url = "https://github.com/marcolongol/nix-config";
+          branches.main.name = "main";
+        }
+      ];
+    };
   };
 
   boot.loader.systemd-boot.configurationLimit = 10;
