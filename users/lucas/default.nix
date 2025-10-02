@@ -13,6 +13,7 @@
       remmina
       webex
       freecad
+      spotify
     ];
 
     sessionVariables = {
