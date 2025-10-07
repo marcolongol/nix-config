@@ -153,7 +153,6 @@ in {
             (mkIf cfg.enableVulkan [
               nvidia-vaapi-driver
               vaapiVdpau
-              libvdpau-va-gl
             ])
             (mkIf cfg.enableOpenCL [ocl-icd opencl-headers])
           ];
