@@ -14,6 +14,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     kubernetes-helm
     talosctl
     kubectl
+    ngrok
   ];
 
   programs.git = {
