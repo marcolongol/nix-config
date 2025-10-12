@@ -5,7 +5,7 @@
 }: {
   home.stateVersion = "25.11";
 
-  profiles = ["common" "desktop-user" "developer"];
+  profiles = ["common" "desktop-user" "developer" "gamer"];
 
   home = {
     packages = with pkgs; [
