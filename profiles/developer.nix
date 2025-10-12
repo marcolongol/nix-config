@@ -14,6 +14,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     kubernetes-helm
     talosctl
     kubectl
+    krew
     ngrok
   ];
 
@@ -55,10 +56,13 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     ".claude"
     ".config/github-copilot"
     ".config/Code"
+    ".krew"
   ];
 
   persistentFiles = [
     ".claude.json"
     ".kube/config"
   ];
+
+  home.sessionPath = ["$HOME/.krew/bin"];
 }
