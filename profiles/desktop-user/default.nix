@@ -10,6 +10,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     glib
     nautilus
     thunderbird
+    wl-clipboard
   ];
 
   # ----------------
@@ -172,6 +173,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
         "$mod SHIFT, S, movetoworkspace, special:magic"
 
         "$mod SHIFT, W, exec, wallctl.py next"
+        "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
       ];
       bindel = [
         ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
@@ -182,6 +184,14 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
         ",XF86MonBrightnessDown, exec, brightnessctl -e4 -n2 set 5%-"
       ];
     };
+  };
+
+  # -----------------
+  # SECTION: Cliphist
+  # -----------------
+  services.cliphist = {
+    enable = true;
+    allowImages = true;
   };
 
   # -----------------
