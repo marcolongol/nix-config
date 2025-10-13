@@ -16,6 +16,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     kubectl
     krew
     ngrok
+    restic
   ];
 
   programs.git = {
