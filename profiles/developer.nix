@@ -17,6 +17,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     krew
     ngrok
     restic
+    fluxcd
   ];
 
   programs.git = {
