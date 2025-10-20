@@ -11,6 +11,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     nautilus
     thunderbird
     wl-clipboard
+    filezilla
   ];
 
   # ----------------
