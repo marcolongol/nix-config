@@ -48,6 +48,10 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     enable = true;
   };
 
+  programs.lazydocker = {
+    enable = true;
+  };
+
   programs.ssh = {
     enable = true;
   };
