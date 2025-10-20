@@ -18,6 +18,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     ngrok
     restic
     fluxcd
+    cilium-cli
   ];
 
   programs.git = {
