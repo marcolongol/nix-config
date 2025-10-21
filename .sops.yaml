@@ -23,9 +23,10 @@ creation_rules:
           - *admin
           - *nixos-lt
 
-  # User-specific secrets
+  # User-specific secrets (encrypted with host key for system access)
   - path_regex: secrets/users/lucas\.yaml$
     key_groups:
       - age:
           - *admin
+          - *nixos-lt
           - *lucas-user

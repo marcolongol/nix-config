@@ -35,11 +35,22 @@
   };
 
   config = lib.mkIf (config.hostUsers != []) {
+    users.mutableUsers = false;
+
+    sops.secrets = lib.mkMerge (map (userName: {
+        "user-password-${userName}" = {
+          sopsFile = secretsPath + "/users/${userName}.yaml";
+          key = "hashed-password";
+          neededForUsers = true;
+        };
+      })
+      config.hostUsers);
+
     users.users = lib.genAttrs config.hostUsers (userName: {
       isNormalUser = true;
       home = "/home/${userName}";
       extraGroups = ["wheel" "networkmanager" "docker"];
-      password = "";
+      hashedPasswordFile = config.sops.secrets."user-password-${userName}".path;
     });
 
     home-manager = {
