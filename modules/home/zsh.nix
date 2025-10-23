@@ -90,7 +90,7 @@
     extraPackages = with pkgs.bat-extras; [
       batdiff
       batman
-      batgrep
+      # batgrep
       prettybat
     ];
     config = {
