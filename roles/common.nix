@@ -79,7 +79,10 @@ lib.mkIf (lib.elem "common" config.roles) {
 
   sops = {
     age = {
-      sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+      sshKeyPaths =
+        if (lib.elem "impermanent" config.roles)
+        then ["/persist/etc/ssh/ssh_host_ed25519_key"]
+        else ["/etc/ssh/ssh_host_ed25519_key"];
     };
 
     defaultSopsFormat = "yaml";
