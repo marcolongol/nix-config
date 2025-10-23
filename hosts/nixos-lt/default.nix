@@ -18,7 +18,7 @@
   };
 
   # Roles and users
-  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent" "gaming"];
+  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
   hostUsers = ["lucas"];
 
   # secrets
