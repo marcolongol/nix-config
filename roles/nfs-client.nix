@@ -28,6 +28,9 @@ in
     boot.supportedFilesystems = ["nfs"];
     boot.kernelModules = ["nfs"];
 
+    # Persist NFS state for file locking and state monitoring
+    persistentFolders = ["/var/lib/nfs"];
+
     fileSystems = builtins.listToAttrs (
       lib.flatten (
         map (
