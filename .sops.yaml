@@ -2,7 +2,7 @@ keys:
   # Admin key for emergency access (replace with your actual key)
   - &admin age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
 
-  # Host keys (these will be generated from SSH host keys)
+  # Host keys (derived from SSH host keys using ssh-to-age)
   - &nixos-lt age1k2m2hjlr26pgxvtuesw6wpgxv5kx5je5egck9r3x7rujteh0a3hqypwxry
 
   # User keys (these will be generated from user SSH keys)
