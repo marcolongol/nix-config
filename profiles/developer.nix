@@ -11,6 +11,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     gnumake
     cmake
     docker-compose
+    docker-buildx
     docker-client
     kubernetes-helm
     talosctl
