@@ -21,6 +21,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     restic
     fluxcd
     cilium-cli
+    dbeaver-bin
   ];
 
   programs.git = {
