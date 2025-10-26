@@ -26,9 +26,24 @@ lib.mkIf (lib.elem "developer" config.profiles) {
 
   programs.git = {
     enable = true;
-    extraConfig = {
+    settings = {
       core.editor = "vim";
       pull.rebase = true;
+
+      # Security & Performance
+      push.autoSetupRemote = true;
+      fetch.prune = true;
+      rebase.autoStash = true;
+      rerere.enabled = true;
+
+      # Better Diffs & Merges
+      diff.algorithm = "histogram";
+      diff.colorMoved = "default";
+      merge.conflictStyle = "zdiff3";
+
+      # Branch Management
+      branch.sort = "-committerdate";
+      tag.sort = "version:refname";
     };
   };
 
@@ -56,6 +71,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
   };
 
   programs.k9s = {
