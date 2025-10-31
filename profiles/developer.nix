@@ -22,6 +22,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     fluxcd
     cilium-cli
     dbeaver-bin
+    dig
   ];
 
   programs.git = {
