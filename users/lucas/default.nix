@@ -14,6 +14,7 @@
       webex
       freecad
       spotify
+      todoist
     ];
 
     sessionVariables = {
