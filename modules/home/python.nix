@@ -16,6 +16,7 @@
         pandas
         psutil
         types-psutil
+        nbtlib
       ]))
   ];
 }
