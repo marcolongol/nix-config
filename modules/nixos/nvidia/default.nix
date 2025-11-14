@@ -152,7 +152,7 @@ in {
           mkMerge [
             (mkIf cfg.enableVulkan [
               nvidia-vaapi-driver
-              vaapiVdpau
+              libva-vdpau-driver
             ])
             (mkIf cfg.enableOpenCL [ocl-icd opencl-headers])
           ];
@@ -221,7 +221,7 @@ in {
             nvidia-vaapi-driver
             egl-wayland
             mesa
-            glxinfo # For debugging OpenGL issues
+            mesa-demos # For debugging OpenGL issues (includes glxinfo)
           ]
           # CUDA packages
           (mkIf cfg.enableCUDA [cudatoolkit cudaPackages.cudnn])
