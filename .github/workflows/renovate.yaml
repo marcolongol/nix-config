@@ -1,0 +1,68 @@
+---
+name: Renovate
+on:
+  schedule:
+    # Run twice per week (Monday and Thursday at 6 AM UTC)
+    - cron: "0 6 * * 1,4"
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: "Run in dry-run mode"
+        type: boolean
+        default: false
+        required: false
+      logLevel:
+        description: "Override default log level"
+        required: false
+        default: "info"
+        type: choice
+        options:
+          - info
+          - debug
+          - trace
+
+env:
+  OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_HOST }}
+  OP_CONNECT_TOKEN: ${{ secrets.OP_CONNECT_TOKEN }}
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 1password/load-secrets-action/configure@13f58eec611f8e5db52ec16247f58c508398f3e6 # v3
+        with:
+          connect-host: ${{ env.OP_CONNECT_HOST }}
+          connect-token: ${{ env.OP_CONNECT_TOKEN }}
+
+      - uses: 1password/load-secrets-action@13f58eec611f8e5db52ec16247f58c508398f3e6 # v3
+        with:
+          export-env: true
+        env:
+          BOT_APP_ID: op://homelab/GITHUB/GITHUB_APP_ID
+          BOT_APP_PRIVATE_KEY: op://homelab/GITHUB/GITHUB_APP_PRIVATE_KEY
+
+      - name: Generate Token
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
+        id: app-token
+        with:
+          app-id: "${{ env.BOT_APP_ID }}"
+          private-key: "${{ env.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          token: "${{ steps.app-token.outputs.token }}"
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@ea850436a5fe75c0925d583c7a02c60a5865461d # v43.0.20
+        with:
+          configurationFile: .github/renovate.json5
+          token: "${{ steps.app-token.outputs.token }}"
+          renovate-version: latest
+        env:
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+          RENOVATE_AUTODISCOVER: true
+          RENOVATE_AUTODISCOVER_FILTER: "${{ github.repository }}"
+          RENOVATE_DRY_RUN: "${{ inputs.dryRun }}"
+          RENOVATE_INTERNAL_CHECKS_FILTER: strict
+          RENOVATE_PLATFORM_COMMIT: true
