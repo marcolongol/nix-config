@@ -23,6 +23,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     cilium-cli
     dbeaver-bin
     dig
+    tilt
   ];
 
   programs.git = {
