@@ -15,6 +15,7 @@
       freecad
       spotify
       todoist
+      ticktick
     ];
 
     sessionVariables = {
