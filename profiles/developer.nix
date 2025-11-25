@@ -24,6 +24,8 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     dbeaver-bin
     dig
     tilt
+    minijinja
+    go-task
   ];
 
   programs.git = {
