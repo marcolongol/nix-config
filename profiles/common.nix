@@ -8,7 +8,7 @@
 }:
 lib.mkIf (lib.elem "common" config.profiles) {
   home.persistence = lib.mkIf (lib.elem "impermanent" osConfig.roles) {
-    "/persist/home/${config.home.username}" = {
+    "/persist" = {
       directories =
         [
           "Pictures"
@@ -20,7 +20,6 @@ lib.mkIf (lib.elem "common" config.profiles) {
         ]
         ++ config.persistentFolders;
       files = [".config/sops-nix/key.txt"] ++ config.persistentFiles;
-      allowOther = true;
     };
   };
 

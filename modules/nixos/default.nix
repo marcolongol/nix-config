@@ -67,7 +67,6 @@
             imports =
               [
                 (import users.${userName})
-                inputs.impermanence.homeManagerModules.impermanence
                 inputs.zen-browser.homeModules.beta
                 inputs.sops-nix.homeManagerModules.sops
               ]
