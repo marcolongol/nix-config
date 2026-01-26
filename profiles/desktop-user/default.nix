@@ -107,6 +107,10 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
         allow_tearing = false;
         layout = "master";
       };
+      misc = {
+        disable_splash_rendering = true;
+        disable_hyprland_logo = true;
+      };
       decoration = {
         rounding = 10;
         active_opacity = 1.0;
