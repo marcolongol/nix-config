@@ -87,6 +87,15 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
   stylix.targets.zen-browser.profileNames = ["default"];
 
   # -----------------
+  # SECTION: Hyprpaper
+  # -----------------
+  services.hyprpaper = {
+    settings = {
+      splash = false;
+    };
+  };
+
+  # -----------------
   # SECTION: Hyprland
   # -----------------
   wayland.windowManager.hyprland = {
