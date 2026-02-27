@@ -13,6 +13,5 @@ in {
     myNodePackages.npm-check-updates
     myNodePackages.yarn
     myNodePackages.pnpm
-    myNodePackages."@angular/cli"
   ];
 }
