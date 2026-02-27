@@ -26,6 +26,12 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     tilt
     minijinja
     go-task
+    aria2
+    cabextract
+    wimlib
+    chntpw
+    rsync
+    cdrkit
   ];
 
   programs.git = {
