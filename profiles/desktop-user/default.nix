@@ -242,6 +242,6 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
   # -----------------
   persistentFolders = [
     ".thunderbird"
-    ".zen"
+    ".config/zen"
   ];
 }

@@ -1,7 +1,8 @@
 final: prev: {
   # Package overrides go here
-  # Example:
-  # nodejs = prev.nodejs.overrideAttrs (old: {
-  #   version = "20.10.0";
-  # });
+  freecad = prev.freecad.overrideAttrs (old: {
+    buildInputs = map (dep:
+      if dep.pname or "" == "boost" then prev.boost186 else dep
+    ) old.buildInputs;
+  });
 }
