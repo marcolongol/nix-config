@@ -65,7 +65,6 @@
                   inputs.home-manager.nixosModules.home-manager
                   inputs.disko.nixosModules.disko
                   inputs.impermanence.nixosModules.impermanence
-                  inputs.nixos-generators.nixosModules.all-formats
                   inputs.stylix.nixosModules.stylix
                   inputs.sops-nix.nixosModules.sops
                   inputs.comin.nixosModules.comin

@@ -33,11 +33,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nixievim = {
       url = "github:marcolongol/nixievim";
       inputs.nixpkgs.follows = "nixpkgs";
