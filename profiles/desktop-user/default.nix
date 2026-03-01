@@ -243,5 +243,6 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
   persistentFolders = [
     ".thunderbird"
     ".config/zen"
+    ".local/state/wireplumber"
   ];
 }

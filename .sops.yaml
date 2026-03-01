@@ -4,6 +4,7 @@ keys:
 
   # Host keys (derived from SSH host keys using ssh-to-age)
   - &nixos-lt age1k2m2hjlr26pgxvtuesw6wpgxv5kx5je5egck9r3x7rujteh0a3hqypwxry
+  - &nixos-dt age1epjrwdd07pzzkzjvcd9epln3tvjzlayjllxfpj4nqtf4qjsjcf6qgvx0xz
 
   # User keys (these will be generated from user SSH keys)
   - &lucas-user age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
@@ -16,12 +17,20 @@ creation_rules:
           - *admin
           - *nixos-lt
 
+  # Host-specific secrets
+  - path_regex: secrets/nixos-dt\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *nixos-dt
+
   # System shared secrets accessible by all hosts
   - path_regex: secrets/shared\.yaml$
     key_groups:
       - age:
           - *admin
           - *nixos-lt
+          - *nixos-dt
 
   # User-specific secrets (encrypted with host key for system access)
   - path_regex: secrets/users/lucas\.yaml$
@@ -29,4 +38,5 @@ creation_rules:
       - age:
           - *admin
           - *nixos-lt
+          - *nixos-dt
           - *lucas-user
