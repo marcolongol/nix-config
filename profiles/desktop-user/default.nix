@@ -12,6 +12,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     thunderbird
     wl-clipboard
     filezilla
+    pavucontrol
   ];
 
   # ----------------
