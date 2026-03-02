@@ -13,6 +13,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     wl-clipboard
     filezilla
     pavucontrol
+    solaar
   ];
 
   # ----------------
