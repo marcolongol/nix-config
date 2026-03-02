@@ -1,5 +1,10 @@
-{
+{...}: let
+  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
+  hostUsers = ["lucas"];
+in {
   system.stateVersion = "25.11";
+
+  inherit roles hostUsers;
 
   imports = [
     ./disko-config.nix
@@ -16,10 +21,6 @@
     kernelModules = ["kvm-intel"];
     kernelParams = ["loglevel=3" "quiet"];
   };
-
-  # Roles and users
-  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
-  hostUsers = ["lucas"];
 
   # secrets
   sops = {

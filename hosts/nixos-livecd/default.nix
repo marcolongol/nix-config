@@ -14,17 +14,17 @@
   ];
 
   repoUrl = "https://github.com/marcolongol/nix-config";
+
+  roles = ["common"];
+  hostUsers = [];
 in {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
+  inherit roles hostUsers;
+
   isoImage.squashfsCompression = "gzip -Xcompression-level 1";
-  # common gives us: hostname, networkmanager, nix settings, zsh, basic
-  # packages, openssh, sudo, etc. We override the two parts that don't make
-  # sense on a live CD (sops has no age key, comin shouldn't manage a live system).
-  roles = ["common"];
-  hostUsers = [];
 
   services.comin.enable = lib.mkForce false;
   system.autoUpgrade.enable = lib.mkForce false;

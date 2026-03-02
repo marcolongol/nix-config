@@ -1,10 +1,10 @@
-{
-  pkgs,
-  users,
-  ...
-}
-: {
+{pkgs, ...}: let
+  roles = ["common" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
+  hostUsers = ["lucas"];
+in {
   system.stateVersion = "25.11";
+
+  inherit roles hostUsers;
 
   imports = [
     ./disko-config.nix
@@ -29,7 +29,4 @@
   };
 
   services.xserver.videoDrivers = ["amdgpu"];
-
-  roles = ["common" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
-  hostUsers = ["lucas"];
 }
