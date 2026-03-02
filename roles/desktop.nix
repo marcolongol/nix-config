@@ -52,7 +52,10 @@ in
         defaultSession = "hyprland-uwsm";
         sddm = {
           enable = true;
-          wayland.enable = true;
+          wayland = {
+            enable = true;
+            compositor = "kwin";
+          };
           package = pkgs.kdePackages.sddm;
           theme = "sddm-astronaut-theme";
           extraPackages = [sddm-astronaut];
