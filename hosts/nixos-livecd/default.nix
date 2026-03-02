@@ -37,12 +37,6 @@ in {
 
   users.users = {
     nixos.openssh.authorizedKeys.keys = authorizedKeys;
-    lucas = {
-      isNormalUser = true;
-      extraGroups = ["wheel"];
-      openssh.authorizedKeys.keys = authorizedKeys;
-      initialPassword = "";
-    };
   };
 
   environment.systemPackages = with pkgs; [
