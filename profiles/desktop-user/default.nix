@@ -104,7 +104,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
       "$mod" = "SUPER";
       "$terminal" = "alacritty";
       "$filemanager" = "nautilus";
-      "$browser" = "zen";
+      "$browser" = "zen-beta";
       "$menu" = "rofi -show drun -show-icons";
       general = {
         gaps_in = 5;
