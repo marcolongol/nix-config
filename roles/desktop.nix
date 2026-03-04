@@ -69,6 +69,12 @@ in
       };
     };
 
+    xdg.portal = {
+      enable = true;
+      extraPortals = [pkgs.xdg-desktop-portal-hyprland];
+      config.common.default = "*";
+    };
+
     security.rtkit.enable = true;
     hardware.graphics.enable = true;
     hardware.keyboard.zsa.enable = true;
