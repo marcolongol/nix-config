@@ -14,4 +14,9 @@ in {
     myNodePackages.yarn
     myNodePackages.pnpm
   ];
+
+  persistentFolders = [
+    ".local/share/pnpm"
+    ".npm"
+  ];
 }
