@@ -14,6 +14,8 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     filezilla
     pavucontrol
     solaar
+    grim
+    slurp
   ];
 
   # ----------------
@@ -190,6 +192,8 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
 
         "$mod SHIFT, W, exec, wallctl.py next"
         "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+
+        "CTRL ALT, S, exec, grim -g \"$(slurp)\" - | wl-copy"
 
         "$mod, comma, focusmonitor, -1"
         "$mod, period, focusmonitor, +1"
