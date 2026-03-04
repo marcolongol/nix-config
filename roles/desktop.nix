@@ -71,6 +71,9 @@ in
 
     security.rtkit.enable = true;
     hardware.graphics.enable = true;
+    hardware.keyboard.zsa.enable = true;
+    hardware.logitech.wireless.enable = true;
+    hardware.logitech.wireless.enableGraphical = true;
 
     stylix = {
       enable = true;

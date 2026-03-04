@@ -49,7 +49,7 @@
     users.users = lib.genAttrs config.hostUsers (userName: {
       isNormalUser = true;
       home = "/home/${userName}";
-      extraGroups = ["wheel" "networkmanager" "docker"];
+      extraGroups = ["wheel" "networkmanager" "docker" "plugdev"];
       hashedPasswordFile = config.sops.secrets."user-password-${userName}".path;
     });
 
