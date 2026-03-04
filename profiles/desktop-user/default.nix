@@ -125,7 +125,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
       decoration = {
         rounding = 10;
         active_opacity = 1.0;
-        inactive_opacity = 0.8;
+        inactive_opacity = 1.0;
         shadow = {
           enabled = true;
           range = 4;
@@ -190,6 +190,11 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
 
         "$mod SHIFT, W, exec, wallctl.py next"
         "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+
+        "$mod, comma, focusmonitor, -1"
+        "$mod, period, focusmonitor, +1"
+        "$mod SHIFT, comma, movewindow, mon:-1"
+        "$mod SHIFT, period, movewindow, mon:+1"
       ];
       bindel = [
         ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"

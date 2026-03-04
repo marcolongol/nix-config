@@ -7,7 +7,7 @@
       "empty": ""
     },
     "persistent-workspaces": {
-      "*": 4
+      "*": 5
     }
   },
   "hyprland/window": {
