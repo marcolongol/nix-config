@@ -17,7 +17,7 @@ in {
       freecad
       spotify
       todoist
-      ticktick
+      keymapp
     ];
 
     sessionVariables = {
