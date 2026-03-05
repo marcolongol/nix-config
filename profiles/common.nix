@@ -6,7 +6,11 @@
   secretsPath,
   ...
 }:
-lib.mkIf (lib.elem "common" config.profiles) {
+lib.mkIf (lib.elem "common" config.profiles) (
+let
+  ageKeyFile = "${config.home.homeDirectory}/.config/sops-nix/key.txt";
+in
+{
   home.persistence = lib.mkIf (lib.elem "impermanent" osConfig.roles) {
     "/persist" = {
       directories =
@@ -36,9 +40,11 @@ lib.mkIf (lib.elem "common" config.profiles) {
     btop.enable = true;
   };
 
+  home.sessionVariables.SOPS_AGE_KEY_FILE = ageKeyFile;
+
   sops = {
-    age.keyFile = "${config.home.homeDirectory}/.config/sops-nix/key.txt";
+    age.keyFile = ageKeyFile;
     defaultSopsFormat = "yaml";
     defaultSopsFile = secretsPath + "/users/${config.home.username}.yaml";
   };
-}
+})
