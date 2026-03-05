@@ -10,11 +10,15 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
+  hardware.amd-custom = {
+    enable = true;
+    enableOpenCL = true;
+    enableCorectrl = true;
+  };
+
   hardware = {
     enableRedistributableFirmware = true;
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    graphics.enable32Bit = true;
-    graphics.enable = true;
 
     bluetooth = {
       enable = true;

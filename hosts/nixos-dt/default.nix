@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
+{lib, ...}: let
   roles = ["common" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
   hostUsers = ["lucas"];
 in {
@@ -18,21 +14,17 @@ in {
   boot = {
     initrd = {
       availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage"];
-      kernelModules = ["amdgpu"];
     };
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
     kernelModules = ["kvm-amd"];
-    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "loglevel=3"
       "quiet"
     ];
   };
-
-  services.xserver.videoDrivers = ["amdgpu"];
 
   # Monitor layout and workspace bindings are host-specific so they live here rather than in the desktop-user profile.
   # DP-2: LG ULTRAGEAR 2560x1440, main monitor, max refresh (164.96Hz)
