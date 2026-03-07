@@ -21,6 +21,8 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 ├── lib.nix                # Custom utility functions
 ├── hosts/                 # Host-specific configurations
 │   ├── nixos-lt/         # Laptop configuration
+│   ├── nixos-dt/         # Desktop configuration
+│   ├── nixos-livecd/     # Live CD / installer image
 │   └── nixos-vm/         # Virtual machine configuration
 ├── modules/               # Custom modules
 │   ├── flake/            # Flake-specific modules
@@ -72,7 +74,7 @@ sudo nixos-rebuild switch --flake .#your-hostname
 ```nix
 # hosts/nixos-lt/default.nix
 {
-  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent"];
+  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
   hostUsers = ["lucas"];
 }
 ```
@@ -83,6 +85,8 @@ sudo nixos-rebuild switch --flake .#your-hostname
 - **laptop**: Laptop-specific optimizations and hardware support
 - **impermanent**: Impermanence configuration for stateless systems
 - **nfs-client**: Network file system client configuration
+- **gaming**: Steam, Proton, and gaming-related packages
+- **docker**: Docker daemon with auto-prune and journald logging
 
 This separation means you can:
 - Add the "desktop" role to any host to get a full desktop environment
@@ -96,7 +100,7 @@ This separation means you can:
 ```nix
 # users/lucas/default.nix - User identity and personal settings
 {
-  profiles = ["common" "desktop-user" "developer"];
+  profiles = ["common" "desktop-user" "developer" "gamer"];
   # Personal git config, ssh settings, etc.
 }
 ```
@@ -105,6 +109,7 @@ This separation means you can:
 - **common**: Basic user configuration with essential tools (vim, btop, etc.)
 - **developer**: Development environment with programming tools
 - **desktop-user**: Desktop user environment for GUI workflows
+- **gamer**: MangoHud overlay, Discord
 
 This means multiple users can share profiles, and users can mix different profiles for different purposes.
 
@@ -116,67 +121,68 @@ This means multiple users can share profiles, and users can mix different profil
 - **Stylix** - System-wide theming with wallpaper-based color schemes
 - **Pipewire** - Modern audio system with ALSA, PulseAudio, and JACK support
 
-#### Development Environment (Developer Profile)  
-- **Nixievim** - My custom Neovim distribution built with nixvim for declarative configuration
-- **Git** with 1Password SSH signing integration
-- **Tmux** with session persistence
-- **Python** development environment
-- **Starship** prompt and **Zsh** shell
+#### Development Environment (Developer Profile)
+- **Git** with histogram diffs, rebase settings, and rerere
+- **direnv** with nix-direnv for per-project environments
+- **Kubernetes tooling** - kubectl, helm, talosctl, krew, k9s, cilium-cli, fluxcd
+- **lazygit** and **lazydocker** for TUI Git/Docker management
+- **claude-code**, **jq**, and a broad set of dev utilities
 
 #### Core Tools (Common Profile)
+- **Nixievim** - My custom Neovim distribution built with nixvim
 - **Alacritty** - Terminal emulator
+- **Tmux** - Auto-attaches to a persistent `dev` session on shell start
+- **Starship** prompt and **Zsh** shell
 - **Home Manager** - Declarative user configuration management
 - **Btop** - System monitor
-- **sops-nix** - Encrypted secrets management for user-level secrets
+- **sops-nix** - User secret decryption via YubiKey GPG
 
 ## 🔐 Secrets Management
 
-This configuration includes a comprehensive secrets management system using **sops-nix** with age encryption, supporting both system-level and user-level secrets.
+This configuration uses **sops-nix** for encrypted secrets management, supporting both system-level and user-level secrets.
 
 ### Architecture
 
-**System Secrets**: Managed in the `common` role, accessible system-wide:
+**System Secrets**: Managed in the `common` role, decrypted at boot via the SSH host key (age):
 - `secrets/shared.yaml` - Shared across all hosts
 - `secrets/${hostname}.yaml` - Host-specific secrets (e.g., `nixos-lt.yaml`)
 
-**User Secrets**: Managed in user profiles, accessible per-user:
+**User Secrets**: Managed in user profiles, decrypted by the user's GPG key (YubiKey):
 - `secrets/users/${username}.yaml` - User-specific secrets
-- `secrets/users/shared.yaml` - Shared across all users
 
 ### Configuration Files
 
 **`.sops.yaml`** - Defines encryption keys and access rules:
 ```yaml
 keys:
-  - &admin age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
   - &nixos-lt age1k2m2hjlr26pgxvtuesw6wpgxv5kx5je5egck9r3x7rujteh0a3hqypwxry
-  - &lucas-user age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
+  - &nixos-dt age1epjrwdd07pzzkzjvcd9epln3tvjzlayjllxfpj4nqtf4qjsjcf6qgvx0xz
+  - &lucas-gpg 1818334CEAC35348ED5E30F5DD40CEDB2EEAD4A4  # YubiKey GPG key
 
 creation_rules:
-  # System secrets
   - path_regex: secrets/nixos-lt\.yaml$
-    key_groups: [age: [*admin, *nixos-lt]]
+    key_groups:
+      - age: [*nixos-lt]
+        pgp: [*lucas-gpg]
   - path_regex: secrets/shared\.yaml$
-    key_groups: [age: [*admin, *nixos-lt]]
-
-  # User secrets
+    key_groups:
+      - age: [*nixos-lt, *nixos-dt]
+        pgp: [*lucas-gpg]
   - path_regex: secrets/users/lucas\.yaml$
-    key_groups: [age: [*admin, *lucas-user]]
+    key_groups:
+      - age: [*nixos-lt, *nixos-dt]
+        pgp: [*lucas-gpg]
 ```
 
 ### Key Management
 
-**System Keys**: Generated from SSH host keys
+**System Keys**: Derived from SSH host keys (age) — imported automatically during `nixos-rebuild`
 ```bash
-# Host keys are automatically imported during nixos-rebuild
-# Located at: /etc/ssh/ssh_host_ed25519_key
+# Located at: /persist/etc/ssh/ssh_host_ed25519_key  (impermanent hosts)
+#             /etc/ssh/ssh_host_ed25519_key           (other hosts)
 ```
 
-**User Keys**: Stored in user home directory
-```bash
-# User age key stored at: ~/.config/sops-nix/key.txt
-# Must be manually created with your age secret key
-```
+**User/Admin Key**: GPG key stored on YubiKey — plug in the YubiKey and GPG agent handles decryption automatically
 
 ### Usage Examples
 
@@ -193,9 +199,6 @@ sops secrets/shared.yaml
 ```bash
 # Edit user-specific secrets
 sops secrets/users/lucas.yaml
-
-# Edit shared user secrets
-sops secrets/users/shared.yaml
 ```
 
 **Declaring Secrets in Configuration**:
@@ -220,41 +223,73 @@ sops.secrets = {
 };
 ```
 
-### Security Features
+### Security Model
 
-- **Age encryption** with multiple recipients for redundancy
-- **Automatic key generation** for system hosts
-- **Proper file permissions** (0400) for all secret files
-- **Impermanence support** - Keys are persisted across reboots
-- **Separation of concerns** - System vs user secret isolation
+- System secrets decrypted at boot via the SSH host key (no user interaction)
+- User secrets decrypted on demand via YubiKey GPG (requires physical touch)
+- Proper file permissions (0400) for all secret files
+- Impermanence: `/etc/ssh` persisted so the host key survives reboots
 
 ## 🔧 Customization
 
-### Adding a New Host
+### Bootstrapping a New Host
 
-1. Create a new directory in `hosts/`:
-   ```bash
-   mkdir hosts/new-host
-   ```
+#### 1 — Add the host config
 
-2. Create `hosts/new-host/default.nix`:
-   ```nix
-   {
-     system.stateVersion = "25.11";
-     
-     imports = [
-       ./hardware-config.nix
-     ];
-     
-     roles = ["common" "desktop"];
-     hostUsers = ["username"];
-   }
-   ```
+Create `hosts/<hostname>/default.nix` and `hosts/<hostname>/disko-config.nix`. See `hosts/nixos-lt/` for a reference. Register the host in `flake.nix`.
 
-3. Generate hardware configuration:
-   ```bash
-   nixos-generate-config --dir hosts/new-host
-   ```
+#### 2 — Add a placeholder sops key
+
+Add a placeholder age key under `keys:` in `.sops.yaml` and add the appropriate `creation_rules` entry. The real key is derived from the SSH host key after first boot.
+
+Create the host secrets file (requires YubiKey):
+```bash
+sops secrets/<hostname>.yaml
+```
+
+Commit and push so comin can pull the config on first boot.
+
+#### 3 — Install
+
+Boot from the [livecd](hosts/nixos-livecd/) image, clone the repo, then:
+
+```bash
+# Partition and format disks
+sudo disko --mode disko hosts/<hostname>/disko-config.nix
+
+# Generate hardware config
+sudo nixos-generate-config --no-filesystems --root /mnt
+cp /mnt/etc/nixos/hardware-configuration.nix hosts/<hostname>/hardware-config.nix
+
+# Mount EFI if disko doesn't manage it
+mount /dev/<efi-partition> /mnt/boot
+
+# Install
+sudo nixos-install --flake .#<hostname>
+```
+
+#### 4 — Wire up sops after first boot
+
+The SSH host key is generated on first boot. Get the age public key derived from it:
+
+```bash
+# On the new host
+ssh-to-age < /persist/etc/ssh/ssh_host_ed25519_key.pub  # impermanent
+# or: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
+```
+
+On your dev machine (YubiKey required):
+```bash
+# Replace the placeholder in .sops.yaml with the real age key
+# Then re-encrypt all files that include this host as a recipient
+sops updatekeys secrets/shared.yaml
+sops updatekeys secrets/users/lucas.yaml
+git add .sops.yaml secrets/
+git commit -m "chore(sops): add <hostname> host key"
+git push
+```
+
+comin will pick up the changes automatically.
 
 ### Adding New Roles
 

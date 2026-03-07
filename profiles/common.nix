@@ -6,11 +6,7 @@
   secretsPath,
   ...
 }:
-lib.mkIf (lib.elem "common" config.profiles) (
-let
-  ageKeyFile = "${config.home.homeDirectory}/.config/sops-nix/key.txt";
-in
-{
+lib.mkIf (lib.elem "common" config.profiles) {
   home.persistence = lib.mkIf (lib.elem "impermanent" osConfig.roles) {
     "/persist" = {
       directories =
@@ -24,7 +20,7 @@ in
           ".local/state/nvim"
         ]
         ++ config.persistentFolders;
-      files = [".config/sops-nix/key.txt"] ++ config.persistentFiles;
+      files = config.persistentFiles;
     };
   };
 
@@ -41,11 +37,9 @@ in
     btop.enable = true;
   };
 
-  home.sessionVariables.SOPS_AGE_KEY_FILE = ageKeyFile;
-
   sops = {
-    age.keyFile = ageKeyFile;
+    gnupg.home = "${config.home.homeDirectory}/.gnupg";
     defaultSopsFormat = "yaml";
     defaultSopsFile = secretsPath + "/users/${config.home.username}.yaml";
   };
-})
+}

@@ -3,10 +3,7 @@ keys:
   - &nixos-lt age1k2m2hjlr26pgxvtuesw6wpgxv5kx5je5egck9r3x7rujteh0a3hqypwxry
   - &nixos-dt age1epjrwdd07pzzkzjvcd9epln3tvjzlayjllxfpj4nqtf4qjsjcf6qgvx0xz
 
-  # User age key (transitional - kept for nixos-lt migration)
-  - &lucas-user age19r6wen3fypsw5ykk0dj2e2hc0tyw2zlux6mw33c57pfg5jd9mg9sgjp3za
-
-  # GPG key (YubiKey) - admin and user key
+  # GPG key (YubiKey)
   - &lucas-gpg 1818334CEAC35348ED5E30F5DD40CEDB2EEAD4A4
 
 creation_rules:
@@ -41,6 +38,5 @@ creation_rules:
       - age:
           - *nixos-lt
           - *nixos-dt
-          - *lucas-user
         pgp:
           - *lucas-gpg
