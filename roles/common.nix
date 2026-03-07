@@ -66,12 +66,6 @@ lib.mkIf (lib.elem "common" config.roles) {
     options = "--delete-older-than 7d";
   };
 
-  system.autoUpgrade = {
-    enable = true;
-    dates = "daily";
-    allowReboot = false;
-  };
-
   users.defaultUserShell = pkgs.zsh;
 
   programs = {
@@ -83,6 +77,7 @@ lib.mkIf (lib.elem "common" config.roles) {
   };
 
 
+  # Passwordless sudo — intentional for a single-user personal machine
   security.sudo.wheelNeedsPassword = false;
 
   sops = {

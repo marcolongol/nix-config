@@ -10,7 +10,7 @@
   # paths outside the host directory break in pure eval mode.
   # Add more users here as needed: (import (users.<name> + "/pubkeys.nix")).ssh
   authorizedKeys = [
-    (import (users.lucas + "/pubkeys.nix")).ssh
+    (import (users.lucas + "/pubkeys.nix")).ssh.publicKey
   ];
 
   repoUrl = "https://github.com/marcolongol/nix-config";
@@ -18,6 +18,8 @@
   roles = ["common"];
   hostUsers = [];
 in {
+  system.stateVersion = "25.11";
+
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
@@ -83,6 +85,4 @@ in {
     theme = "nixos-bgrt";
     themePackages = [pkgs.nixos-bgrt-plymouth];
   };
-
-  system.stateVersion = "25.11";
 }

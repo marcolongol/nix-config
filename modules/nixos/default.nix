@@ -49,8 +49,15 @@
     users.users = lib.genAttrs config.hostUsers (userName: {
       isNormalUser = true;
       home = "/home/${userName}";
-      extraGroups = ["wheel" "networkmanager" "docker" "plugdev"];
+      extraGroups =
+        ["wheel" "networkmanager" "plugdev"]
+        ++ lib.optionals (lib.elem "docker" config.roles) ["docker"];
       hashedPasswordFile = config.sops.secrets."user-password-${userName}".path;
+      openssh.authorizedKeys.keys = let
+        pubkeysPath = "${users.${userName}}/pubkeys.nix";
+      in
+        lib.optionals (users ? ${userName} && builtins.pathExists pubkeysPath)
+        [(import pubkeysPath).ssh.publicKey];
     });
 
     home-manager = {

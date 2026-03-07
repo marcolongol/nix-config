@@ -1,9 +1,6 @@
-{
-  lib,
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   pubKeys = import ./pubkeys.nix;
+  gpgPubKey = pkgs.writeText "lucas-gpg-pubkey.asc" pubKeys.gpg.publicKey;
 in {
   home.stateVersion = "25.11";
 
@@ -24,15 +21,13 @@ in {
       EDITOR = "vim";
       TERMINAL = "alacritty";
     };
-
-    file.".ssh/authorized_keys".text = pubKeys.ssh;
   };
 
   programs.gpg = {
     enable = true;
     publicKeys = [
       {
-        source = ./public-key.asc;
+        source = gpgPubKey;
         trust = "ultimate";
       }
     ];
@@ -42,12 +37,10 @@ in {
     settings = {
       user = {
         name = "Lucas Marcolongo";
-        email = "lucas_marco@live.com";
-        signingKey = pubKeys.ssh;
+        email = "lucas@marcolongo.dev";
+        signingKey = pubKeys.gpg.fingerprint;
       };
       init.defaultBranch = "main";
-      gpg.format = "ssh";
-      "gpg \"ssh\"".program = "${lib.getExe' pkgs._1password-gui "op-ssh-sign"}";
       commit.gpgSign = true;
     };
   };
@@ -59,15 +52,11 @@ in {
         serverAliveInterval = 60;
         serverAliveCountMax = 3;
         compression = true;
-        addKeysToAgent = "yes";
       };
       "github.com" = {
         user = "git";
       };
     };
-    extraConfig = ''
-      IdentityAgent ~/.1password/agent.sock
-    '';
   };
 
   programs.spotify-player = {
