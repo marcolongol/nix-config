@@ -20,7 +20,7 @@ lib.mkIf (lib.elem "laptop" config.roles) {
         };
         charger = {
           governor = "performance";
-          turbo = "auto";
+          turbo = "always";
         };
       };
     };
