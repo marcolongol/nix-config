@@ -76,6 +76,7 @@ lib.mkIf (lib.elem "common" config.roles) {
     zsh.enable = true;
   };
 
+  hardware.gpgSmartcards.enable = true;
 
   # Passwordless sudo — intentional for a single-user personal machine
   security.sudo.wheelNeedsPassword = false;
