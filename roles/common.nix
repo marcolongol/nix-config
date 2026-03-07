@@ -26,6 +26,7 @@ lib.mkIf (lib.elem "common" config.roles) {
     tree
     pfetch
     sops
+    yubikey-manager
   ];
 
   services = {
@@ -73,7 +74,14 @@ lib.mkIf (lib.elem "common" config.roles) {
 
   users.defaultUserShell = pkgs.zsh;
 
-  programs.zsh.enable = true;
+  programs = {
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+    zsh.enable = true;
+  };
+
 
   security.sudo.wheelNeedsPassword = false;
 

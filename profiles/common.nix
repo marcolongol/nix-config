@@ -19,6 +19,7 @@ in
           "Work"
           "Personal"
           ".ssh"
+          ".gnupg"
           ".local/share/nvim"
           ".local/state/nvim"
         ]

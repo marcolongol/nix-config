@@ -28,6 +28,16 @@ in {
     file.".ssh/authorized_keys".text = pubKeys.ssh;
   };
 
+  programs.gpg = {
+    enable = true;
+    publicKeys = [
+      {
+        source = ./public-key.asc;
+        trust = "ultimate";
+      }
+    ];
+  };
+
   programs.git = {
     settings = {
       user = {
