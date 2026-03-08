@@ -33,6 +33,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     rsync
     cdrkit
     gh
+    k3d
   ];
 
   programs.git = {
