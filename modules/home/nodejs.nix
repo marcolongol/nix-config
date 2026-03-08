@@ -1,5 +1,5 @@
 {pkgs, ...}: let
-  nodejs = pkgs.nodejs_latest;
+  nodejs = pkgs.nodejs;
 
   myNodePackages = pkgs.nodePackages.override {
     inherit nodejs;
