@@ -32,6 +32,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     chntpw
     rsync
     cdrkit
+    gh
   ];
 
   programs.git = {
