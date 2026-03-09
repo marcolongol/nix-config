@@ -146,6 +146,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     kind: Simple
     metadata:
       name: dev
+    image: rancher/k3s:v1.31.5-k3s1
     servers: 1
     agents: 2
     registries:

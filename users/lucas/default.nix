@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   pubKeys = import ./pubkeys.nix;
   gpgPubKey = pkgs.writeText "lucas-gpg-pubkey.asc" pubKeys.gpg.publicKey;
 in {
@@ -77,9 +81,21 @@ in {
 
   sops = {
     secrets = {
-      user-secret = {
-        mode = "0400";
-      };
+      user-secret = {};
+      dockerhub-auth = {};
+    };
+    templates.docker-config = {
+      path = "${config.home.homeDirectory}/.docker/config.json";
+      content = ''
+        {
+          "auths": {
+            "https://index.docker.io/v1/": {
+              "auth": "${config.sops.placeholder.dockerhub-auth}"
+            }
+          }
+        }
+      '';
+      mode = "0600";
     };
   };
 }

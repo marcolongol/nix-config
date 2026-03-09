@@ -1,18 +1,17 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 lib.mkIf (lib.elem "docker" config.roles) {
-  persistentFolders = ["/var/lib/docker"];
-
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
     autoPrune.enable = true;
     logDriver = "journald";
   };
+
+  persistentFolders = ["/var/lib/docker"];
 
   # Wildcard DNS for local cluster ingress (*.k3d.local -> 127.0.0.1)
   # Uses a minimal dnsmasq bound to 127.0.0.55 for .k3d.local only,
