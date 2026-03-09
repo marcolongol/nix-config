@@ -158,7 +158,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
         mirrors:
           "registry.localhost:5000":
             endpoint:
-              - "http://k3d-registry.localhost:5000"
+              - "http://registry.localhost:5000"
     ports:
       - port: 80:80
         nodeFilters:
