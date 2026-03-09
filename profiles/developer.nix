@@ -136,4 +136,37 @@ lib.mkIf (lib.elem "developer" config.profiles) {
   ];
 
   home.sessionPath = ["$HOME/.krew/bin"];
+
+  # ----------------
+  # SECTION: k3d
+  # ----------------
+  home.file.".config/k3d/dev-cluster.yaml".text = ''
+    apiVersion: k3d.io/v1alpha5
+    kind: Simple
+    metadata:
+      name: dev
+    servers: 1
+    agents: 2
+    registries:
+      create:
+        name: registry.localhost
+        host: "0.0.0.0"
+        hostPort: "5000"
+      config: |
+        mirrors:
+          "registry.localhost:5000":
+            endpoint:
+              - "http://k3d-registry.localhost:5000"
+    ports:
+      - port: 80:80
+        nodeFilters:
+          - loadbalancer
+      - port: 443:443
+        nodeFilters:
+          - loadbalancer
+  '';
+
+  programs.zsh.shellAliases = {
+    k3d-dev = "k3d cluster create --config ~/.config/k3d/dev-cluster.yaml";
+  };
 }
