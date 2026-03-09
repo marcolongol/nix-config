@@ -34,12 +34,22 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     cdrkit
     gh
     k3d
+    wl-clipboard
   ];
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      line-numbers = true;
+    };
+  };
 
   programs.git = {
     enable = true;
     settings = {
-      core.editor = "vim";
+      core.editor = "nvim";
       pull.rebase = true;
 
       # Security & Performance
@@ -51,6 +61,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
       # Better Diffs & Merges
       diff.algorithm = "histogram";
       diff.colorMoved = "default";
+      diff.colorMovedWS = "allow-indentation-change";
       merge.conflictStyle = "zdiff3";
 
       # Branch Management
@@ -75,6 +86,23 @@ lib.mkIf (lib.elem "developer" config.profiles) {
 
   programs.lazygit = {
     enable = true;
+    settings = {
+      git.pagers = [
+        {
+          colorArg = "always";
+          pager = "delta --color-only --dark --paging=never";
+        }
+      ];
+      customCommands = [
+        {
+          key = "<c-g>";
+          context = "files";
+          description = "Generate AI commit message (copies to clipboard)";
+          command = ''git diff --staged | claude -p "Generate a git commit message following the Conventional Commits spec for this diff. Output only the commit message (subject line + optional body), nothing else." | wl-copy && echo "Commit message copied to clipboard."'';
+          output = "terminal";
+        }
+      ];
+    };
   };
 
   programs.lazydocker = {
@@ -84,6 +112,11 @@ lib.mkIf (lib.elem "developer" config.profiles) {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
+    extraConfig = ''
+      AddKeysToAgent yes
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+    '';
   };
 
   programs.k9s = {

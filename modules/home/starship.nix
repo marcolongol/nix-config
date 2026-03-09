@@ -29,7 +29,7 @@
         truncation_length = 3;
         truncate_to_repo = true;
       };
-      line_break = " ";
+      line_break.disabled = false;
     };
   };
 }

@@ -7,12 +7,12 @@
 in {
   home.packages = [
     nodejs
+    pkgs.pnpm
+    pkgs.yarn
     myNodePackages.typescript
     myNodePackages.eslint
     myNodePackages.prettier
     myNodePackages.npm-check-updates
-    myNodePackages.yarn
-    myNodePackages.pnpm
   ];
 
   persistentFolders = [

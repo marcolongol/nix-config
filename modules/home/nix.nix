@@ -3,5 +3,7 @@
     alejandra
     nixd
     deadnix
+    statix
+    nh
   ];
 }
