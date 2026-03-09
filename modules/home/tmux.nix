@@ -24,8 +24,8 @@
       bind -n M-4 select-window -t 4
 
       # Open split panes in the current directory
-      bind '"' split-window -v -c "#{pane_current_path}"
-      bind % split-window -h -c "#{pane_current_path}"
+      bind '"' split-window -v -p 30 -c "#{pane_current_path}"
+      bind % split-window -h -p 30 -c "#{pane_current_path}"
     '';
   };
 
