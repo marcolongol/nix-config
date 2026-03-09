@@ -16,6 +16,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     kubernetes-helm
     talosctl
     kubectl
+    kubectx
     krew
     ngrok
     restic
@@ -98,7 +99,7 @@ lib.mkIf (lib.elem "developer" config.profiles) {
           key = "<c-g>";
           context = "files";
           description = "Generate AI commit message (copies to clipboard)";
-          command = ''git diff --staged | claude -p "Generate a git commit message following the Conventional Commits spec for this diff. Output only the commit message (subject line + optional body), nothing else." | wl-copy && echo "Commit message copied to clipboard."'';
+          command = ''git diff --staged | claude -p "Generate a git commit message following the Conventional Commits spec for this diff. Output only the raw commit message (subject line + optional body). Do not use markdown, code blocks, backticks, or any other formatting. Plain text only." | wl-copy && echo "Commit message copied to clipboard."'';
           output = "terminal";
         }
       ];
@@ -128,11 +129,11 @@ lib.mkIf (lib.elem "developer" config.profiles) {
     ".config/github-copilot"
     ".config/Code"
     ".krew"
+    ".kube"
   ];
 
   persistentFiles = [
     ".claude.json"
-    ".kube/config"
   ];
 
   home.sessionPath = ["$HOME/.krew/bin"];
@@ -167,6 +168,8 @@ lib.mkIf (lib.elem "developer" config.profiles) {
   '';
 
   programs.zsh.shellAliases = {
-    k3d-dev = "k3d cluster create --config ~/.config/k3d/dev-cluster.yaml";
+    k3d-dev = "k3d cluster create --config ~/.config/k3d/dev-cluster.yaml --kubeconfig-update-default";
+    kn = "kubens";
+    kx = "kubectx";
   };
 }
