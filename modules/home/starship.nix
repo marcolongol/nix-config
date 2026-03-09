@@ -3,7 +3,7 @@
     enable = true;
     settings = {
       format = "$all$character";
-      right_format = "$time";
+      right_format = "$kubernetes$cmd_duration$time";
       add_newline = true;
       character = {
         success_symbol = "[❯](bold green)";
@@ -24,6 +24,14 @@
         disabled = false;
         format = "[🕒 $time](dimmed white)";
         use_12hr = false;
+      };
+      kubernetes = {
+        disabled = false;
+        format = "[$symbol$context( \\($namespace\\))](cyan bold) ";
+      };
+      cmd_duration = {
+        min_time = 2000;
+        format = "[⏱ $duration](dimmed yellow) ";
       };
       directory = {
         truncation_length = 3;
