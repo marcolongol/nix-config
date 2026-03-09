@@ -5,6 +5,8 @@
   ...
 }:
 lib.mkIf (lib.elem "docker" config.roles) {
+  persistentFolders = ["/var/lib/docker"];
+
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
