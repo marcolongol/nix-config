@@ -347,11 +347,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1773023812,
-        "narHash": "sha256-rBLAkCg/HOtQm6yiQMdb8GTzMCE8rYDiJaBICQH3ChM=",
+        "lastModified": 1773224135,
+        "narHash": "sha256-9f0V703pg2/ckZ+41oMAP0zbNuZ1P0z3r/YZCCkqtDc=",
         "owner": "marcolongol",
         "repo": "nixievim",
-        "rev": "b8eaa0b53840cc2c79c812108312b72640364511",
+        "rev": "8ab32bb5720bdca26bd8a435b21fd5cfa77dc5dd",
         "type": "github"
       },
       "original": {
@@ -733,11 +733,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773117756,
-        "narHash": "sha256-47P/mNwhBao57SDfEMQqWPrK8GEUCcVj/Bb24390BDk=",
+        "lastModified": 1773222182,
+        "narHash": "sha256-6JJ9rWLJ7pxdSXBIGHbXJmbvnolo5vkqT7w5jhbmpGE=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "bb5e69d7f82c0a58ad11b5ae46755c44772e335c",
+        "rev": "20331741be8473d15735e8d852c8cc2288722375",
         "type": "github"
       },
       "original": {
