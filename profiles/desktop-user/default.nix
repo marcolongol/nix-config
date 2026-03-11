@@ -6,7 +6,6 @@
 }:
 lib.mkIf (lib.elem "desktop-user" config.profiles) {
   home.packages = with pkgs; [
-    alacritty
     glib
     nautilus
     thunderbird
@@ -106,7 +105,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     enable = true;
     settings = {
       "$mod" = "SUPER";
-      "$terminal" = "alacritty";
+      "$terminal" = "ghostty";
       "$filemanager" = "nautilus";
       "$browser" = "zen-beta";
       "$menu" = "rofi -show drun -show-icons";

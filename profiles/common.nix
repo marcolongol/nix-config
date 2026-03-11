@@ -33,7 +33,15 @@ lib.mkIf (lib.elem "common" config.profiles) {
   programs = {
     home-manager.enable = true;
     nixievim.enable = true;
-    alacritty.enable = true;
+    ghostty = {
+      enable = true;
+      settings = {
+        window-padding-x = 8;
+        window-padding-y = 8;
+        scrollback-limit = 10000;
+        shell-integration-features = "cursor,sudo,title";
+      };
+    };
     btop.enable = true;
   };
 

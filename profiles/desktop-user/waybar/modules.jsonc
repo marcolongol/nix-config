@@ -24,7 +24,7 @@
       "discord(.*)": "Discord",
       "Code": "VS Code",
       "Docker Desktop": "Docker",
-      "alacritty": "Alacritty"
+      "com.mitchellh.ghostty": "Ghostty"
     }
   },
   "cpu": {
