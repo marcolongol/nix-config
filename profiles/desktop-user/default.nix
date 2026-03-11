@@ -89,6 +89,16 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
 
   stylix.targets.zen-browser.profileNames = ["default"];
 
+  # Set Zen as the default browser
+  xdg.mimeApps.defaultApplications = {
+    "text/html" = "zen-browser.desktop";
+    "text/xml" = "zen-browser.desktop";
+    "application/xhtml+xml" = "zen-browser.desktop";
+    "application/vnd.mozilla.xul+xml" = "zen-browser.desktop";
+    "x-scheme-handler/http" = "zen-browser.desktop";
+    "x-scheme-handler/https" = "zen-browser.desktop";
+  };
+
   # -----------------
   # SECTION: Hyprpaper
   # -----------------
