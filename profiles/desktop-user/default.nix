@@ -6,17 +6,17 @@
 }:
 lib.mkIf (lib.elem "desktop-user" config.profiles) {
   home.packages = with pkgs; [
-    glib
-    nautilus
-    thunderbird
-    wl-clipboard
-    filezilla
-    pavucontrol
-    solaar
-    grim
-    slurp
-    vlc
     file-roller
+    filezilla
+    glib
+    grim
+    nautilus
+    pavucontrol
+    slurp
+    solaar
+    thunderbird
+    vlc
+    wl-clipboard
   ];
 
   # ----------------
