@@ -15,6 +15,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     solaar
     grim
     slurp
+    vlc
   ];
 
   # ----------------
