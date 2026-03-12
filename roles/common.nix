@@ -30,6 +30,11 @@ lib.mkIf (lib.elem "common" config.roles) {
   ];
 
   services = {
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+    };
     openssh = {
       enable = true;
       settings = {
