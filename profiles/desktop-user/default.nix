@@ -16,6 +16,7 @@ lib.mkIf (lib.elem "desktop-user" config.profiles) {
     grim
     slurp
     vlc
+    file-roller
   ];
 
   # ----------------
