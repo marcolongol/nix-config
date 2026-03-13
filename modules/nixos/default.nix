@@ -7,18 +7,17 @@
   homeManagerModules,
   secretsPath,
   ...
-}: {
+}: let
+  # Derive the list of active users from the attrset option
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in {
   options = {
-    roles = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      description = "List of roles this host should assume";
-    };
-
     hostUsers = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      description = "List of users this host should have";
+      type = lib.types.attrsOf (lib.types.submodule {
+        options.enable = lib.mkEnableOption "this user on this host";
+      });
+      default = {};
+      description = "Users to enable on this host";
     };
 
     persistentFolders = lib.mkOption {
@@ -34,7 +33,7 @@
     };
   };
 
-  config = lib.mkIf (config.hostUsers != []) {
+  config = lib.mkIf (activeUsers != []) {
     users.mutableUsers = false;
 
     sops.secrets = lib.mkMerge (map (userName: {
@@ -44,14 +43,14 @@
           neededForUsers = true;
         };
       })
-      config.hostUsers);
+      activeUsers);
 
-    users.users = lib.genAttrs config.hostUsers (userName: {
+    users.users = lib.genAttrs activeUsers (userName: {
       isNormalUser = true;
       home = "/home/${userName}";
       extraGroups =
         ["wheel" "networkmanager" "plugdev"]
-        ++ lib.optionals (lib.elem "docker" config.roles) ["docker"];
+        ++ lib.optionals config.roles.docker.enable ["docker"];
       hashedPasswordFile = config.sops.secrets."user-password-${userName}".path;
       openssh.authorizedKeys.keys = let
         pubkeysPath = "${users.${userName}}/pubkeys.nix";
@@ -67,7 +66,7 @@
       useGlobalPkgs = true;
       useUserPackages = true;
       backupFileExtension = "bak";
-      users = lib.genAttrs config.hostUsers (
+      users = lib.genAttrs activeUsers (
         userName:
           if users ? ${userName}
           then {

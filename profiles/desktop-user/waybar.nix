@@ -3,7 +3,7 @@
   lib,
   ...
 }:
-lib.mkIf (lib.elem "desktop-user" config.profiles) {
+lib.mkIf config.profiles.desktopUser.enable {
   stylix.targets.waybar = {
     addCss = false;
   };

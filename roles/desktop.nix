@@ -7,8 +7,11 @@
   sddm-astronaut = pkgs.sddm-astronaut.override {
     # embeddedTheme = "black_hole";
   };
-in
-  lib.mkIf (lib.elem "desktop" config.roles) {
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in {
+  options.roles.desktop.enable = lib.mkEnableOption "desktop environment (Hyprland, SDDM, Pipewire)";
+
+  config = lib.mkIf config.roles.desktop.enable {
     environment.systemPackages = [
       sddm-astronaut
       pkgs.bibata-cursors
@@ -25,7 +28,7 @@ in
     programs._1password.enable = true;
     programs._1password-gui = {
       enable = true;
-      polkitPolicyOwners = config.hostUsers;
+      polkitPolicyOwners = activeUsers;
     };
 
     environment.etc = {
@@ -115,4 +118,5 @@ in
         };
       };
     };
-  }
+  };
+}

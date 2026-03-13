@@ -2,25 +2,28 @@
   config,
   lib,
   ...
-}:
-lib.mkIf (lib.elem "laptop" config.roles) {
-  powerManagement = {
-    enable = true;
-    powertop.enable = true;
-  };
+}: {
+  options.roles.laptop.enable = lib.mkEnableOption "laptop power management";
 
-  services = {
-    thermald.enable = true;
-    auto-cpufreq = {
+  config = lib.mkIf config.roles.laptop.enable {
+    powerManagement = {
       enable = true;
-      settings = {
-        battery = {
-          governor = "powersave";
-          turbo = "never";
-        };
-        charger = {
-          governor = "performance";
-          turbo = "always";
+      powertop.enable = true;
+    };
+
+    services = {
+      thermald.enable = true;
+      auto-cpufreq = {
+        enable = true;
+        settings = {
+          battery = {
+            governor = "powersave";
+            turbo = "never";
+          };
+          charger = {
+            governor = "performance";
+            turbo = "always";
+          };
         };
       };
     };

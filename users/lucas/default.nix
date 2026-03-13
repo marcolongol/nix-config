@@ -8,7 +8,12 @@
 in {
   home.stateVersion = "25.11";
 
-  profiles = ["common" "desktop-user" "developer" "gamer"];
+  profiles = {
+    common.enable = true;
+    desktopUser.enable = true;
+    developer.enable = true;
+    gamer.enable = true;
+  };
 
   home = {
     packages = with pkgs; [

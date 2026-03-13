@@ -22,8 +22,11 @@
     "tcp"
   ];
   nfsMounts = ["Backup" "Documents" "Downloads" "K8s" "Media" "Shared"];
-in
-  lib.mkIf (lib.elem "nfs-client" config.roles) {
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in {
+  options.roles.nfsClient.enable = lib.mkEnableOption "NFS client mounts";
+
+  config = lib.mkIf config.roles.nfsClient.enable {
     services.rpcbind.enable = true;
     boot.supportedFilesystems = ["nfs"];
     boot.kernelModules = ["nfs"];
@@ -44,9 +47,10 @@ in
             })
             nfsMounts
         )
-        config.hostUsers
+        activeUsers
       )
     );
 
     environment.systemPackages = with pkgs; [nfs-utils];
-  }
+  };
+}

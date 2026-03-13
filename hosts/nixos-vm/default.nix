@@ -2,14 +2,23 @@
   config,
   lib,
   ...
-}: let
-  roles = ["common" "nfs-client" "desktop"];
-  hostUsers = ["lucas"];
-in {
+}:
+let
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in
+{
   system.stateVersion = "25.11";
 
   # Example host configuration
-  inherit roles hostUsers;
+  roles = {
+    common.enable = true;
+    nfsClient.enable = true;
+    desktop.enable = true;
+  };
+
+  hostUsers = {
+    lucas.enable = true;
+  };
 
   services.qemuGuest.enable = true;
 
@@ -28,10 +37,9 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Set empty passwords for all normal users in the VM for easy initial access
-  # INFO: This is needed because the VM does not have a way to decrypt the user passwords from
-  # SOPS due to lack of SSH keys during vm build time.
-  users.users = lib.genAttrs hostUsers (userName: {
+  # Set empty passwords for all normal users in the VM for easy initial access.
+  # Needed because the VM cannot decrypt SOPS user passwords (no host SSH keys at build time).
+  users.users =  lib.genAttrs activeUsers (_: {
     initialPassword = lib.mkForce "";
     hashedPasswordFile = lib.mkForce null;
   });

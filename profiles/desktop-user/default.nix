@@ -13,9 +13,11 @@
     ./clipboard.nix
   ];
 
+  options.profiles.desktopUser.enable = lib.mkEnableOption "desktop user profile (Hyprland, Waybar, Zen Browser)";
+
   # Packages, scripts, and persistence for the desktop-user profile.
-  # Each sub-file guards itself with lib.mkIf (lib.elem "desktop-user" config.profiles).
-  config = lib.mkIf (lib.elem "desktop-user" config.profiles) {
+  # Each sub-file guards itself with lib.mkIf config.profiles.desktopUser.enable.
+  config = lib.mkIf config.profiles.desktopUser.enable {
     home.packages = with pkgs; [
       file-roller
       filezilla

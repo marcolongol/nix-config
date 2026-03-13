@@ -21,16 +21,6 @@
   ];
 
   repoUrl = "https://github.com/marcolongol/nix-config";
-
-  roles = ["common"];
-  # hostUsers is intentionally empty on the live CD.  The normal hostUsers
-  # mechanism in modules/nixos/default.nix creates user accounts backed by
-  # SOPS-encrypted hashed passwords.  SOPS is disabled on the live CD (no
-  # persistent host key to decrypt secrets), so adding a real user via
-  # hostUsers would result in an account with no usable password.  Instead,
-  # we grant SSH access by injecting public keys into the stock `nixos` user
-  # below.
-  hostUsers = [];
 in {
   system.stateVersion = "25.11";
 
@@ -38,7 +28,11 @@ in {
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
-  inherit roles hostUsers;
+  # Only the common role is enabled. hostUsers is intentionally empty on the live CD.
+  # The normal hostUsers mechanism creates user accounts backed by SOPS-encrypted
+  # passwords. SOPS is disabled here (no persistent host key), so we grant SSH
+  # access by injecting public keys into the stock `nixos` user instead.
+  roles.common.enable = true;
 
   isoImage.squashfsCompression = "gzip -Xcompression-level 1";
 

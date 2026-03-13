@@ -65,9 +65,9 @@ in {
 
     # Grant render/video group access for OpenCL/ROCm
     users.users = mkIf cfg.enableOpenCL (
-      genAttrs config.hostUsers (_: {
-        extraGroups = ["render" "video"];
-      })
+      genAttrs
+      (lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers))
+      (_: {extraGroups = ["render" "video"];})
     );
 
     # Allow wheel users to run CoreCtrl without password prompt
