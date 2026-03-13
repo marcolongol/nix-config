@@ -11,21 +11,6 @@ in {
     ./hardware-config.nix
   ];
 
-  boot = {
-    initrd = {
-      availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage"];
-    };
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-    kernelModules = ["kvm-amd"];
-    kernelParams = [
-      "loglevel=3"
-      "quiet"
-    ];
-  };
-
   # Monitor layout and workspace bindings are host-specific so they live here rather than in the desktop-user profile.
   # DP-2: LG ULTRAGEAR 2560x1440, main monitor, max refresh (164.96Hz)
   # HDMI-A-1: Samsung U28H75x 4K, secondary, reversed portrait (transform=3), 30Hz max over HDMI

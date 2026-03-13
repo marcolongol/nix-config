@@ -10,6 +10,16 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
+  boot = {
+    initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage"];
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernelModules = ["kvm-amd"];
+    kernelParams = ["loglevel=3" "quiet"];
+  };
+
   hardware.amd-custom = {
     enable = true;
     enableOpenCL = true;
