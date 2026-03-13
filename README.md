@@ -5,8 +5,8 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 ## 🎯 Key Features
 
 - **Hosts ↔ Roles abstraction** - Separates "what a machine does" (roles) from "which machine it is" (hosts)
-- **Users ↔ Profiles abstraction** - Separates user identity from user environment configuration  
-- **Multiple user support** - Each user can have different profiles and configurations
+- **Users ↔ Profiles abstraction** - Separates user identity from user environment configuration
+- **Typed module options** - Roles, profiles, and users are declared as `mkEnableOption` options, giving type-checking and `nix eval` introspection
 - **Flake-based configuration** with flake-parts for modularity
 - **Home Manager** integration for declarative user-level configurations
 - **Impermanence** support with automatic persistence handling
@@ -18,26 +18,49 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 ```
 .
 ├── flake.nix              # Main flake configuration
-├── lib.nix                # Custom utility functions
+├── lib/                   # Custom utility functions
+│   ├── default.nix        # Extends nixpkgs.lib
+│   ├── mkDirMap.nix       # Auto-discovery helpers
+│   └── mkNixosConfigurations.nix
 ├── hosts/                 # Host-specific configurations
-│   ├── nixos-lt/         # Laptop configuration
-│   ├── nixos-dt/         # Desktop configuration
+│   ├── nixos-lt/         # Laptop (default.nix + hardware-config.nix + disko-config.nix)
+│   ├── nixos-dt/         # Desktop (default.nix + hardware-config.nix + disko-config.nix)
 │   ├── nixos-livecd/     # Live CD / installer image
 │   └── nixos-vm/         # Virtual machine configuration
 ├── modules/               # Custom modules
 │   ├── flake/            # Flake-specific modules
-│   ├── home/             # Home Manager modules
-│   └── nixos/            # NixOS system modules
-├── roles/                 # System roles (common, desktop, laptop, etc.)
-├── profiles/              # User profiles (common, developer, desktop-user)
+│   ├── home/             # Home Manager modules (zsh, starship, tmux, etc.)
+│   └── nixos/            # NixOS system modules (amd, nvidia)
+├── roles/                 # System roles — each declares its own option
+│   ├── common.nix        # Base system config
+│   ├── desktop.nix       # Hyprland, SDDM, Pipewire, Stylix
+│   ├── laptop.nix        # Power management
+│   ├── impermanent.nix   # Ephemeral root with /persist
+│   ├── nfs-client.nix    # NFS automounts
+│   ├── gaming.nix        # Steam, Proton, GameMode
+│   └── docker.nix        # Docker daemon + k3d DNS
+├── profiles/              # User profiles — each declares its own option
+│   ├── common.nix        # Essential tools (vim, btop, ghostty, nvim)
+│   ├── developer.nix     # Dev tools, git, k8s, direnv
+│   ├── desktop-user/     # GUI environment (Hyprland, Waybar, Zen, etc.)
+│   │   ├── default.nix   # Packages, scripts, rofi
+│   │   ├── hyprland.nix
+│   │   ├── waybar.nix
+│   │   ├── browser.nix
+│   │   ├── lock.nix
+│   │   ├── clipboard.nix
+│   │   └── themes.nix
+│   └── gamer.nix         # MangoHud, Discord
 ├── users/                 # User-specific configurations
-│   └── lucas/            # User: Lucas configurations
-├── secrets/               # Encrypted secrets management
-│   ├── shared.yaml       # System-wide shared secrets
-│   ├── ${hostname}.yaml  # Host-specific system secrets
-│   └── users/            # User-specific secrets
-│       └── ${username}.yaml
+│   └── lucas/
+├── secrets/               # Encrypted secrets (sops-nix)
+│   ├── shared.yaml
+│   ├── ${hostname}.yaml
+│   └── users/${username}.yaml
 └── overlays/              # Nixpkgs overlays
+    ├── overrides.nix      # Package overrides (e.g. freecad boost fix)
+    ├── custom-packages.nix
+    └── patches.nix
 ```
 
 ## 🚀 Using This Configuration
@@ -48,16 +71,20 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 
 This configuration demonstrates several organizational patterns:
 
-1. **Host-Role Separation**: Each host defines which roles it needs, roles define functionality
-2. **User-Profile Separation**: Users can mix and match profiles for different environments
-3. **Modular Architecture**: Reusable components that can be composed together
-4. **Flake Organization**: Using flake-parts and custom lib functions for maintainable flakes
+1. **Host-Role Separation**: Each host declares which roles it enables; roles define functionality
+2. **User-Profile Separation**: Users enable profiles declaratively; profiles define environment config
+3. **Typed Options**: Roles and profiles use `mkEnableOption`, so misconfigured names are caught at eval time
+4. **Modular Architecture**: Reusable components that can be composed together
+5. **Flake Organization**: Using flake-parts and custom lib functions for maintainable flakes
 
 ### Example Usage Patterns
 
 ```bash
 # Build a specific host configuration
 nix build .#nixosConfigurations.nixos-lt.config.system.build.toplevel
+
+# Introspect whether a role is enabled on a host
+nix eval .#nixosConfigurations.nixos-dt.config.roles.docker.enable
 
 # Test in a VM
 nixos-rebuild build-vm --flake .#nixos-vm
@@ -70,48 +97,62 @@ sudo nixos-rebuild switch --flake .#your-hostname
 
 ### Hosts ↔ Roles Abstraction
 
-**Hosts** define *which* machine this is and *what roles* it should have:
+**Hosts** define *which* machine this is and *which roles* to enable:
 ```nix
 # hosts/nixos-lt/default.nix
 {
-  roles = ["common" "laptop" "desktop" "nfs-client" "impermanent" "gaming" "docker"];
-  hostUsers = ["lucas"];
+  roles = {
+    common.enable = true;
+    laptop.enable = true;
+    desktop.enable = true;
+    nfsClient.enable = true;
+    impermanent.enable = true;
+    gaming.enable = true;
+    docker.enable = true;
+  };
+
+  hostUsers.lucas.enable = true;
 }
 ```
 
-**Roles** define *what functionality* a machine should have:
-- **common**: Base system configuration shared across all hosts
-- **desktop**: Desktop environment (Hyprland, SDDM, theming via Stylix)
-- **laptop**: Laptop-specific optimizations and hardware support
-- **impermanent**: Impermanence configuration for stateless systems
-- **nfs-client**: Network file system client configuration
-- **gaming**: Steam, Proton, and gaming-related packages
-- **docker**: Docker daemon with auto-prune and journald logging
+Hardware-specific settings (boot loader, kernel modules, thermald) live in the host's `hardware-config.nix`, keeping `default.nix` as a clean identity declaration.
+
+**Roles** define *what functionality* a machine should have. Each role declares its own option:
+- **common**: Base system config, SSH, nix settings, comin GitOps
+- **desktop**: Hyprland with UWSM, SDDM, Pipewire, Stylix theming
+- **laptop**: Powertop, thermald, auto-cpufreq
+- **impermanent**: Ephemeral root filesystem with `/persist`
+- **nfsClient**: NFS automounts per active user
+- **gaming**: Steam, Proton-GE, GameMode
+- **docker**: Docker daemon, k3d local DNS
 
 This separation means you can:
-- Add the "desktop" role to any host to get a full desktop environment
+- Add the `desktop` role to any host to get a full desktop environment
 - Create new hosts by combining existing roles
 - Modify a role once and have it apply to all hosts using it
 
 ### Users ↔ Profiles Abstraction
 
-**Users** define system-level user accounts, while **profiles** define user environment configurations:
+**Users** define identity and personal settings; **profiles** define the environment:
 
 ```nix
-# users/lucas/default.nix - User identity and personal settings
+# users/lucas/default.nix
 {
-  profiles = ["common" "desktop-user" "developer" "gamer"];
-  # Personal git config, ssh settings, etc.
+  profiles = {
+    common.enable = true;
+    desktopUser.enable = true;
+    developer.enable = true;
+    gamer.enable = true;
+  };
+  # Personal git config, SSH settings, GPG, etc.
 }
 ```
 
-**Profiles** define collections of user software and settings:
-- **common**: Basic user configuration with essential tools (vim, btop, etc.)
-- **developer**: Development environment with programming tools
-- **desktop-user**: Desktop user environment for GUI workflows
-- **gamer**: MangoHud overlay, Discord
-
-This means multiple users can share profiles, and users can mix different profiles for different purposes.
+**Profiles** define collections of software and settings. Each profile declares its own option:
+- **common**: Essential tools, ghostty, btop, nixievim, sops config
+- **developer**: Git, direnv, kubectl/helm/talosctl/k9s, lazygit, claude-code
+- **desktopUser**: Hyprland, Waybar, Zen Browser, Rofi, cliphist, hypridle
+- **gamer**: MangoHud, Discord
 
 ### Key Components
 
@@ -129,9 +170,8 @@ This means multiple users can share profiles, and users can mix different profil
 - **claude-code**, **jq**, and a broad set of dev utilities
 
 #### Core Tools (Common Profile)
-- **Nixievim** - My custom Neovim distribution built with nixvim
-- **Alacritty** - Terminal emulator
-- **Tmux** - Auto-attaches to a persistent `dev` session on shell start
+- **Nixievim** - Custom Neovim distribution built with nixvim
+- **Ghostty** - Terminal emulator
 - **Starship** prompt and **Zsh** shell
 - **Home Manager** - Declarative user configuration management
 - **Btop** - System monitor
@@ -188,16 +228,12 @@ creation_rules:
 
 **Creating System Secrets**:
 ```bash
-# Edit host-specific secrets
 sops secrets/nixos-lt.yaml
-
-# Edit shared system secrets
 sops secrets/shared.yaml
 ```
 
 **Creating User Secrets**:
 ```bash
-# Edit user-specific secrets
 sops secrets/users/lucas.yaml
 ```
 
@@ -217,9 +253,6 @@ User secrets (in profiles/common.nix):
 ```nix
 sops.secrets = {
   user-secret = {}; # Uses defaultSopsFile (users/${username}.yaml)
-  github-token = {
-    path = "${config.home.homeDirectory}/.config/gh/token";
-  };
 };
 ```
 
@@ -236,13 +269,34 @@ sops.secrets = {
 
 #### 1 — Add the host config
 
-Create `hosts/<hostname>/default.nix` and `hosts/<hostname>/disko-config.nix`. See `hosts/nixos-lt/` for a reference. Register the host in `flake.nix`.
+Create `hosts/<hostname>/default.nix` and `hosts/<hostname>/disko-config.nix`. See `hosts/nixos-lt/` for a reference.
+
+```nix
+# hosts/<hostname>/default.nix
+{config, lib, ...}: let
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in {
+  system.stateVersion = "25.11";
+
+  imports = [
+    ./disko-config.nix
+    ./hardware-config.nix
+  ];
+
+  roles = {
+    common.enable = true;
+    desktop.enable = true;
+    impermanent.enable = true;
+  };
+
+  hostUsers.alice.enable = true;
+}
+```
 
 #### 2 — Add a placeholder sops key
 
 Add a placeholder age key under `keys:` in `.sops.yaml` and add the appropriate `creation_rules` entry. The real key is derived from the SSH host key after first boot.
 
-Create the host secrets file (requires YubiKey):
 ```bash
 sops secrets/<hostname>.yaml
 ```
@@ -254,34 +308,20 @@ Commit and push so comin can pull the config on first boot.
 Boot from the [livecd](hosts/nixos-livecd/) image, clone the repo, then:
 
 ```bash
-# Partition and format disks
 sudo disko --mode disko hosts/<hostname>/disko-config.nix
-
-# Generate hardware config
 sudo nixos-generate-config --no-filesystems --root /mnt
 cp /mnt/etc/nixos/hardware-configuration.nix hosts/<hostname>/hardware-config.nix
-
-# Mount EFI if disko doesn't manage it
-mount /dev/<efi-partition> /mnt/boot
-
-# Install
 sudo nixos-install --flake .#<hostname>
 ```
 
 #### 4 — Wire up sops after first boot
 
-The SSH host key is generated on first boot. Get the age public key derived from it:
-
 ```bash
 # On the new host
-ssh-to-age < /persist/etc/ssh/ssh_host_ed25519_key.pub  # impermanent
-# or: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
-```
+ssh-to-age < /persist/etc/ssh/ssh_host_ed25519_key.pub
 
-On your dev machine (YubiKey required):
-```bash
-# Replace the placeholder in .sops.yaml with the real age key
-# Then re-encrypt all files that include this host as a recipient
+# On your dev machine (YubiKey required)
+# Replace the placeholder in .sops.yaml, then re-encrypt
 sops updatekeys secrets/shared.yaml
 sops updatekeys secrets/users/lucas.yaml
 git add .sops.yaml secrets/
@@ -293,39 +333,64 @@ comin will pick up the changes automatically.
 
 ### Adding New Roles
 
-Create a new file in `roles/` directory:
+Create a new file in `roles/`. The file auto-discovers via `mkDirMap` — no manual imports needed.
 
 ```nix
+# roles/my-role.nix
 {
   config,
   lib,
   pkgs,
   ...
-}:
-lib.mkIf (lib.elem "role-name" config.roles) {
-  # Role-specific configuration
+}: {
+  options.roles.myRole.enable = lib.mkEnableOption "description of what this role does";
+
+  config = lib.mkIf config.roles.myRole.enable {
+    # Role-specific NixOS configuration
+  };
 }
+```
+
+Enable it on a host:
+```nix
+# hosts/<hostname>/default.nix
+roles.myRole.enable = true;
+```
+
+### Adding New Profiles
+
+Create a new file in `profiles/`. Same auto-discovery applies.
+
+```nix
+# profiles/my-profile.nix
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  options.profiles.myProfile.enable = lib.mkEnableOption "description of this profile";
+
+  config = lib.mkIf config.profiles.myProfile.enable {
+    # Home Manager configuration
+  };
+}
+```
+
+Enable it for a user:
+```nix
+# users/<username>/default.nix
+profiles.myProfile.enable = true;
 ```
 
 ### User Configuration
 
-User configurations are located in `users/username/default.nix`. Each user can specify:
-- Home Manager profiles
+User configurations live in `users/<username>/default.nix`. Each user specifies:
+- Which profiles to enable
+- Personal identity (git, SSH, GPG)
 - Personal packages
-- Git configuration
-- SSH settings
 - Persistent files and folders (for impermanence)
-
-## 💡 Inspiration
-
-This configuration architecture is inspired by the **nixos-unified autowire feature**, which provides automatic scanning and wiring of flake configurations. While this repo implements similar concepts manually, it demonstrates:
-
-- Automatic discovery of configuration modules
-- Clean separation between system roles and user profiles  
-- Composable configuration patterns
-- Reduced boilerplate through reusable abstractions
-
-The goal is to eliminate repetitive configuration management while maintaining clear organization as the number of hosts and users scales.
+- SOPS secrets
 
 ## 🔄 Maintenance
 
@@ -350,27 +415,12 @@ nix fmt
 This configuration uses a modular architecture:
 
 1. **Flake-parts** for organizing flake outputs
-2. **Custom lib functions** for configuration generation
-3. **Role-based system** for composable configurations
-4. **Profile-based user management** for different user types
-5. **Host-specific overrides** for hardware and environment differences
+2. **`lib/`** — custom utilities split across focused files (`mkDirMap`, `mkNixosConfigurations`)
+3. **Role-based system** — each role is a self-contained module with its own `mkEnableOption`
+4. **Profile-based user management** — same pattern for home-manager profiles
+5. **Host-specific overrides** — `default.nix` for identity, `hardware-config.nix` for hardware
 
-The `lib.nix` file provides utility functions for:
-- Automatic configuration discovery
-- NixOS system generation
-- Module composition and organization
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with `nixos-rebuild build --flake .#<hostname>`
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+The `lib/mkDirMap.nix` utility auto-discovers all `.nix` files in `hosts/`, `roles/`, `profiles/`, `users/`, and `modules/` — adding a new role or profile is as simple as creating the file.
 
 ## 🙏 Acknowledgments
 
