@@ -30,7 +30,7 @@
   };
 
   flake = let
-    lib = import ../../lib.nix {inherit inputs lib;};
+    lib = import ../../lib {inherit inputs lib;};
     dirs = lib.mkDirMap {
       hosts = ../../hosts;
       roles = ../../roles;
