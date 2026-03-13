@@ -24,6 +24,7 @@ in {
       spotify
       todoist
       keymapp
+      telegram-desktop
     ];
 
     sessionVariables = {
