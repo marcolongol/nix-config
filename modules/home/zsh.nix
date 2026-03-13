@@ -70,6 +70,11 @@
       zle -N zle-keymap-select
       echo -ne '\e[5 q'
 
+      # Get SRI hash for a URL (works for any file type)
+      nix-hash-url() {
+        nix-prefetch-url "$1" 2>/dev/null | tail -1 | xargs -I{} nix hash to-sri --type sha256 {}
+      }
+
       # Accept autosuggestion with alt+l
       bindkey '^[l' autosuggest-accept
 

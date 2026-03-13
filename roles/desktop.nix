@@ -87,8 +87,8 @@ in {
     stylix = {
       enable = true;
       image = pkgs.fetchurl {
-        url = "https://w.wallhaven.cc/full/3q/wallhaven-3q3z9d.jpg";
-        hash = "sha256-VsbazfMLpq2z9LmNZRBWJtPEWbwBZ/7w1ZBhaCMR+m0=";
+        url = "https://w.wallhaven.cc/full/96/wallhaven-96gkyx.jpg";
+        hash = "sha256-BK0u8EJcy5pd9KF891joEqcIWixWid8Ce+GZoL1HSko=";
       };
       autoEnable = true;
       polarity = "dark";
