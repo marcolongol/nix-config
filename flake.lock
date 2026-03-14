@@ -347,11 +347,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1773435280,
-        "narHash": "sha256-dmt7UiSQ87k1uYY6c9E+AwpsQ5sTMMGCe/PQ/mcbozA=",
+        "lastModified": 1773450778,
+        "narHash": "sha256-cI5F2z+yssl8+4WiME8pYpLvDeETpu7OXrQzkpp8XRo=",
         "owner": "marcolongol",
         "repo": "nixievim",
-        "rev": "6b27a81ba167bcf4ebfa902cdfb539d6889fafea",
+        "rev": "99141f3927a210b2fa2c57dd16ad264bb56f96da",
         "type": "github"
       },
       "original": {
