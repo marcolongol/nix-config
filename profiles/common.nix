@@ -34,7 +34,10 @@
 
     programs = {
       home-manager.enable = true;
-      nixievim.enable = true;
+      nixievim = {
+        enable = true;
+        neovide.enable = true;
+      };
       ghostty = {
         enable = true;
         settings = {
