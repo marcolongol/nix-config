@@ -105,7 +105,7 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, comma, movewindow, mon:-1"
         "$mod SHIFT, period, movewindow, mon:+1"
       ];
-      bindel = [
+bindel = [
         ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
         ",XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
         ",XF86AudioMute, exec, wpctl set-mute -l 1 @DEFAULT_AUDIO_SINK@ toggle"

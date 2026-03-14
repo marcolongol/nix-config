@@ -38,11 +38,14 @@
       ghostty = {
         enable = true;
         settings = {
+          font-size = 10;
           window-padding-x = 8;
           window-padding-y = 8;
           scrollback-limit = 10000;
           shell-integration-features = "cursor,sudo,title";
+          background-opacity = 0.90;
         };
+        systemd.enable = true;
       };
       btop.enable = true;
     };
