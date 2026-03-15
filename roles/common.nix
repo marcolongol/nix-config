@@ -29,6 +29,7 @@
       pfetch
       sops
       yubikey-manager
+      notepad-next
     ];
 
     services = {

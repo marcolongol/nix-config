@@ -28,10 +28,6 @@
 
     xdg.enable = true;
 
-    home.packages = with pkgs; [
-      vim
-    ];
-
     programs = {
       home-manager.enable = true;
       nixievim = {
