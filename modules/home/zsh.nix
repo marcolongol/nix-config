@@ -107,17 +107,6 @@
     enableZshIntegration = true;
   };
 
-  programs.kubecolor = {
-    enable = true;
-    enableAlias = true;
-    enableZshIntegration = true;
-  };
-
-  programs.kubeswitch = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
   programs.eza = {
     enable = true;
     enableZshIntegration = true;

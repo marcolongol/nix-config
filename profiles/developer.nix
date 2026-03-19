@@ -122,6 +122,17 @@
       '';
     };
 
+    programs.kubecolor = {
+      enable = true;
+      enableAlias = true;
+      enableZshIntegration = true;
+    };
+
+    programs.kubeswitch = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     programs.k9s = {
       enable = true;
     };
@@ -172,6 +183,7 @@
 
     programs.zsh.shellAliases = {
       k3d-dev = "k3d cluster create --config ~/.config/k3d/dev-cluster.yaml --kubeconfig-update-default";
+      k = "kubectl";
       kn = "kubens";
       kx = "kubectx";
     };
