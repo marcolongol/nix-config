@@ -15,6 +15,12 @@
 
     persistentFolders = ["/var/lib/docker"];
 
+    # Allow inbound traffic from Docker bridge networks (br+) to host services.
+    # Required for k3d pods to reach host-local servers (e.g. Prefect UI at port 4200).
+    networking.firewall.extraInputRules = ''
+      iifname "br*" accept
+    '';
+
     # Wildcard DNS for local cluster ingress (*.k3d.local -> 127.0.0.1)
     # Uses a minimal dnsmasq bound to 127.0.0.55 for .k3d.local only,
     # with resolved forwarding that domain to it — preserving DNSSEC and VPN split-DNS.
