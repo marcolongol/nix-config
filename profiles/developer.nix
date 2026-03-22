@@ -17,6 +17,7 @@
       docker-client
       kubernetes-helm
       talosctl
+      talhelper
       kubectl
       kubectx
       krew
