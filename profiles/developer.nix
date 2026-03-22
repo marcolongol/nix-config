@@ -138,6 +138,11 @@
       enable = true;
     };
 
+    programs.mise = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     persistentFolders = [
       ".claude"
       ".config/github-copilot"
