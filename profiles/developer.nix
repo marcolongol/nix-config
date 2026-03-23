@@ -39,6 +39,14 @@
       gh
       k3d
       wl-clipboard
+      pkg-config
+      zlib.dev
+      openssl.dev
+      readline.dev
+      bzip2.dev
+      libffi.dev
+      ncurses.dev
+      xz.dev
     ];
 
     programs.delta = {
