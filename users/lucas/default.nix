@@ -13,16 +13,14 @@ in {
     desktopUser.enable = true;
     developer.enable = true;
     gamer.enable = true;
+    worker.enable = true;
   };
 
   home = {
     packages = with pkgs; [
       vim
-      remmina
-      webex
       freecad
       spotify
-      todoist
       keymapp
       telegram-desktop
     ];
@@ -80,8 +78,6 @@ in {
 
   persistentFolders = [
     ".config/1Password"
-    ".config/remmina"
-    ".local/share/remmina"
     ".local/share/Steam"
   ];
 
