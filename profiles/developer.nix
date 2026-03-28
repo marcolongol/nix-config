@@ -157,6 +157,7 @@
       ".config/Code"
       ".krew"
       ".kube"
+      ".local/share/DBeaverData"
     ];
 
     persistentFiles = [
