@@ -8,45 +8,46 @@
 
   config = lib.mkIf config.profiles.developer.enable {
     home.packages = with pkgs; [
-      curl
-      wget
-      gnumake
-      cmake
-      docker-compose
-      docker-buildx
-      docker-client
-      kubernetes-helm
-      talosctl
-      talhelper
-      kubectl
-      kubectx
-      krew
-      ngrok
-      restic
-      fluxcd
+      aria2
+      bzip2.dev
+      cabextract
+      cdrkit
+      chntpw
       cilium-cli
+      cmake
+      curl
       dbeaver-bin
       dig
-      tilt
-      minijinja
-      go-task
-      aria2
-      cabextract
-      wimlib
-      chntpw
-      rsync
-      cdrkit
+      docker-buildx
+      docker-client
+      docker-compose
+      fluxcd
       gh
+      github-copilot-cli
+      gnumake
+      go-task
       k3d
-      wl-clipboard
-      pkg-config
-      zlib.dev
-      openssl.dev
-      readline.dev
-      bzip2.dev
+      krew
+      kubectl
+      kubectx
+      kubernetes-helm
       libffi.dev
+      minijinja
       ncurses.dev
+      ngrok
+      openssl.dev
+      pkg-config
+      readline.dev
+      restic
+      rsync
+      talhelper
+      talosctl
+      tilt
+      wget
+      wimlib
+      wl-clipboard
       xz.dev
+      zlib.dev
     ];
 
     programs.delta = {
@@ -154,6 +155,7 @@
     persistentFolders = [
       ".claude"
       ".config/github-copilot"
+      ".copilot"
       ".config/Code"
       ".krew"
       ".kube"
