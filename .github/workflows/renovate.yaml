@@ -29,12 +29,12 @@ jobs:
   renovate:
     runs-on: ubuntu-latest
     steps:
-      - uses: 1password/load-secrets-action/configure@13f58eec611f8e5db52ec16247f58c508398f3e6 # v3
+      - uses: 1password/load-secrets-action/configure@92467eb28f72e8255933372f1e0707c567ce2259 # v4
         with:
           connect-host: ${{ env.OP_CONNECT_HOST }}
           connect-token: ${{ env.OP_CONNECT_TOKEN }}
 
-      - uses: 1password/load-secrets-action@13f58eec611f8e5db52ec16247f58c508398f3e6 # v3
+      - uses: 1password/load-secrets-action@92467eb28f72e8255933372f1e0707c567ce2259 # v4
         with:
           export-env: true
         env:
