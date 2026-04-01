@@ -14,10 +14,11 @@
     "enabled": true
   },
 
-  // Automatically update flake.lock weekly
+  // Automatically update flake.lock on each Renovate run
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
+    "postUpdateOptions": ["nixFlakeUpdate"],
   },
 
   "packageRules": [
@@ -45,8 +46,6 @@
   "timezone": "America/Los_Angeles",
   "labels": ["dependencies"],
   "branchPrefix": "renovate/",
-  "platformCommit": "enabled",
-
   // Remove rate limiting
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0
