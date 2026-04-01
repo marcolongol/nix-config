@@ -14,11 +14,12 @@
     "enabled": true
   },
 
-  // Automatically update flake.lock on each Renovate run
+  // Automatically update flake.lock on Renovate runs
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
     "postUpdateOptions": ["nixFlakeUpdate"],
+    "schedule": ["at any time"],
   },
 
   "packageRules": [
