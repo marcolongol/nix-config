@@ -34,7 +34,7 @@
       libffi.dev
       minijinja
       ncurses.dev
-      # ngrok # temporarily removed - equinox.io CDN returning 500
+      ngrok
       openssl.dev
       pkg-config
       readline.dev
