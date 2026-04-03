@@ -154,9 +154,10 @@
 
     persistentFolders = [
       ".claude"
+      ".config/Code"
+      ".config/direnv"
       ".config/github-copilot"
       ".copilot"
-      ".config/Code"
       ".krew"
       ".kube"
       ".local/share/DBeaverData"
