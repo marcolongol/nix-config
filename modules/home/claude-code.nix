@@ -89,6 +89,74 @@
           $ARGUMENTS
         '';
 
+        discover = ''
+          ---
+          name: discover
+          description: Discover relevant skills and MCP servers for the current project
+          allowed-tools: Bash Glob Read Write Edit WebFetch AskUserQuestion
+          context: fork
+          ---
+
+          Analyze the current project and recommend relevant skills and MCP servers to install.
+
+          ## Process
+
+          ### Step 1: Detect project stack
+          Scan for project markers to identify technologies in use:
+          - `package.json`, `tsconfig.json` → Node.js/TypeScript
+          - `Cargo.toml` → Rust
+          - `go.mod` → Go
+          - `pyproject.toml`, `requirements.txt` → Python
+          - `flake.nix`, `*.nix` → Nix
+          - `Dockerfile`, `docker-compose.yml` → Docker
+          - `prisma/`, `*.sql`, `drizzle.config.*` → Database
+          - `.github/workflows/` → GitHub Actions
+          - `terraform/`, `*.tf` → Terraform
+          - `k8s/`, `helm/` → Kubernetes
+          - `nx.json`, `project.json` → Nx monorepo (also scan `apps/` and `libs/` for per-project markers)
+
+          Print detected stack as a summary.
+
+          ### Step 2: Check already-installed tools
+          - Read `.claude/settings.json` if it exists to see which MCP servers are already configured
+          - Run `npx skills list` to see which skills are already installed
+          - Exclude these from recommendations
+
+          ### Step 3: Find skills
+          For each detected technology, run `npx skills find <keyword>` with relevant terms.
+          Collect and deduplicate results.
+          **Filter for relevance**: only include skills whose name or description directly relates to the
+          detected technology. Discard loosely matched or unrelated results.
+          Show top 3 most relevant skills per category.
+
+          ### Step 4: Find MCP servers
+          For each detected technology, query the MCP Registry:
+          ```
+          curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=<keyword>&limit=10"
+          ```
+          **Filter for relevance**: parse the JSON response and only keep servers whose name or description
+          clearly matches the detected technology. Discard generic or loosely matched results.
+          If no relevant servers found for a technology, say so — don't pad with irrelevant results.
+
+          ### Step 5: Present and install
+          Present a unified summary table of recommendations.
+
+          Then use `AskUserQuestion` with `multiSelect: true` to let the user pick which items to install.
+          Present skills and MCP servers as separate questions. Only show questions for categories that
+          have recommendations. Skip the question entirely if no relevant items were found.
+
+          For selected items:
+          - **Skills**: install with `npx skills add <name>` (project-scoped by default)
+          - **MCP servers**: write config to `.claude/settings.json` in the project root
+            - Read existing `.claude/settings.json` first if it exists, merge new entries into `mcpServers`
+            - Use the install command from the registry response (typically `npx -y <package>`)
+
+          If `$ARGUMENTS` contains `--dry-run`, skip installation and only show recommendations.
+          If `$ARGUMENTS` contains specific keywords, narrow the search to those topics only.
+
+          $ARGUMENTS
+        '';
+
         review = ''
           ---
           name: review
