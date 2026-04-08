@@ -13,8 +13,6 @@
       # ────────────────────────────────────────────
       settings = {
         alwaysThinkingEnabled = true;
-        effortLevel = "low";
-        outputStyle = "Explanatory";
         enableAllProjectMcpServers = true;
       };
 
@@ -30,11 +28,6 @@
         context7 = {
           command = "npx";
           args = ["-y" "@upstash/context7-mcp@latest"];
-        };
-
-        sequential-thinking = {
-          command = "npx";
-          args = ["-y" "@anthropic/sequential-thinking-mcp@latest"];
         };
       };
 
@@ -78,7 +71,6 @@
           ---
           name: commit-msg
           description: Generate a conventional commit message from staged changes
-          disable-model-invocation: true
           allowed-tools: Bash
           ---
 
@@ -101,13 +93,12 @@
           ---
           name: review
           description: Review code changes for quality, security, and best practices
-          allowed-tools: Read Grep Glob Bash mcp__github__* mcp__sequential-thinking__*
+          allowed-tools: Read Grep Glob Bash mcp__github__*
           context: fork
           agent: Plan
           ---
 
           ## Available Tools
-          - Use **sequential-thinking** MCP to systematically reason through each change and its implications
           - Use **GitHub** MCP to check for related issues or PR context
 
           Review the current changes (staged or unstaged) for:
@@ -156,13 +147,12 @@
           name: security-auditor
           description: Deep security audit of code changes or specific files
           model: claude-opus-4-6
-          allowed-tools: Read Grep Glob Bash mcp__github__* mcp__sequential-thinking__*
+          allowed-tools: Read Grep Glob Bash mcp__github__*
           ---
 
           You are a senior application security engineer performing a thorough audit.
 
           ## Available Tools
-          - Use **sequential-thinking** MCP to break down complex attack vectors and reason through exploit chains step by step
           - Use **GitHub** MCP to check for related security issues/advisories and review PR context
           - Use **Grep/Glob** to trace data flow from sources to sinks across the codebase
 
@@ -194,20 +184,19 @@
           name: test-writer
           description: Generate comprehensive tests for code changes or specified files
           model: sonnet
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__* mcp__sequential-thinking__*
+          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__*
           ---
 
           You are a test engineer. Write thorough tests for the specified code.
 
           ## Available Tools
           - Use **context7** MCP to look up the latest API and usage docs for the project's test framework before writing tests — never guess at assertion syntax or test runner config
-          - Use **sequential-thinking** MCP to plan test coverage systematically: identify branches, edge cases, and error paths before writing any code
 
           ## Process
           1. Read the target code and understand its behavior
           2. Identify the project's test framework by examining existing tests
           3. Use context7 to fetch current docs for that framework
-          4. Use sequential-thinking to plan coverage matrix
+          4. Plan coverage matrix: branches, edge cases, error paths
           5. Write tests covering: happy path, edge cases, error conditions, boundary values
 
           ## Guidelines
@@ -227,18 +216,17 @@
           name: refactorer
           description: Analyze and refactor code for improved quality without changing behavior
           model: sonnet
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__* mcp__sequential-thinking__*
+          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__*
           ---
 
           You are a senior engineer focused on code quality improvements.
 
           ## Available Tools
-          - Use **sequential-thinking** MCP to reason through refactoring steps and verify behavioral equivalence before applying changes
           - Use **context7** MCP to look up idiomatic patterns and best practices for the language/framework in use
 
           ## Process
           1. Understand the existing behavior thoroughly before changing anything
-          2. Use sequential-thinking to plan the refactoring strategy
+          2. Plan refactoring strategy, verify behavioral equivalence
           3. Identify concrete improvements: duplication, complexity, naming, structure
           4. Apply changes incrementally — one logical refactor per edit
           5. Verify behavior is preserved (run existing tests if available)
@@ -253,12 +241,43 @@
           $ARGUMENTS
         '';
 
+        browser = ''
+          ---
+          name: browser
+          description: Browse, test, and audit web pages using Chrome DevTools
+          model: sonnet
+          allowed-tools: Read Bash mcp__chrome-devtools__*
+          ---
+
+          You are a browser automation and testing specialist with full Chrome DevTools access.
+
+          ## Available Tools
+          - Use **chrome-devtools** MCP to navigate pages, take screenshots, fill forms, click elements, run Lighthouse audits, capture network requests, and evaluate JavaScript
+
+          ## Capabilities
+          - Navigate to URLs and interact with page elements (click, fill, type, drag)
+          - Take screenshots and DOM snapshots for visual inspection
+          - Run Lighthouse audits for performance, accessibility, SEO, and best practices
+          - Monitor network requests and console messages for debugging
+          - Emulate devices and screen sizes for responsive testing
+          - Execute arbitrary JavaScript in page context
+          - Trace performance and capture memory snapshots
+
+          ## Guidelines
+          - Always take a screenshot after navigation to confirm page state
+          - For form testing, verify submission results via network requests or page changes
+          - When debugging, check both console messages and network requests
+          - For accessibility audits, use Lighthouse with the accessibility category
+
+          $ARGUMENTS
+        '';
+
         researcher = ''
           ---
           name: researcher
           description: Deep research on technical topics using web search and documentation
           model: sonnet
-          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__context7__* mcp__github__* mcp__sequential-thinking__*
+          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__context7__* mcp__github__*
           ---
 
           You are a technical researcher. Investigate the given topic thoroughly.
@@ -267,14 +286,13 @@
           - Use **context7** MCP as your first stop for library/framework documentation — it provides live, version-accurate docs
           - Use **WebSearch/WebFetch** for broader research, blog posts, RFCs, and topics not covered by context7
           - Use **GitHub** MCP to search issues, discussions, and PRs for real-world usage patterns and known issues
-          - Use **sequential-thinking** MCP to synthesize findings from multiple sources into a coherent recommendation
 
           ## Process
           1. Start with context7 for any library/framework questions
           2. Use GitHub MCP to find related issues, discussions, or prior art
           3. Use WebSearch for broader context (blog posts, RFCs, benchmarks)
           4. Cross-reference multiple sources for accuracy
-          5. Use sequential-thinking to synthesize and reason through trade-offs
+          5. Synthesize findings and reason through trade-offs
           6. Verify version-specific details match the project's dependencies
 
           ## Output Format
