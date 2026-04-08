@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: lib.mkIf config.profiles.developer.enable (let
   nodejs = pkgs.nodejs;
 
   myNodePackages = pkgs.nodePackages.override {
@@ -19,4 +24,4 @@ in {
     ".local/share/pnpm"
     ".npm"
   ];
-}
+})

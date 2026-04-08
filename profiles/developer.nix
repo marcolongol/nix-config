@@ -90,10 +90,6 @@
       nix-direnv.enable = true;
     };
 
-    programs.claude-code = {
-      enable = true;
-    };
-
     programs.jq = {
       enable = true;
     };
@@ -154,7 +150,6 @@
     };
 
     persistentFolders = [
-      ".claude"
       ".config/Code"
       ".config/direnv"
       ".config/github-copilot"
@@ -164,9 +159,7 @@
       ".local/share/DBeaverData"
     ];
 
-    persistentFiles = [
-      ".claude.json"
-    ];
+    persistentFiles = [ ];
 
     home.sessionPath = ["$HOME/.krew/bin"];
 
