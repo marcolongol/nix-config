@@ -22,8 +22,10 @@
       # ────────────────────────────────────────────
       mcpServers = {
         github = {
-          command = "${lib.getExe pkgs.gh}";
-          args = ["mcp-server"];
+          command = "${pkgs.writeShellScript "github-mcp-server-wrapper" ''
+            export GITHUB_PERSONAL_ACCESS_TOKEN="$(cat ${config.sops.secrets.github-pat.path})"
+            exec ${lib.getExe pkgs.github-mcp-server} stdio "$@"
+          ''}";
         };
 
         context7 = {

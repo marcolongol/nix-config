@@ -85,6 +85,7 @@ in {
     secrets = {
       user-secret = {};
       dockerhub-auth = {};
+      github-pat = {};
     };
     templates.docker-config = {
       path = "${config.home.homeDirectory}/.docker/config.json";
