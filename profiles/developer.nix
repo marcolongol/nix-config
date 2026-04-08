@@ -37,6 +37,7 @@
       ngrok
       openssl.dev
       pkg-config
+      psqlodbc
       readline.dev
       restic
       rsync
