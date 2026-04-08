@@ -14,6 +14,7 @@
       settings = {
         alwaysThinkingEnabled = true;
         enableAllProjectMcpServers = true;
+
       };
 
       # ────────────────────────────────────────────
@@ -29,38 +30,6 @@
           command = "npx";
           args = ["-y" "@upstash/context7-mcp@latest"];
         };
-      };
-
-      # ────────────────────────────────────────────
-      # SECTION: Hooks
-      # ────────────────────────────────────────────
-      hooks = {
-        truncate-output = ''
-          #!/usr/bin/env bash
-          # PostToolUse hook: truncate excessively long Bash output to save tokens
-          # Keeps the first and last N lines, replacing the middle with a summary
-          # Set CLAUDE_NO_TRUNCATE=1 to bypass this hook entirely
-          [[ "$CLAUDE_NO_TRUNCATE" == "1" ]] && exit 0
-
-          input=$(cat)
-          tool=$(echo "$input" | ${lib.getExe pkgs.jq} -r '.tool_name // empty')
-
-          if [[ "$tool" == "Bash" ]]; then
-            output=$(echo "$input" | ${lib.getExe pkgs.jq} -r '.tool_output // empty')
-            line_count=$(echo "$output" | wc -l)
-
-            if [[ "$line_count" -gt 200 ]]; then
-              head_lines=$(echo "$output" | head -80)
-              tail_lines=$(echo "$output" | tail -80)
-              echo "--- Output truncated: $line_count lines total (showing first 80 + last 80) ---"
-              echo "$head_lines"
-              echo ""
-              echo "... ($((line_count - 160)) lines omitted) ..."
-              echo ""
-              echo "$tail_lines"
-            fi
-          fi
-        '';
       };
 
       # ────────────────────────────────────────────
@@ -193,16 +162,6 @@
           - Never hardcode credentials — use environment variables or secret managers
           - Never expose internal service ports without explicit user confirmation
           - Validate and sanitize all external inputs at system boundaries
-        '';
-
-        output-truncation = ''
-          # Output Truncation
-
-          Bash output over 200 lines is automatically truncated (first 80 + last 80 lines).
-          If you see "lines omitted" in tool output and need the full content:
-          - Pipe through `grep` or `tail`/`head` to target the relevant section
-          - Ask the user to rerun with `CLAUDE_NO_TRUNCATE=1` if the full output is essential
-          - Never guess at truncated content — narrow your query or request the bypass
         '';
       };
 
