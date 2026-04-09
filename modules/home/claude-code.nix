@@ -17,6 +17,77 @@
         env = {
           CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1";
         };
+        permissions = {
+          allow = [
+            # File operations
+            "Edit"
+            "Write"
+            "Read"
+
+            # Search and navigation
+            "Grep"
+            "Glob"
+            "WebSearch"
+            "WebFetch"
+
+            # Shell — safe patterns
+            "Bash(git *)"
+            "Bash(nix *)"
+            "Bash(nixos-rebuild *)"
+            "Bash(home-manager *)"
+            "Bash(npm *)"
+            "Bash(npx *)"
+            "Bash(node *)"
+            "Bash(cargo *)"
+            "Bash(go *)"
+            "Bash(python *)"
+            "Bash(pip *)"
+            "Bash(ls *)"
+            "Bash(cat *)"
+            "Bash(head *)"
+            "Bash(tail *)"
+            "Bash(wc *)"
+            "Bash(sort *)"
+            "Bash(grep *)"
+            "Bash(rg *)"
+            "Bash(fd *)"
+            "Bash(find *)"
+            "Bash(which *)"
+            "Bash(echo *)"
+            "Bash(pwd)"
+            "Bash(mkdir *)"
+            "Bash(cp *)"
+            "Bash(mv *)"
+            "Bash(jq *)"
+            "Bash(sed *)"
+            "Bash(awk *)"
+            "Bash(diff *)"
+            "Bash(gh *)"
+            "Bash(curl *)"
+            "Bash(* --version)"
+            "Bash(* --help)"
+
+            # MCP servers
+            "mcp__plugin_claude-code-home-manager_github__*"
+            "mcp__plugin_claude-code-home-manager_context7__*"
+            "mcp__chrome-devtools__*"
+
+            # Agents
+            "Agent"
+          ];
+          deny = [
+            # Dangerous operations still require confirmation
+            "Bash(rm -rf *)"
+            "Bash(rm -r *)"
+            "Bash(git push --force *)"
+            "Bash(git push -f *)"
+            "Bash(git reset --hard *)"
+            "Bash(git checkout -- *)"
+            "Bash(git clean *)"
+            "Bash(sudo *)"
+            "Bash(chmod 777 *)"
+          ];
+        };
       };
 
       # ────────────────────────────────────────────
@@ -134,7 +205,6 @@
           ---
           name: team
           description: Orchestrate an agent team from a high-level task description
-          allowed-tools: none
           ---
 
           Parse the user's request and create an agent team to accomplish it.
@@ -222,6 +292,48 @@
           - Never expose internal service ports without explicit user confirmation
           - Validate and sanitize all external inputs at system boundaries
         '';
+
+        tooling = ''
+          # Tool and Resource Usage
+
+          ## MCP Servers
+          - Always prefer available MCP servers over manual alternatives
+          - Use **context7** as first source for library/framework documentation — never guess at APIs when docs are available
+          - Use **GitHub** MCP for issue context, PR history, and code search before making assumptions
+          - Use **chrome-devtools** MCP for any web testing, screenshots, or Lighthouse audits
+
+          ## Skills
+          - Use `/discover` when starting work in an unfamiliar project to find relevant skills and MCP servers
+          - Use `/review` before committing significant changes
+          - Use `/team` for tasks that benefit from parallel exploration or multi-role coordination
+
+          ## General
+          - Check what tools and MCP servers are available before falling back to manual approaches
+          - When a task involves a library or framework, check context7 for current docs even if you think you know the API
+        '';
+
+        teams = ''
+          # Agent Team Coordination
+
+          ## File Ownership
+          - Each teammate must own distinct files/modules — never have two teammates editing the same file
+          - If overlapping edits are unavoidable, serialize the work with task dependencies
+
+          ## Communication
+          - Teammates should share findings proactively, not wait to be asked
+          - Use broadcast sparingly — prefer targeted messages to specific teammates
+          - Challenge each other's assumptions during investigation tasks
+
+          ## Task Management
+          - Break work into 5-6 tasks per teammate
+          - Mark tasks complete promptly — stale status blocks dependent work
+          - The lead must wait for all teammates to finish before synthesizing results
+          - The lead should not implement tasks itself — delegate to teammates
+
+          ## Lifecycle
+          - Shut down all teammates before cleaning up the team
+          - Always clean up through the lead, never through a teammate
+        '';
       };
 
       # ────────────────────────────────────────────
@@ -233,7 +345,10 @@
           name: security-auditor
           description: Deep security audit of code changes or specific files
           model: claude-opus-4-6
-          allowed-tools: Read Grep Glob Bash mcp__github__*
+          color: red
+          effort: max
+          memory: user
+          allowed-tools: Read Grep Glob Bash mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a senior application security engineer performing a thorough audit.
@@ -270,7 +385,10 @@
           name: test-writer
           description: Generate comprehensive tests for code changes or specified files
           model: sonnet
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__*
+          color: cyan
+          isolation: worktree
+          memory: user
+          allowed-tools: Read Grep Glob Edit Write Bash mcp__plugin_claude-code-home-manager_context7__*
           ---
 
           You are a test engineer. Write thorough tests for the specified code.
@@ -302,7 +420,10 @@
           name: refactorer
           description: Analyze and refactor code for improved quality without changing behavior
           model: sonnet
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__*
+          color: purple
+          isolation: worktree
+          memory: user
+          allowed-tools: Read Grep Glob Edit Write Bash mcp__plugin_claude-code-home-manager_context7__*
           ---
 
           You are a senior engineer focused on code quality improvements.
@@ -332,7 +453,10 @@
           name: coder
           description: General-purpose implementation agent for writing, editing, and shipping code
           model: sonnet
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__context7__*
+          color: green
+          isolation: worktree
+          memory: user
+          allowed-tools: Read Grep Glob Edit Write Bash mcp__plugin_claude-code-home-manager_context7__*
           ---
 
           You are a senior software engineer. Write clean, correct, production-ready code.
@@ -364,6 +488,8 @@
           name: browser
           description: Browse, test, and audit web pages using Chrome DevTools
           model: sonnet
+          color: pink
+          memory: user
           allowed-tools: Read Bash mcp__chrome-devtools__*
           ---
 
@@ -395,7 +521,10 @@
           name: architect
           description: Software architect agent for high-level design, system overview, and implementation planning
           model: claude-opus-4-6
-          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__context7__* mcp__github__*
+          color: blue
+          effort: max
+          memory: user
+          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a senior software architect. Analyze systems at a high level and produce clear implementation plans.
@@ -435,7 +564,10 @@
           name: reviewer
           description: Code reviewer focused on best practices, correctness, and maintainability
           model: claude-opus-4-6
-          allowed-tools: Read Grep Glob Bash mcp__context7__* mcp__github__*
+          color: yellow
+          effort: max
+          memory: user
+          allowed-tools: Read Grep Glob Bash mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a senior staff engineer performing a thorough code review.
@@ -473,7 +605,9 @@
           name: researcher
           description: Deep research on technical topics using web search and documentation
           model: sonnet
-          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__context7__* mcp__github__*
+          color: orange
+          memory: user
+          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a technical researcher. Investigate the given topic thoroughly.
