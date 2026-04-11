@@ -67,6 +67,10 @@
             "Bash(* --version)"
             "Bash(* --help)"
 
+            # IDE integration
+            "LSP"
+            "mcp__ide__getDiagnostics"
+
             # MCP servers
             "mcp__plugin_claude-code-home-manager_github__*"
             "mcp__plugin_claude-code-home-manager_context7__*"
@@ -289,12 +293,14 @@
           ---
           name: review
           description: Review code changes for quality, security, and best practices
-          allowed-tools: Read Grep Glob Bash mcp__github__*
+          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__github__*
           context: fork
           agent: Plan
           ---
 
           ## Available Tools
+          - Use **LSP** (findReferences, hover) to verify changed symbols are used correctly across the codebase
+          - Use **getDiagnostics** to check for errors/warnings on changed files
           - Use **GitHub** MCP to check for related issues or PR context
 
           Review the current changes (staged or unstaged) for:
@@ -325,6 +331,13 @@
 
         tooling = ''
           # Tool and Resource Usage
+
+          ## IDE Integration (Neovim)
+          - Use **LSP** tools for code intelligence — hover, go-to-definition, find-references, document symbols, call hierarchy
+          - Use **getDiagnostics** to check for errors/warnings before and after edits — catch issues the same way the editor does
+          - Prefer LSP navigation (goToDefinition, findReferences) over grep when tracing symbols — it's more precise
+          - Use documentSymbol/workspaceSymbol to understand file and project structure before diving into code
+          - Use hover to inspect types and documentation inline instead of guessing
 
           ## MCP Servers
           - Always prefer available MCP servers over manual alternatives
@@ -378,12 +391,14 @@
           color: red
           effort: max
           memory: user
-          allowed-tools: Read Grep Glob Bash mcp__plugin_claude-code-home-manager_github__*
+          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a senior application security engineer performing a thorough audit.
 
           ## Available Tools
+          - Use **LSP** (goToDefinition, findReferences, callHierarchy) to trace data flow precisely — follow function calls from sources to sinks
+          - Use **getDiagnostics** to surface type errors or warnings that may indicate unsafe code
           - Use **GitHub** MCP to check for related security issues/advisories and review PR context
           - Use **Grep/Glob** to trace data flow from sources to sinks across the codebase
 
@@ -418,12 +433,14 @@
           color: cyan
           isolation: worktree
           memory: user
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__plugin_claude-code-home-manager_context7__*
+          allowed-tools: Read Grep Glob Edit Write Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__*
           ---
 
           You are a test engineer. Write thorough tests for the specified code.
 
           ## Available Tools
+          - Use **LSP** (hover, goToDefinition, documentSymbol) to understand function signatures, types, and structure of code under test
+          - Use **getDiagnostics** after writing tests to catch type errors and import issues immediately
           - Use **context7** MCP to look up the latest API and usage docs for the project's test framework before writing tests — never guess at assertion syntax or test runner config
 
           ## Process
@@ -453,12 +470,14 @@
           color: purple
           isolation: worktree
           memory: user
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__plugin_claude-code-home-manager_context7__*
+          allowed-tools: Read Grep Glob Edit Write Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__*
           ---
 
           You are a senior engineer focused on code quality improvements.
 
           ## Available Tools
+          - Use **LSP** (findReferences, callHierarchy) to verify no callers are affected before refactoring — more reliable than grep for symbol renames
+          - Use **getDiagnostics** after each refactoring step to catch regressions immediately
           - Use **context7** MCP to look up idiomatic patterns and best practices for the language/framework in use
 
           ## Process
@@ -486,12 +505,14 @@
           color: green
           isolation: worktree
           memory: user
-          allowed-tools: Read Grep Glob Edit Write Bash mcp__plugin_claude-code-home-manager_context7__*
+          allowed-tools: Read Grep Glob Edit Write Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__*
           ---
 
           You are a senior software engineer. Write clean, correct, production-ready code.
 
           ## Available Tools
+          - Use **LSP** (hover, goToDefinition, documentSymbol) to understand types, function signatures, and module structure before writing code
+          - Use **getDiagnostics** after edits to catch errors immediately — fix before moving on
           - Use **context7** MCP to look up current API docs, syntax, and idiomatic patterns before writing code
           - Use **Grep/Glob** to understand existing patterns and conventions in the codebase
 
@@ -554,12 +575,14 @@
           color: blue
           effort: max
           memory: user
-          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
+          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics WebSearch WebFetch mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a senior software architect. Analyze systems at a high level and produce clear implementation plans.
 
           ## Available Tools
+          - Use **LSP** (documentSymbol, workspaceSymbol, callHierarchy) to map module structure, symbol relationships, and dependency graphs precisely
+          - Use **getDiagnostics** to identify existing issues in the codebase before planning changes
           - Use **context7** MCP for framework/library architecture patterns and best practices
           - Use **GitHub** MCP to review existing PRs, issues, and project history for architectural context
           - Use **Grep/Glob** to map codebase structure, dependencies, and module boundaries
@@ -597,12 +620,14 @@
           color: yellow
           effort: max
           memory: user
-          allowed-tools: Read Grep Glob Bash mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
+          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a senior staff engineer performing a thorough code review.
 
           ## Available Tools
+          - Use **LSP** (findReferences, hover, goToDefinition) to verify symbol usage, trace call sites, and check type correctness
+          - Use **getDiagnostics** to surface compiler/linter warnings on changed files
           - Use **context7** MCP to verify library usage follows current best practices and API conventions
           - Use **GitHub** MCP to check PR context, related issues, and prior discussions
           - Use **Grep/Glob** to trace usage patterns and verify consistency across the codebase
