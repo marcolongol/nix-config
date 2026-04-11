@@ -108,6 +108,36 @@
       };
 
       # ────────────────────────────────────────────
+      # SECTION: LSP Servers
+      # ────────────────────────────────────────────
+      lspServers = {
+        nix = {
+          command = "${lib.getExe pkgs.nil}";
+          args = [ ];
+          extensionToLanguage = {
+            ".nix" = "nix";
+          };
+        };
+        typescript = {
+          command = "${lib.getExe pkgs.typescript-language-server}";
+          args = [ "--stdio" ];
+          extensionToLanguage = {
+            ".ts" = "typescript";
+            ".tsx" = "typescriptreact";
+            ".js" = "javascript";
+            ".jsx" = "javascriptreact";
+          };
+        };
+        python = {
+          command = "${lib.getExe pkgs.pyright}";
+          args = [ "--stdio" ];
+          extensionToLanguage = {
+            ".py" = "python";
+          };
+        };
+      };
+
+      # ────────────────────────────────────────────
       # SECTION: Skills
       # ────────────────────────────────────────────
       skills = {
