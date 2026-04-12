@@ -224,7 +224,9 @@
           have recommendations. Skip the question entirely if no relevant items were found.
 
           For selected items:
-          - **Skills**: install with `npx skills add <name>` (project-scoped by default)
+          - **Skills**: install using `npx skills add <name> --yes` in Bash.
+            This installs project-locally by default (do NOT pass `-g`/`--global`).
+            IMPORTANT: The ONLY correct command is `npx skills add`. Do NOT use `claude skill install`, `npx skills install`, or any other variant.
           - **MCP servers**: write config to `.claude/settings.json` in the project root
             - Read existing `.claude/settings.json` first if it exists, merge new entries into `mcpServers`
             - Use the install command from the registry response (typically `npx -y <package>`)
