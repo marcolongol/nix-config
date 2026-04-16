@@ -3,25 +3,17 @@
   lib,
   pkgs,
   ...
-}: lib.mkIf config.profiles.developer.enable (let
-  nodejs = pkgs.nodejs;
-
-  myNodePackages = pkgs.nodePackages.override {
-    inherit nodejs;
-  };
-in {
+}:
+lib.mkIf config.profiles.developer.enable {
   home.packages = [
-    nodejs
+    pkgs.nodejs
     pkgs.pnpm
     pkgs.yarn
-    myNodePackages.typescript
-    myNodePackages.eslint
-    myNodePackages.prettier
-    myNodePackages.npm-check-updates
+    pkgs.npm-check-updates
   ];
 
   persistentFolders = [
     ".local/share/pnpm"
     ".npm"
   ];
-})
+}
