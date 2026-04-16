@@ -41,6 +41,7 @@
       readline.dev
       restic
       rsync
+      sox
       talhelper
       talosctl
       tilt
