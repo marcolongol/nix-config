@@ -20,7 +20,7 @@ inputs: final: _: {
             inherit system;
             config.allowUnfree = true;
             overlays = [
-              (import ../overlays)
+              (import ../overlays final)
             ];
           };
           specialArgs =

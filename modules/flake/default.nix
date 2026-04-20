@@ -13,8 +13,10 @@
       pkgs = import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;
-        overlays = [
-          (import ../../overlays)
+        overlays = let
+          lib = import ../../lib {inherit inputs;};
+        in [
+          (import ../../overlays lib)
         ];
       };
     };
@@ -27,7 +29,7 @@
   };
 
   flake = let
-    lib = import ../../lib {inherit inputs lib;};
+    lib = import ../../lib {inherit inputs;};
     dirs = lib.mkDirMap {
       hosts = ../../hosts;
       roles = ../../roles;
