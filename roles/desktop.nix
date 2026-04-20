@@ -31,6 +31,8 @@ in {
       polkitPolicyOwners = activeUsers;
     };
 
+    programs.surfshark.enable = true;
+
     environment.etc = {
       "1password/custom_allowed_browsers" = {
         text = ''
