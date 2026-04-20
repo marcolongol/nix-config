@@ -1,3 +1,3 @@
 final: prev: {
-  surfshark = final.callPackage ./packages/surfshark.nix { };
+  surfshark = final.callPackage ../packages/surfshark.nix { };
 }

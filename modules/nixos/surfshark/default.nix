@@ -11,7 +11,11 @@ in
   options.programs.surfshark = {
     enable = lib.mkEnableOption "Surfshark VPN";
 
-    package = lib.mkPackageOption pkgs "surfshark" { };
+    package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.surfshark;
+      description = "The Surfshark package to use.";
+    };
 
     enableKillSwitch = lib.mkOption {
       type = lib.types.bool;

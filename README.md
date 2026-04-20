@@ -27,10 +27,12 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 │   ├── nixos-dt/         # Desktop (default.nix + hardware-config.nix + disko-config.nix)
 │   ├── nixos-livecd/     # Live CD / installer image
 │   └── nixos-vm/         # Virtual machine configuration
+├── packages/              # Custom packages (exported as flake outputs)
+│   └── surfshark.nix     # Surfshark VPN client (FHS-wrapped .deb)
 ├── modules/               # Custom modules
 │   ├── flake/            # Flake-specific modules
 │   ├── home/             # Home Manager modules (zsh, starship, tmux, etc.)
-│   └── nixos/            # NixOS system modules (amd, nvidia)
+│   └── nixos/            # NixOS system modules (amd, nvidia, surfshark)
 ├── roles/                 # System roles — each declares its own option
 │   ├── common.nix        # Base system config
 │   ├── desktop.nix       # Hyprland, SDDM, Pipewire, Stylix
@@ -59,7 +61,7 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 │   └── users/${username}.yaml
 └── overlays/              # Nixpkgs overlays
     ├── overrides.nix      # Package overrides (e.g. freecad boost fix)
-    ├── custom-packages.nix
+    ├── custom-packages.nix # Exposes packages/ into pkgs
     └── patches.nix
 ```
 

@@ -21,11 +21,8 @@
 
     formatter = pkgs.alejandra;
 
-    packages = pkgs.lib.optionalAttrs (system == "x86_64-linux") {
-      livecd-iso = self.nixosConfigurations.nixos-livecd.config.system.build.isoImage;
-    };
-
     imports = [
+      (self + /packages)
     ];
   };
 
