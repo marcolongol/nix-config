@@ -79,6 +79,7 @@ in {
   persistentFolders = [
     ".config/1Password"
     ".local/share/Steam"
+    ".config/spotify"
   ];
 
   sops = {
