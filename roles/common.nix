@@ -14,6 +14,10 @@
     networking = {
       inherit hostName;
       networkmanager.enable = true;
+      firewall = {
+        allowedTCPPorts = [ 80 443 3000 4200 ];
+        allowPing = true;
+      };
     };
 
     environment.systemPackages = with pkgs; [
