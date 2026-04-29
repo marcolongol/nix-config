@@ -11,6 +11,7 @@
     ./browser.nix
     ./lock.nix
     ./clipboard.nix
+    ./wayvnc.nix
   ];
 
   options.profiles.desktopUser.enable = lib.mkEnableOption "desktop user profile (Hyprland, Waybar, Zen Browser)";
