@@ -15,7 +15,11 @@
       inherit hostName;
       networkmanager.enable = true;
       firewall = {
-        allowedTCPPorts = [ 22 80 443 3000 4200 5900 ];
+        allowedTCPPorts = [ 22 80 443 5900 ];
+        allowedTCPPortRanges = [
+          { from = 3000; to = 3010; }
+          { from = 4200; to = 4210; }
+        ];
         allowPing = true;
       };
     };
