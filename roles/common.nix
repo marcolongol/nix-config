@@ -61,6 +61,8 @@
       smartd.enable = true;
       udisks2.enable = true;
       devmon.enable = true;
+      pcscd.enable = true;
+      udev.packages = [ pkgs.yubikey-personalization ];
       comin = {
         enable = true;
         remotes = [
