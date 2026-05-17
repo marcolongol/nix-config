@@ -75,7 +75,8 @@
   boot.initrd.systemd.services.rollback-root = {
     description = "Rollback btrfs root subvolume";
     wantedBy = ["initrd.target"];
-    after = ["systemd-cryptsetup@*.service"];
+    requires = ["dev-disk-by\\x2dlabel-nixos.device"];
+    after = ["dev-disk-by\\x2dlabel-nixos.device"];
     before = ["sysroot.mount"];
     unitConfig.DefaultDependencies = "no";
     serviceConfig.Type = "oneshot";
