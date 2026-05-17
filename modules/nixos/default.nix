@@ -83,11 +83,15 @@ in {
       id = userYubikeySerials;
     };
 
+    # YubiKey-only auth: enable yubico and explicitly disable the unix
+    # password fallback on each affected service. With pam_unix removed
+    # from the auth stack, pam_yubico is the only module that can satisfy
+    # the auth check before pam_deny.
     security.pam.services = lib.mkIf yubikeyAuthEnabled {
-      login.yubicoAuth = true;
-      sudo.yubicoAuth = true;
-      hyprlock.yubicoAuth = true;
-      sddm.yubicoAuth = true;
+      login = { yubicoAuth = true; unixAuth = false; };
+      sudo = { yubicoAuth = true; unixAuth = false; };
+      hyprlock = { yubicoAuth = true; unixAuth = false; };
+      sddm = { yubicoAuth = true; unixAuth = false; };
     };
 
     # When YubiKey auth is on, sudo must run PAM (not NOPASSWD) so the
