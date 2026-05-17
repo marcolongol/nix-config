@@ -10,6 +10,19 @@
 }: let
   # Derive the list of active users from the attrset option
   activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+
+  # Collect YubiKey serials declared in each active user's pubkeys.nix.
+  # Users without a pubkeys.nix or without a `yubikeys` field contribute nothing.
+  userYubikeySerials = lib.concatMap (
+    userName: let
+      pubkeysPath = "${users.${userName}}/pubkeys.nix";
+    in
+      if users ? ${userName} && builtins.pathExists pubkeysPath
+      then map (k: k.serial) ((import pubkeysPath).yubikeys or [])
+      else []
+  ) activeUsers;
+
+  yubikeyAuthEnabled = userYubikeySerials != [];
 in {
   options = {
     hostUsers = lib.mkOption {
@@ -58,6 +71,28 @@ in {
         lib.optionals (users ? ${userName} && builtins.pathExists pubkeysPath)
         [(import pubkeysPath).ssh.publicKey];
     });
+
+    # YubiKey HMAC challenge-response auth. Enabled only when at least one
+    # active user declares a YubiKey serial in their pubkeys.nix. Per-user
+    # challenge files live at ~/.yubico/challenge-<serial> (impermanence
+    # persists them via the user's persistentFolders).
+    security.pam.yubico = lib.mkIf yubikeyAuthEnabled {
+      enable = true;
+      mode = "challenge-response";
+      control = "sufficient";
+      id = userYubikeySerials;
+    };
+
+    security.pam.services = lib.mkIf yubikeyAuthEnabled {
+      login.yubicoAuth = true;
+      sudo.yubicoAuth = true;
+      hyprlock.yubicoAuth = true;
+      sddm.yubicoAuth = true;
+    };
+
+    # When YubiKey auth is on, sudo must run PAM (not NOPASSWD) so the
+    # touch-to-auth path actually triggers. Password remains as fallback.
+    security.sudo.wheelNeedsPassword = lib.mkIf yubikeyAuthEnabled true;
 
     home-manager = {
       extraSpecialArgs = {

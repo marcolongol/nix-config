@@ -4,6 +4,10 @@
     publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNjIO2jinm2iNpJ3Wkib5FaLwQhcBPcRyPwxoeZQgfb";
   };
 
+  yubikeys = [
+    { serial = "35686149"; description = "YubiKey 5C Nano (primary)"; }
+  ];
+
   gpg = {
     fingerprint = "1818334CEAC35348ED5E30F5DD40CEDB2EEAD4A4";
     publicKey = ''

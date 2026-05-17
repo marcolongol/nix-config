@@ -101,8 +101,9 @@
 
     hardware.gpgSmartcards.enable = true;
 
-    # Passwordless sudo — intentional for a single-user personal machine
-    security.sudo.wheelNeedsPassword = false;
+    # Passwordless sudo by default. Flipped to require auth when a user
+    # declares a YubiKey (see modules/nixos/default.nix).
+    security.sudo.wheelNeedsPassword = lib.mkDefault false;
 
     sops = {
       age = {
