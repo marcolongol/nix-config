@@ -65,6 +65,7 @@
       };
     };
 
+    boot.zfs.forceImportRoot = false;
     boot.loader.systemd-boot.configurationLimit = 10;
 
     nix.settings = {

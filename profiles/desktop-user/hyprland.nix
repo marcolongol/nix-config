@@ -12,6 +12,7 @@ lib.mkIf config.profiles.desktopUser.enable {
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang";
     settings = {
       "$mod" = "SUPER";
       "$terminal" = "ghostty";
