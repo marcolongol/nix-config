@@ -88,10 +88,10 @@ in {
     # from the auth stack, pam_yubico is the only module that can satisfy
     # the auth check before pam_deny.
     security.pam.services = lib.mkIf yubikeyAuthEnabled {
-      login = { yubicoAuth = true; unixAuth = false; };
-      sudo = { yubicoAuth = true; unixAuth = false; };
-      hyprlock = { yubicoAuth = true; unixAuth = false; };
-      sddm = { yubicoAuth = true; unixAuth = false; };
+      login = { yubicoAuth = true; unixAuth = true; };
+      sudo = { yubicoAuth = true; unixAuth = true; };
+      hyprlock = { yubicoAuth = true; unixAuth = true; };
+      sddm = { yubicoAuth = true; unixAuth = true; };
     };
 
     # When YubiKey auth is on, sudo must run PAM (not NOPASSWD) so the
