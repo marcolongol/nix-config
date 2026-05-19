@@ -8,21 +8,7 @@
   secretsPath,
   ...
 }: let
-  # Derive the list of active users from the attrset option
   activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
-
-  # Collect YubiKey serials declared in each active user's pubkeys.nix.
-  # Users without a pubkeys.nix or without a `yubikeys` field contribute nothing.
-  userYubikeySerials = lib.concatMap (
-    userName: let
-      pubkeysPath = "${users.${userName}}/pubkeys.nix";
-    in
-      if users ? ${userName} && builtins.pathExists pubkeysPath
-      then map (k: k.serial) ((import pubkeysPath).yubikeys or [])
-      else []
-  ) activeUsers;
-
-  yubikeyAuthEnabled = userYubikeySerials != [];
 in {
   options = {
     hostUsers = lib.mkOption {
@@ -72,31 +58,22 @@ in {
         [(import pubkeysPath).ssh.publicKey];
     });
 
-    # YubiKey HMAC challenge-response auth. Enabled only when at least one
-    # active user declares a YubiKey serial in their pubkeys.nix. Per-user
-    # challenge files live at ~/.yubico/challenge-<serial> (impermanence
-    # persists them via the user's persistentFolders).
-    security.pam.yubico = lib.mkIf yubikeyAuthEnabled {
-      enable = true;
-      mode = "challenge-response";
-      control = "sufficient";
-      id = userYubikeySerials;
+    # GPG auth subkey (stored on YubiKey) via pam_ssh_agent_auth.
+    # gpg-agent exposes the [A] subkey as an SSH key; pam_ssh_agent_auth
+    # checks it against /etc/ssh/authorized_keys.d/%u (populated from
+    # openssh.authorizedKeys.keys). UIF touch on the auth slot ensures
+    # physical presence on every auth. Password remains as fallback.
+    security.pam.sshAgentAuth.enable = true;
+
+    security.pam.services = {
+      login.sshAgentAuth = true;
+      sudo.sshAgentAuth = true;
+      hyprlock.sshAgentAuth = true;
+      sddm.sshAgentAuth = true;
     };
 
-    # YubiKey-only auth: enable yubico and explicitly disable the unix
-    # password fallback on each affected service. With pam_unix removed
-    # from the auth stack, pam_yubico is the only module that can satisfy
-    # the auth check before pam_deny.
-    security.pam.services = lib.mkIf yubikeyAuthEnabled {
-      login = { yubicoAuth = true; unixAuth = true; };
-      sudo = { yubicoAuth = true; unixAuth = true; };
-      hyprlock = { yubicoAuth = true; unixAuth = true; };
-      sddm = { yubicoAuth = true; unixAuth = true; };
-    };
-
-    # When YubiKey auth is on, sudo must run PAM (not NOPASSWD) so the
-    # touch-to-auth path actually triggers. Password remains as fallback.
-    security.sudo.wheelNeedsPassword = lib.mkIf yubikeyAuthEnabled true;
+    # sudo must run PAM so the touch-to-auth path triggers.
+    security.sudo.wheelNeedsPassword = true;
 
     home-manager = {
       extraSpecialArgs = {

@@ -81,7 +81,6 @@ in {
     ".config/1Password"
     ".local/share/Steam"
     ".config/spotify"
-    ".yubico"
   ];
 
   sops = {
