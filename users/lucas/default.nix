@@ -23,6 +23,7 @@ in {
       spotify
       keymapp
       telegram-desktop
+      signal-desktop
     ];
 
     sessionVariables = {

@@ -6,6 +6,7 @@
 
   yubikeys = [
     { serial = "35686149"; description = "YubiKey 5C Nano (primary)"; }
+    { serial = "18445889"; description = "YubiKey 5C (secondary)"; }
   ];
 
   gpg = {
