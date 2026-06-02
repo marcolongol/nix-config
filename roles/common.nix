@@ -9,7 +9,7 @@
   options.roles.common.enable = lib.mkEnableOption "common system configuration";
 
   config = lib.mkIf config.roles.common.enable {
-    time.timeZone = "America/Los_Angeles";
+    time.timeZone = "America/New_York";
 
     networking = {
       inherit hostName;
