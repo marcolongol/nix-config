@@ -23,11 +23,26 @@ in {
   };
 
   # Monitor layout and workspace bindings
-  # eDP-1: Chimei Innolux 1920x1080, built-in display, max refresh 144Hz
+  # eDP-1: Chimei Innolux 1920x1080, built-in display, max refresh 144Hz, primary
+  # HDMI-A-1: Samsung SMS27A350H 1920x1080, secondary, positioned to the right at 60Hz
+  # Workspaces 1-5 on eDP-1 (primary), 6-10 on HDMI-A-1 (secondary)
   home-manager.users = lib.genAttrs activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
         "eDP-1,1920x1080@144,0x0,1"
+        "HDMI-A-1,1920x1080@60,1920x0,1"
+      ];
+      workspace = [
+        "1, monitor:eDP-1"
+        "2, monitor:eDP-1"
+        "3, monitor:eDP-1"
+        "4, monitor:eDP-1"
+        "5, monitor:eDP-1"
+        "6, monitor:HDMI-A-1"
+        "7, monitor:HDMI-A-1"
+        "8, monitor:HDMI-A-1"
+        "9, monitor:HDMI-A-1"
+        "10, monitor:HDMI-A-1"
       ];
     };
   });
