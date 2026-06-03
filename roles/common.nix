@@ -13,7 +13,16 @@
 
     networking = {
       inherit hostName;
-      networkmanager.enable = true;
+      networkmanager = {
+        enable = true;
+        # Randomize MAC per-connection for privacy on untrusted networks.
+        # Switch to "stable" if captive portals or DHCP reservations break.
+        wifi.macAddress = "random";
+        ethernet.macAddress = "random";
+        wifi.scanRandMacAddress = true;
+        # Hand DNS to systemd-resolved (DoT, see services.resolved below).
+        dns = "systemd-resolved";
+      };
       firewall = {
         allowedTCPPorts = [ 22 80 443 5900 ];
         allowedTCPPortRanges = [
@@ -41,6 +50,17 @@
     ];
 
     services = {
+      # Encrypted DNS over TLS, opportunistic so captive portals still work.
+      # Fallback resolvers carry #hostname for cert validation.
+      resolved = {
+        enable = true;
+        dnssec = "true";
+        dnsovertls = "opportunistic";
+        fallbackDns = [
+          "1.1.1.1#cloudflare-dns.com"
+          "9.9.9.9#dns.quad9.net"
+        ];
+      };
       avahi = {
         enable = true;
         nssmdns4 = true;
