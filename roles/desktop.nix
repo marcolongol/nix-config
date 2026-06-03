@@ -45,7 +45,12 @@ in {
 
     services = {
       printing.enable = lib.mkDefault true;
-      blueman.enable = lib.mkDefault true;
+      blueman = {
+        enable = lib.mkDefault true;
+        # NixOS-generated drop-in collides with upstream blueman-applet.service
+        # ExecStart=; use home-manager services.blueman-applet instead.
+        withApplet = false;
+      };
       hypridle.enable = lib.mkDefault true;
       pipewire = {
         enable = true;

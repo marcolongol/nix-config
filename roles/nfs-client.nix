@@ -10,7 +10,7 @@
     "x-systemd.automount"
     "noauto"
     "x-systemd.idle-timeout=600"
-    "x-systemd.mount-timeout=100ms"
+    "x-systemd.mount-timeout=5s"
     "_netdev"
     "rw"
     "soft"

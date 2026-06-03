@@ -43,6 +43,8 @@
 
     programs.rofi.enable = true;
 
+    services.blueman-applet.enable = true;
+
     xdg.enable = lib.mkDefault true;
 
     persistentFolders = [
