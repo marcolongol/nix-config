@@ -24,6 +24,7 @@ in {
       keymapp
       telegram-desktop
       signal-desktop
+      anytype
     ];
 
     sessionVariables = {
