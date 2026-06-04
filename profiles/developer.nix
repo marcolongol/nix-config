@@ -27,6 +27,7 @@
       gnumake
       go-task
       k3d
+      knot-dns
       krew
       kubectl
       kubectx
@@ -44,6 +45,7 @@
       sox
       talhelper
       talosctl
+      tcpdump
       tilt
       wget
       wimlib
