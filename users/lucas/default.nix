@@ -25,6 +25,7 @@ in {
       telegram-desktop
       signal-desktop
       anytype
+      tz
     ];
 
     sessionVariables = {
@@ -32,6 +33,20 @@ in {
       TERMINAL = "alacritty";
     };
   };
+
+  xdg.configFile."tz/conf.toml".text = ''
+    [[zones]]
+    id = "America/Los_Angeles"
+    name = "Seattle"
+
+    [[zones]]
+    id = "Europe/Berlin"
+    name = "Poland"
+
+    [[zones]]
+    id = "Asia/Kolkata"
+    name = "India"
+  '';
 
   programs.gpg = {
     enable = true;
