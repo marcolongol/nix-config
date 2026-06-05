@@ -2,19 +2,23 @@
   "layer": "top",
   "position": "top",
   "name": "nixbar",
-  "height": "28px",
+  "height": "32px",
+  "spacing": 0,
   "reload_style_on_change": true,
   "modules-left": [
     "group/tray",
     "custom/separator",
     "hyprland/workspaces",
     "custom/separator",
-    "hyprland/window"
+    "hyprland/window",
+    "mpris"
   ],
   "modules-center": [
     "clock"
   ],
   "modules-right": [
+    "privacy",
+    "custom/weather",
     "cpu",
     "memory",
     "disk",
@@ -39,9 +43,8 @@
   "group/tray": {
     "orientation": "horizontal",
     "drawer": {
-      "transition-duration": "500",
-      "transition-left-to-right": "true",
-      "children-class": "drawer-child"
+      "transition-duration": 500,
+      "transition-left-to-right": true
     },
     "modules": [
       "custom/trayicon",
@@ -52,7 +55,6 @@
     "orientation": "inherit",
     "drawer": {
       "transition-duration": 500,
-      "children-class": "not-power",
       "transition-left-to-right": false
     },
     "modules": [

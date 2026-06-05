@@ -1,171 +1,293 @@
 /* ============================================================================
- * SEMANTIC COLORS - Fixed pastel colors for status indicators (GTK syntax)
+ * GLASSMORPHISM WAYBAR
+ * GTK3 CSS — no backdrop-filter / transforms. Glass is faked with:
+ *   - alpha() over base16 swatches for translucency
+ *   - linear-gradient sheen for a top-light "specular" highlight
+ *   - inset white box-shadow as inner rim light
+ *   - outer drop shadow for floating depth
  * ============================================================================ */
 
+/* ---- SEMANTIC PASTEL ACCENTS ---- */
 @define-color success_color #90e0a3;
-/* Softer mint green for good/success states */
 @define-color warning_color #f4c79a;
-/* Warmer soft peach for warning states */
-@define-color danger_color #f5a3a3;
-/* Muted coral for critical/error states */
-@define-color info_color #a3c5f0;
-/* Soft periwinkle blue for info/charging states */
+@define-color danger_color  #f5a3a3;
+@define-color info_color    #a3c5f0;
 @define-color neutral_color #b8bcc8;
-/* Muted gray for neutral/disabled states */
 
-/* ============================================================================
- * BASE STYLES - Enhanced for better interactivity
- * ============================================================================ */
-
-window#waybar {
-  padding: 2px;
-  background: @base00;
+/* ---- BASE ---- */
+* {
+  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", sans-serif;
+  font-size: 13px;
+  min-height: 0;
   border: none;
-  background-color: transparent;
-  margin: 0px;
-  box-shadow: none;
+  border-radius: 0;
 }
 
+window#waybar {
+  background: transparent;
+  background-color: transparent;
+  color: @base05;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border: none;
+  transition: background-color 0.4s ease;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
 
 tooltip,
 menu {
-  padding: 7px 8px;
-  margin: 2px;
-  border-radius: 6px;
-  background: @base01;
+  padding: 8px 10px;
+  margin: 4px;
+  border-radius: 10px;
+  background: alpha(@base01, 0.92);
   color: @base05;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid alpha(#ffffff, 0.18);
+  box-shadow:
+    0 6px 18px alpha(#000000, 0.55),
+    inset 0 1px 0 alpha(#ffffff, 0.10);
+}
+
+tooltip label {
+  color: @base05;
 }
 
 /* ============================================================================
- * MODULE GROUP CONTAINERS
+ * MODULE GROUP CONTAINERS — give the bar two floating glass "rails"
  * ============================================================================ */
-
-.modules-left {
-  margin: 2px;
-  padding: 2px;
-}
-
-.modules-center {
-  margin: 2px;
-  padding: 2px;
-}
-
+.modules-left,
+.modules-center,
 .modules-right {
-  margin: 2px;
-  padding: 2px;
+  margin: 3px 4px;
+  padding: 2px 4px;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      180deg,
+      alpha(#ffffff, 0.08) 0%,
+      alpha(#ffffff, 0.02) 45%,
+      alpha(#000000, 0.04) 100%
+    ),
+    alpha(@base00, 0.55);
+  border: 1px solid alpha(#ffffff, 0.10);
+  box-shadow:
+    0 4px 14px alpha(#000000, 0.45),
+    inset 0 1px 0 alpha(#ffffff, 0.12),
+    inset 0 -1px 0 alpha(#000000, 0.18);
 }
+
+/* ============================================================================
+ * GLASS PILL — shared shape for individual modules.
+ * (Applied per-module below; kept here as visual reference.)
+ * ============================================================================ */
 
 /* ============================================================================
  * WORKSPACES
  * ============================================================================ */
-
 #workspaces {
-  margin: 1px 2px;
-  padding: 2px;
-  border-radius: 8px;
-  background: @base01;
-  border: 1px solid @base03;
-  box-shadow: 0 2px 4px @base00;
+  margin: 2px 4px;
+  padding: 2px 4px;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.08) 0%,
+      alpha(#000000, 0.10) 100%),
+    alpha(@base01, 0.55);
+  border: 1px solid alpha(#ffffff, 0.10);
+  box-shadow:
+    0 2px 6px alpha(#000000, 0.4),
+    inset 0 1px 0 alpha(#ffffff, 0.10);
 }
 
 #workspaces button {
   color: @base04;
-  margin: 1px;
-  padding: 2px 6px 2px 2px;
-  border-radius: 6px;
-  border: none;
-  transition: all 0.2s ease;
-  min-width: 20px;
-  background: @base02;
-  box-shadow: 0 1px 2px @base00;
-}
-
-#workspaces button.active {
-  color: @base00;
-  background: @base0D;
-  opacity: 1;
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.4),
-    0 0 15px rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  margin: 2px 2px;
+  padding: 1px 8px;
+  border-radius: 9px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.04),
+      alpha(#000000, 0.04)),
+    alpha(@base02, 0.5);
+  border: 1px solid alpha(#ffffff, 0.05);
+  box-shadow: inset 0 1px 0 alpha(#ffffff, 0.06);
+  transition: all 0.25s ease;
+  min-width: 22px;
 }
 
 #workspaces button:hover {
   color: @base0C;
-  background: @base03;
-  box-shadow: 0 2px 4px @base01;
-  border: 1px solid @base04;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.10),
+      alpha(#ffffff, 0.02)),
+    alpha(@base03, 0.65);
+  border: 1px solid alpha(#ffffff, 0.20);
+  box-shadow:
+    0 2px 6px alpha(#000000, 0.4),
+    inset 0 1px 0 alpha(#ffffff, 0.15);
+}
+
+#workspaces button.active {
+  color: @base00;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.25),
+      alpha(#ffffff, 0.05)),
+    alpha(@base0D, 0.95);
+  border: 1px solid alpha(#ffffff, 0.4);
+  box-shadow:
+    0 0 14px alpha(@base0D, 0.7),
+    0 2px 8px alpha(#000000, 0.5),
+    inset 0 1px 0 alpha(#ffffff, 0.4);
+  animation: ws-pulse 2.6s ease-in-out infinite alternate;
+}
+
+#workspaces button.urgent {
+  color: @base00;
+  background: alpha(@danger_color, 0.9);
+  border: 1px solid alpha(#ffffff, 0.3);
+  animation: blink 0.9s linear infinite alternate;
+}
+
+@keyframes ws-pulse {
+  to {
+    box-shadow:
+      0 0 22px alpha(@base0D, 0.95),
+      0 2px 10px alpha(#000000, 0.55),
+      inset 0 1px 0 alpha(#ffffff, 0.55);
+  }
 }
 
 /* ============================================================================
- * SYSTEM MONITORING - Enhanced grouped styling
+ * HYPRLAND WINDOW (focused-app pill)
  * ============================================================================ */
+#window {
+  color: @base05;
+  padding: 1px 12px;
+  margin: 2px 4px;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.08),
+      alpha(#000000, 0.06)),
+    alpha(@base02, 0.55);
+  border: 1px solid alpha(#ffffff, 0.10);
+  box-shadow:
+    0 2px 6px alpha(#000000, 0.35),
+    inset 0 1px 0 alpha(#ffffff, 0.10);
+  transition: all 0.25s ease;
+}
+
+#window:hover {
+  color: @base0D;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.14),
+      alpha(#000000, 0.02)),
+    alpha(@base03, 0.65);
+  border: 1px solid alpha(#ffffff, 0.18);
+}
+
+/* ============================================================================
+ * MPRIS — now-playing pill, distinct accent
+ * ============================================================================ */
+#mpris {
+  color: @base05;
+  padding: 1px 10px;
+  margin: 2px 4px;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg,
+      alpha(@base0E, 0.22),
+      alpha(@base0D, 0.10)),
+    alpha(@base01, 0.6);
+  border: 1px solid alpha(#ffffff, 0.12);
+  box-shadow:
+    0 2px 6px alpha(#000000, 0.4),
+    inset 0 1px 0 alpha(#ffffff, 0.12);
+  transition: all 0.3s ease;
+}
+
+#mpris:hover {
+  color: @base0E;
+  border: 1px solid alpha(@base0E, 0.5);
+  box-shadow:
+    0 0 12px alpha(@base0E, 0.45),
+    0 2px 6px alpha(#000000, 0.4),
+    inset 0 1px 0 alpha(#ffffff, 0.2);
+}
+
+#mpris.playing {
+  color: @success_color;
+}
+
+#mpris.paused {
+  color: @neutral_color;
+}
+
+#mpris.stopped {
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================================
+ * SYSTEM MONITORING — joined as a single glass slab with accent rims
+ * ============================================================================ */
+#cpu,
+#memory,
+#disk,
+#temperature,
+#custom-gpu-temp {
+  color: @base05;
+  padding: 1px 10px;
+  min-width: 50px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.06),
+      alpha(#000000, 0.04)),
+    alpha(@base01, 0.55);
+  border-top: 2px solid;
+  border-bottom: 1px solid alpha(#000000, 0.25);
+  transition: all 0.25s ease;
+}
 
 #cpu {
-  color: @base05;
-  padding: 1px 4px 1px 6px;
-  margin-left: 1px;
-  border-radius: 8px 0 0 8px;
-  background: @base01;
-  border-top: 2px solid @base09;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: none;
+  margin-left: 4px;
+  padding-left: 10px;
+  border-radius: 10px 0 0 10px;
+  border-left: 1px solid alpha(#ffffff, 0.10);
+  border-top-color: alpha(@base09, 0.85);
+  box-shadow:
+    inset 1px 0 0 alpha(#ffffff, 0.06),
+    inset 0 1px 0 alpha(#ffffff, 0.06);
 }
 
 #memory {
-  color: @base05;
-  padding: 1px 4px;
-  border-radius: 0;
-  background: @base01;
-  border-top: 2px solid @base0A;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: none;
-  border-right: none;
+  border-top-color: alpha(@base0A, 0.85);
 }
 
 #disk {
-  color: @base05;
-  padding: 1px 4px;
-  border-radius: 0;
-  background: @base01;
-  border-top: 2px solid @base0C;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: none;
-  border-right: none;
+  border-top-color: alpha(@base0C, 0.85);
 }
 
 #temperature {
-  color: @base05;
-  padding: 1px 4px;
-  border-radius: 0;
-  background: @base01;
-  border-top: 2px solid @base0B;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: none;
-  border-right: none;
+  border-top-color: alpha(@base0B, 0.85);
 }
 
 #custom-gpu-temp {
-  color: @base05;
-  padding: 1px 6px 1px 4px;
-  margin-right: 1px;
-  border-radius: 0 8px 8px 0;
-  background: @base01;
-  border-top: 2px solid @base0E;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: none;
-}
-
-#temperature.gpu {
-  color: @base0E;
-  padding: 4px 8px;
   margin-right: 2px;
-  border-radius: 8px;
-  background: @base01;
-  border-top: 2px solid @base0B;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  min-width: 24px;
+  padding-right: 10px;
+  border-radius: 0 10px 10px 0;
+  border-right: 1px solid alpha(#ffffff, 0.10);
+  border-top-color: alpha(@base0E, 0.85);
+  box-shadow:
+    inset -1px 0 0 alpha(#ffffff, 0.06),
+    inset 0 1px 0 alpha(#ffffff, 0.06);
 }
 
 #cpu:hover,
@@ -173,43 +295,26 @@ menu {
 #disk:hover,
 #temperature:hover,
 #custom-gpu-temp:hover {
-  color: @base05;
-  background: @base02;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.15s ease-in-out;
+  color: @base07;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.12),
+      alpha(#000000, 0.02)),
+    alpha(@base02, 0.65);
 }
 
-/* CPU states for performance monitoring */
-#cpu.warning {
-  color: @warning_color;
-}
-
-#cpu.critical {
-  color: @danger_color;
-}
-
-/* Memory states for usage monitoring */
-#memory.warning {
-  color: @warning_color;
-}
-
-#memory.critical {
-  color: @danger_color;
-}
-
-/* Disk states for storage monitoring */
-#disk.warning {
-  color: @warning_color;
-}
-
-#disk.critical {
-  color: @danger_color;
-}
-
-/* Temperature states for thermal monitoring */
+#cpu.warning,
+#memory.warning,
+#disk.warning,
 #temperature.warning,
 #temperature.nvme.warning {
   color: @warning_color;
+}
+
+#cpu.critical,
+#memory.critical,
+#disk.critical {
+  color: @danger_color;
 }
 
 #temperature.critical,
@@ -219,229 +324,298 @@ menu {
 }
 
 /* ============================================================================
- * NETWORK & CONNECTIVITY
+ * SHARED GLASS PILL — single-module right-side widgets
  * ============================================================================ */
-
-#network {
-  color: @success_color;
-  min-width: 20px;
-  padding: 2px 6px 2px 2px;
-  margin: 0 1px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+#network,
+#network.speed,
+#bluetooth,
+#wireplumber,
+#backlight,
+#idle_inhibitor,
+#battery,
+#custom-weather,
+#privacy {
+  color: @base05;
+  padding: 1px 8px;
+  margin: 2px 2px;
+  min-width: 18px;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.06),
+      alpha(#000000, 0.04)),
+    alpha(@base01, 0.55);
+  border: 1px solid alpha(#ffffff, 0.10);
+  box-shadow:
+    0 2px 4px alpha(#000000, 0.3),
+    inset 0 1px 0 alpha(#ffffff, 0.08);
+  transition: all 0.25s ease;
 }
 
+#network:hover,
+#network.speed:hover,
+#bluetooth:hover,
+#wireplumber:hover,
+#backlight:hover,
+#idle_inhibitor:hover,
+#battery:hover,
+#custom-weather:hover {
+  color: @base07;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.14),
+      alpha(#000000, 0.02)),
+    alpha(@base02, 0.7);
+  border: 1px solid alpha(#ffffff, 0.22);
+  box-shadow:
+    0 4px 10px alpha(#000000, 0.45),
+    inset 0 1px 0 alpha(#ffffff, 0.18);
+}
+
+/* ---- semantic states ---- */
+#network {
+  color: @success_color;
+}
 #network.disconnected {
   color: @danger_color;
 }
-
 #network.ethernet {
   color: @info_color;
 }
-
-#network.speed {
-  color: @base05;
-  min-width: 6px;
-  padding: 1px 4px;
-  margin: 0 1px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 #bluetooth {
   color: @info_color;
-  padding: 1px 4px;
-  margin: 0 1px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  min-width: 18px;
 }
-
 #bluetooth.disabled {
   color: @neutral_color;
 }
 
-#network:hover,
-#battery:hover,
-#network.speed:hover,
-#bluetooth:hover {
-  color: @base05;
-  background: @base02;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.15s ease-in-out;
+/* ---- wireplumber states ---- */
+#wireplumber.muted {
+  color: @danger_color;
+  background:
+    linear-gradient(180deg,
+      alpha(@danger_color, 0.10),
+      alpha(#000000, 0.04)),
+    alpha(@base01, 0.55);
+  border: 1px solid alpha(@danger_color, 0.30);
 }
-
-/* ============================================================================
- * AUDIO & BRIGHTNESS
- * ============================================================================ */
-
-#wireplumber,
-#backlight {
-  color: @base05;
-  padding: 1px 4px;
-  margin: 0 1px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+#wireplumber.low {
+  color: @warning_color;
 }
-
-#wireplumber:hover,
-#backlight:hover {
+#wireplumber.medium {
   color: @base05;
-  background: @base02;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.15s ease-in-out;
+}
+#wireplumber.high {
+  color: @info_color;
 }
 
 /* ============================================================================
  * IDLE INHIBITOR
  * ============================================================================ */
-
 #idle_inhibitor {
   color: @neutral_color;
-  min-width: 20px;
-  padding: 1px 4px;
-  margin: 0 1px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #idle_inhibitor.activated {
   color: @base00;
-  background: @base0A;
-}
-
-#idle_inhibitor:hover {
-  color: @base05;
-  background: @base02;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.15s ease-in-out;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.25),
+      alpha(#ffffff, 0.05)),
+    alpha(@base0A, 0.95);
+  border: 1px solid alpha(#ffffff, 0.3);
+  box-shadow:
+    0 0 12px alpha(@base0A, 0.6),
+    inset 0 1px 0 alpha(#ffffff, 0.35);
 }
 
 /* ============================================================================
  * BATTERY
  * ============================================================================ */
-
 #battery {
   color: @neutral_color;
-  min-width: 20px;
-  padding: 1px 4px;
-  margin: 0 1px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 #battery.charging {
   color: @info_color;
 }
-
 #battery.good:not(.charging) {
   color: @success_color;
 }
-
 #battery.warning:not(.charging) {
   color: @warning_color;
 }
-
 #battery.low:not(.charging) {
   color: @danger_color;
 }
-
 #battery.critical:not(.charging) {
   color: @base07;
-  background: @danger_color;
+  background: alpha(@danger_color, 0.9);
   animation: blink 0.75s linear infinite alternate;
 }
 
 @keyframes blink {
   to {
     color: @base00;
-    background: @danger_color;
+    background: alpha(@danger_color, 0.95);
   }
 }
 
 /* ============================================================================
- * CLOCK & WINDOW - Enhanced centerpiece styling
+ * WEATHER
  * ============================================================================ */
+#custom-weather {
+  color: @info_color;
+  padding: 1px 10px;
+}
 
+/* ============================================================================
+ * PRIVACY — alarm-ish, glowing red when active
+ * ============================================================================ */
+#privacy {
+  padding: 0 6px;
+}
+
+#privacy-item {
+  padding: 0 6px;
+  margin: 0 2px;
+  border-radius: 8px;
+  color: @danger_color;
+  background: alpha(@danger_color, 0.18);
+  border: 1px solid alpha(@danger_color, 0.4);
+  box-shadow:
+    0 0 10px alpha(@danger_color, 0.5),
+    inset 0 1px 0 alpha(#ffffff, 0.1);
+  animation: priv-pulse 1.6s ease-in-out infinite alternate;
+}
+
+#privacy-item.screenshare {
+  color: @warning_color;
+  background: alpha(@warning_color, 0.18);
+  border: 1px solid alpha(@warning_color, 0.4);
+  box-shadow: 0 0 10px alpha(@warning_color, 0.5);
+}
+
+#privacy-item.audio-in {
+  color: @danger_color;
+}
+
+#privacy-item.audio-out {
+  color: @info_color;
+  background: alpha(@info_color, 0.15);
+  border: 1px solid alpha(@info_color, 0.35);
+  box-shadow: 0 0 8px alpha(@info_color, 0.45);
+}
+
+@keyframes priv-pulse {
+  to {
+    background: alpha(@danger_color, 0.32);
+    box-shadow:
+      0 0 18px alpha(@danger_color, 0.85),
+      inset 0 1px 0 alpha(#ffffff, 0.2);
+  }
+}
+
+/* ============================================================================
+ * CLOCK — center showpiece
+ * ============================================================================ */
 #clock {
   color: @base05;
-  padding: 2px 8px;
-  border-radius: 8px;
-  background: @base01;
+  padding: 2px 14px;
+  margin: 2px 4px;
+  border-radius: 12px;
   font-weight: 500;
-  box-shadow: 0 2px 4px @base00;
-  border: 1px solid @base03;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.14) 0%,
+      alpha(#ffffff, 0.04) 50%,
+      alpha(#000000, 0.06) 100%),
+    alpha(@base01, 0.65);
+  border: 1px solid alpha(#ffffff, 0.18);
+  box-shadow:
+    0 4px 12px alpha(#000000, 0.5),
+    0 0 18px alpha(@base0D, 0.18),
+    inset 0 1px 0 alpha(#ffffff, 0.18);
+  transition: all 0.3s ease;
 }
 
 #clock:hover {
   color: @base0D;
-  background: @base01;
-  transition: all 0.2s ease-in-out;
-}
-
-#window {
-  color: @base05;
-  padding: 1px 6px;
-  margin: 0 2px;
-  border-radius: 6px;
-  background: @base02;
-  opacity: 0.9;
+  box-shadow:
+    0 4px 16px alpha(#000000, 0.55),
+    0 0 28px alpha(@base0D, 0.5),
+    inset 0 1px 0 alpha(#ffffff, 0.25);
+  border: 1px solid alpha(@base0D, 0.45);
 }
 
 /* ============================================================================
  * CUSTOM MODULES
  * ============================================================================ */
-
 #custom-trayicon {
   color: @base05;
-  font-size: 24px;
-  padding: 0 0 0 8px;
-  margin: 0 4px 0px 2px;
-  border-radius: 6px;
-  background: @base01;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 2px 4px @base00;
+  font-size: 22px;
+  padding: 0 6px 0 10px;
+  margin: 2px 2px 2px 4px;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.10),
+      alpha(#000000, 0.04)),
+    alpha(@base01, 0.65);
+  border: 1px solid alpha(#ffffff, 0.15);
+  box-shadow:
+    0 2px 6px alpha(#000000, 0.4),
+    inset 0 1px 0 alpha(#ffffff, 0.12);
   min-width: 30px;
+  transition: all 0.25s ease;
 }
 
 #custom-trayicon:hover {
   color: @base0A;
-  background: @base02;
-  transition: all 0.2s ease-in-out;
+  background:
+    linear-gradient(180deg,
+      alpha(@base0A, 0.20),
+      alpha(@base0A, 0.05)),
+    alpha(@base01, 0.7);
+  border: 1px solid alpha(@base0A, 0.4);
+  box-shadow:
+    0 0 12px alpha(@base0A, 0.45),
+    inset 0 1px 0 alpha(#ffffff, 0.18);
 }
 
 #custom-separator {
-  color: @base05;
-  padding: 0 4px;
-  margin: 0 2px;
-  border-radius: 6px;
-  opacity: 0.5;
+  color: alpha(@base05, 0.4);
+  padding: 0 2px;
+  margin: 0;
 }
 
-#custom-transparency {
-  color: @base0C;
-  font-size: 18px;
-  padding: 0 10px;
-  margin-right: 2px;
-  border-radius: 6px;
+#tray {
+  padding: 0 4px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
 }
 
 /* ============================================================================
- * POWER CONTROLS - Enhanced drawer styling
+ * POWER GROUP — glass drawer
  * ============================================================================ */
-
 #group-power {
-  background: @base01;
-  border-radius: 8px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.08),
+      alpha(#000000, 0.04)),
+    alpha(@base01, 0.6);
+  border-radius: 10px;
   padding: 1px;
-  margin: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 2px 4px;
+  border: 1px solid alpha(#ffffff, 0.12);
+  box-shadow:
+    0 2px 6px alpha(#000000, 0.35),
+    inset 0 1px 0 alpha(#ffffff, 0.10);
 }
 
 #custom-power,
@@ -449,44 +623,65 @@ menu {
 #custom-quit,
 #custom-reboot {
   color: @base09;
-  background: @base01;
-  padding: 1px 4px;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.06),
+      alpha(#000000, 0.04)),
+    alpha(@base02, 0.55);
+  padding: 1px 8px;
   margin: 1px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.2s ease-in-out;
-  min-width: 20px;
+  border-radius: 8px;
+  border: 1px solid alpha(#ffffff, 0.10);
+  box-shadow: inset 0 1px 0 alpha(#ffffff, 0.10);
+  transition: all 0.2s ease;
+  min-width: 22px;
 }
 
 #custom-power:hover,
 #custom-lock:hover,
 #custom-quit:hover,
 #custom-reboot:hover {
-  background: @base0A;
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.18),
+      alpha(#000000, 0.05)),
+    alpha(@base0A, 0.9);
   color: @base00;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid alpha(#ffffff, 0.3);
+  box-shadow:
+    0 0 12px alpha(@base0A, 0.5),
+    inset 0 1px 0 alpha(#ffffff, 0.3);
 }
 
-/* ============================================================================
- * UNUSED MODULES (for future reference)
- * ============================================================================ */
-
-#custom-cava {
-  color: @base0E;
-  background: @base00;
-  font-family: "bargraph";
-  padding: 6px;
-  margin: 0 2px;
-  border-left: 0;
-  border-right: 0;
+#custom-power:hover {
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.18),
+      alpha(#000000, 0.05)),
+    alpha(@danger_color, 0.9);
+  box-shadow:
+    0 0 12px alpha(@danger_color, 0.55),
+    inset 0 1px 0 alpha(#ffffff, 0.3);
 }
 
-#custom-launcher {
-  color: @base05;
-  background: @base00;
-  font-size: 18px;
-  padding: 0 10px;
-  margin-right: 2px;
-  border-radius: 0 6px 6px 0;
-  transition: none;
+#custom-reboot:hover {
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.18),
+      alpha(#000000, 0.05)),
+    alpha(@info_color, 0.9);
+  box-shadow:
+    0 0 12px alpha(@info_color, 0.5),
+    inset 0 1px 0 alpha(#ffffff, 0.3);
+}
+
+#custom-lock:hover {
+  background:
+    linear-gradient(180deg,
+      alpha(#ffffff, 0.18),
+      alpha(#000000, 0.05)),
+    alpha(@warning_color, 0.9);
+  box-shadow:
+    0 0 12px alpha(@warning_color, 0.5),
+    inset 0 1px 0 alpha(#ffffff, 0.3);
 }

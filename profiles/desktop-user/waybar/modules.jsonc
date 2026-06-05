@@ -1,10 +1,42 @@
 {
   "hyprland/workspaces": {
-    "format": "{icon}",
+    "format": "{icon} {windows}",
+    "format-window-separator": " ",
+    "window-rewrite-default": "",
+    "window-rewrite": {
+      "class<firefox>": "",
+      "class<zen-beta>": "",
+      "class<zen>": "",
+      "class<(.*)Chromium(.*)>": "",
+      "class<(.*)thunar(.*)>": "",
+      "class<(.*)nautilus(.*)>": "",
+      "class<(.*)obs(.*)>": "",
+      "class<(.*)spotify(.*)>": "",
+      "class<(.*)discord(.*)>": "",
+      "class<(.*)Code(.*)>": "󰨞",
+      "class<code>": "󰨞",
+      "class<(.*)cursor(.*)>": "󰨞",
+      "class<(.*)docker(.*)>": "",
+      "class<(.*)ghostty(.*)>": "",
+      "class<(.*)alacritty(.*)>": "",
+      "class<(.*)kitty(.*)>": "",
+      "class<(.*)thunderbird(.*)>": "",
+      "class<(.*)slack(.*)>": "",
+      "class<(.*)Signal(.*)>": "",
+      "class<(.*)telegram(.*)>": "",
+      "class<(.*)vlc(.*)>": "󰕼",
+      "class<(.*)mpv(.*)>": "",
+      "class<(.*)Steam(.*)>": "",
+      "class<(.*)pavucontrol(.*)>": "",
+      "class<(.*)blueman(.*)>": "",
+      "class<(.*)Anytype(.*)>": "",
+      "title<.*github.*>": "",
+      "title<.*youtube.*>": ""
+    },
     "format-icons": {
-      "active": "",
-      "default": "",
-      "empty": ""
+      "active": "",
+      "default": "",
+      "empty": ""
     },
     "persistent-workspaces": {
       "*": 5
@@ -27,30 +59,64 @@
       "com.mitchellh.ghostty": "Ghostty"
     }
   },
+  "mpris": {
+    "format": "{player_icon} {dynamic}",
+    "format-paused": "{status_icon} <i>{dynamic}</i>",
+    "dynamic-len": 32,
+    "dynamic-order": [
+      "title",
+      "artist"
+    ],
+    "interval": 1,
+    "player-icons": {
+      "default": "",
+      "spotify": "",
+      "firefox": "",
+      "zen": "",
+      "mpv": "",
+      "vlc": "󰕼"
+    },
+    "status-icons": {
+      "playing": "",
+      "paused": "",
+      "stopped": ""
+    },
+    "ignored-players": [
+      "firefox",
+      "chromium",
+      "Chromium"
+    ],
+    "tooltip-format": "{player}: {title}\n{artist} — {album}\n\nLeft: play/pause  Right: next  Mid: prev\nScroll: prev/next track",
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-click-middle": "playerctl previous",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous"
+  },
   "cpu": {
     "interval": 2,
-    "format": "{usage}%  ",
-    "max-length": 10,
+    "format": "<span color='#f4c79a'></span>  {usage}%",
+    "max-length": 12,
     "states": {
       "good": 50,
       "warning": 70,
       "critical": 90
     },
-    "on-click": "alacritty -e btop"
+    "on-click": "ghostty -e btop"
   },
   "memory": {
     "interval": 30,
-    "format": "{}% \uefc5 ",
-    "max-length": 10,
+    "format": "<span color='#c5a3f0'></span>  {}%",
+    "max-length": 12,
     "tooltip-format": "Memory: {used:0.1f}GB / {total:0.1f}GB ({percentage}%)\nSwap: {swapUsed:0.1f}GB / {swapTotal:0.1f}GB",
     "states": {
       "warning": 80,
       "critical": 90
     },
-    "on-click": "alacritty -e btop"
+    "on-click": "ghostty -e btop"
   },
   "disk": {
-    "format": "{percentage_used}%  ",
+    "format": "<span color='#90e0a3'></span>  {percentage_used}%",
     "states": {
       "mounted": 0,
       "warning": 70,
@@ -60,29 +126,39 @@
   },
   "temperature": {
     "interval": 3,
-    "hwmon-path": "/sys/class/hwmon/hwmon6/temp1_input",
-    "critical-threshold": 80,
-    "format": "{temperatureC}°C ",
-    "format-critical": "{temperatureC}°C ",
+    "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+    "input-filename": "temp1_input",
+    "critical-threshold": 90,
+    "format": "<span color='#a3c5f0'></span>  {temperatureC}°C",
+    "format-critical": "<span color='#f5a3a3'></span>  {temperatureC}°C",
     "tooltip-format": "CPU Temperature: {temperatureC}°C\nCritical threshold: 80°C\nClick to open btop",
     "states": {
       "good": 60,
       "warning": 70,
       "critical": 80
     },
-    "on-click": "alacritty -e btop"
+    "on-click": "ghostty -e btop"
   },
   "custom/gpu-temp": {
     "interval": 3,
     "exec": "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null || echo 'N/A'",
-    "format": "{}°C ",
+    "format": "<span color='#d9a3c5'></span>  {}°C",
     "tooltip": true,
     "tooltip-format": "NVIDIA RTX 4060 GPU Temperature: {}°C\nClick to open nvidia-smi",
-    "on-click": "alacritty -e nvidia-smi -l 1"
+    "on-click": "ghostty -e nvidia-smi -l 1"
+  },
+  "custom/weather": {
+    "interval": 1800,
+    "exec": "curl -s --max-time 5 'https://wttr.in/?format=%c+%t' 2>/dev/null | sed 's/+//g' || echo '󰼯'",
+    "return-type": "",
+    "format": "{}",
+    "tooltip": true,
+    "tooltip-format": "Weather (wttr.in)\nClick: full forecast",
+    "on-click": "ghostty -e sh -c 'curl https://wttr.in; read'"
   },
   "clock": {
     "interval": 1,
-    "format": "  {:%H:%M %Z / %h %d}",
+    "format": "  {:%H:%M %Z / %h %d}",
     "format-alt": "{:%A, %B %d, %Y (%R) %Z}",
     "timezones": [
       "America/New_York",
@@ -121,15 +197,15 @@
     ],
     "format-disconnected": "󰪎",
     "interval": 5,
-    "tooltip-format-wifi": " {bandwidthDownBytes} |  {bandwidthUpBytes} | {essid}",
+    "tooltip-format-wifi": " {bandwidthDownBytes} |  {bandwidthUpBytes} | {essid}",
     "tooltip-format-disconnected": "Disconnected",
     "on-click": "~/.local/bin/rofi-wifi.py"
   },
   "network#speed": {
     "interval": 1,
     "format": "{ifname}",
-    "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes}",
-    "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes}",
+    "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
     "format-disconnected": "󰌙",
     "tooltip-format": "{ipaddr}",
     "format-linked": "󰈁 {ifname} (No IP)",
@@ -186,6 +262,39 @@
     "tooltip-format-activated": "Idle inhibitor: ON (preventing sleep/lock)",
     "tooltip-format-deactivated": "Idle inhibitor: OFF (sleep/lock allowed)"
   },
+  "privacy": {
+    "icon-spacing": 6,
+    "icon-size": 14,
+    "transition-duration": 250,
+    "modules": [
+      {
+        "type": "screenshare",
+        "tooltip": true,
+        "tooltip-icon-size": 24
+      },
+      {
+        "type": "audio-in",
+        "tooltip": true,
+        "tooltip-icon-size": 24
+      },
+      {
+        "type": "audio-out",
+        "tooltip": true,
+        "tooltip-icon-size": 24
+      }
+    ],
+    "ignore-monitor": true,
+    "ignore": [
+      {
+        "type": "audio-in",
+        "name": "cava"
+      },
+      {
+        "type": "audio-out",
+        "name": "Easy Effects Sink"
+      }
+    ]
+  },
   // SECTION: Custom Modules
   // ------------------------
   "custom/trayicon": {
@@ -202,7 +311,7 @@
     "format": "󰗼",
     "tooltip-format": "Quit Hyprland",
     "tooltip": true,
-    "on-click": "hyprctl dispatch exit"
+    "on-click": "sh -c \"printf 'No\\nYes\\n' | rofi -dmenu -p 'Quit Hyprland?' | grep -qx Yes && hyprctl dispatch exit\""
   },
   "custom/lock": {
     "format": "󰍁",
@@ -214,13 +323,13 @@
     "format": "󰜉",
     "tooltip-format": "Reboot System",
     "tooltip": true,
-    "on-click": "reboot"
+    "on-click": "sh -c \"printf 'No\\nYes\\n' | rofi -dmenu -p 'Reboot?' | grep -qx Yes && systemctl reboot\""
   },
   "custom/power": {
     "format": "",
     "tooltip-format": "Shutdown System",
     "tooltip": true,
-    "on-click": "shutdown now"
+    "on-click": "sh -c \"printf 'No\\nYes\\n' | rofi -dmenu -p 'Shutdown?' | grep -qx Yes && systemctl poweroff\""
   },
   // SECTION: Audio & Brightness Modules
   // ------------------------------------

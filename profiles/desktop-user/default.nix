@@ -26,6 +26,7 @@
       grim
       nautilus
       pavucontrol
+      playerctl
       slurp
       solaar
       thunderbird
