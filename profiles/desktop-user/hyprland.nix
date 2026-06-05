@@ -99,6 +99,14 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, W, exec, wallctl.py next"
         "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
+        # Rofi launchers
+        "$mod, X, exec, rofi-power.sh"
+        "$mod, W, exec, rofi-wifi.py"
+        "$mod, B, exec, rofi-bluetooth.sh"
+        "$mod, semicolon, exec, rofi -show emoji"
+        "$mod, equal, exec, rofi -show calc -no-show-match -no-sort"
+        "$mod, Tab, exec, rofi -show window"
+
         "CTRL ALT, S, exec, grim -g \"$(slurp)\" - | wl-copy"
 
         "$mod, comma, focusmonitor, -1"

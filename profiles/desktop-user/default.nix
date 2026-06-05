@@ -8,6 +8,7 @@
     ./themes.nix
     ./hyprland.nix
     ./waybar.nix
+    ./rofi.nix
     ./browser.nix
     ./lock.nix
     ./clipboard.nix
@@ -41,8 +42,6 @@
       recursive = true;
       executable = true;
     };
-
-    programs.rofi.enable = true;
 
     services.blueman-applet.enable = true;
 

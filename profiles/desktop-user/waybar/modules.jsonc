@@ -323,29 +323,11 @@
     "format": " // ",
     "tooltip": false
   },
-  "custom/quit": {
-    "format": "󰗼",
-    "tooltip-format": "Quit Hyprland",
+  "custom/power-menu": {
+    "format": "",
+    "tooltip-format": "Power menu (rofi)\nSuper+X",
     "tooltip": true,
-    "on-click": "sh -c \"printf 'No\\nYes\\n' | rofi -dmenu -p 'Quit Hyprland?' | grep -qx Yes && hyprctl dispatch exit\""
-  },
-  "custom/lock": {
-    "format": "󰍁",
-    "tooltip-format": "Lock Screen",
-    "tooltip": true,
-    "on-click": "hyprlock"
-  },
-  "custom/reboot": {
-    "format": "󰜉",
-    "tooltip-format": "Reboot System",
-    "tooltip": true,
-    "on-click": "sh -c \"printf 'No\\nYes\\n' | rofi -dmenu -p 'Reboot?' | grep -qx Yes && systemctl reboot\""
-  },
-  "custom/power": {
-    "format": "",
-    "tooltip-format": "Shutdown System",
-    "tooltip": true,
-    "on-click": "sh -c \"printf 'No\\nYes\\n' | rofi -dmenu -p 'Shutdown?' | grep -qx Yes && systemctl poweroff\""
+    "on-click": "rofi-power.sh"
   },
   // SECTION: Audio & Brightness Modules
   // ------------------------------------

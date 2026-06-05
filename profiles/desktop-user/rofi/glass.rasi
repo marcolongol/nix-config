@@ -1,0 +1,115 @@
+/*
+ * Glass theme — matches the waybar glassmorphism look.
+ * Hyprland's blur layer adds the actual backdrop blur; rasi just sets
+ * translucent backgrounds and layered borders.
+ */
+
+* {
+    bg-base:        #1a1c2099;   /* translucent dark base */
+    bg-elev:        #2a2d35cc;   /* selected / input pill  */
+    fg:             #e8e8ea;
+    fg-dim:         #b8bcc8;
+    accent:         #a3c5f0;     /* periwinkle — matches CPU-temp icon */
+    accent-soft:    #a3c5f033;
+    urgent-color:   #f5a3a3;
+    border-light:   #ffffff22;
+    font:           "JetBrainsMono Nerd Font 11";
+    background-color: transparent;
+    text-color:     @fg;
+}
+
+window {
+    transparency:     "real";
+    location:         center;
+    anchor:           center;
+    width:            520px;
+    border:           1px;
+    border-color:     @border-light;
+    border-radius:    14px;
+    background-color: @bg-base;
+    padding:          10px;
+    children:         [ mainbox ];
+}
+
+mainbox {
+    spacing:          8px;
+    children:         [ inputbar, listview ];
+    background-color: transparent;
+}
+
+inputbar {
+    children:         [ prompt, entry ];
+    padding:          8px 12px;
+    spacing:          8px;
+    border:           1px;
+    border-color:     @border-light;
+    border-radius:    10px;
+    background-color: @bg-elev;
+}
+
+prompt {
+    text-color: @accent;
+    font:       "JetBrainsMono Nerd Font Bold 11";
+}
+
+entry {
+    placeholder:        "type to filter…";
+    placeholder-color:  @fg-dim;
+    cursor-color:       @accent;
+    cursor-width:       2px;
+    text-color:         @fg;
+    background-color:   transparent;
+}
+
+listview {
+    lines:            8;
+    columns:          1;
+    spacing:          4px;
+    fixed-height:     true;
+    dynamic:          true;
+    scrollbar:        false;
+    background-color: transparent;
+}
+
+element {
+    padding:          6px 10px;
+    spacing:          8px;
+    border-radius:    8px;
+    orientation:      horizontal;
+    children:         [ element-icon, element-text ];
+    background-color: transparent;
+}
+
+element-icon {
+    size:             1.4em;
+    vertical-align:   0.5;
+    background-color: transparent;
+}
+
+element-text {
+    vertical-align:   0.5;
+    text-color:       @fg;
+    highlight:        bold #a3c5f0;
+    background-color: transparent;
+}
+
+element selected.normal {
+    background-color: @accent-soft;
+    text-color:       @fg;
+    border:           1px;
+    border-color:     @accent;
+}
+
+element urgent {
+    text-color: @urgent-color;
+}
+
+element active {
+    text-color: @accent;
+}
+
+/* dmenu mode (used by power/bluetooth/wifi scripts) — slightly narrower */
+@media ( enabled: DMENU ) {
+    window { width: 380px; }
+    listview { lines: 6; }
+}
