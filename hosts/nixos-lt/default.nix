@@ -37,7 +37,9 @@ in {
     # Built-in smoke test — reachable at https://whoami.nixos-lt.marcolongo.dev/.
     # Flip to false once your own demo apps are wired in via `apps = {...}`.
     whoami.enable = true;
-    apps = {};
+    apps = {
+      demo = 4200;
+    };
   };
 
   hostUsers = {
