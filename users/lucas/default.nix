@@ -100,6 +100,14 @@ in {
     ".config/anytype"
   ];
 
+  # cloudflared origin certificate from `cloudflared tunnel login`.
+  # Per-tunnel credentials JSON lives in sops; cert.pem is only used by
+  # the cloudflared CLI to manage tunnels in this Cloudflare account, so
+  # persisting just the file keeps stray <UUID>.json files out of /persist.
+  persistentFiles = [
+    ".cloudflared/cert.pem"
+  ];
+
   sops = {
     secrets = {
       user-secret = {};

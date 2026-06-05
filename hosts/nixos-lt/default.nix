@@ -1,4 +1,8 @@
-{config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
 in {
   system.stateVersion = "25.11";
@@ -16,6 +20,24 @@ in {
     impermanent.enable = true;
     gaming.enable = true;
     docker.enable = true;
+  };
+
+  # Cloudflare tunnel for ad-hoc demo hosting. Setup (do once):
+  #   1. `nix shell nixpkgs#cloudflared`
+  #   2. `cloudflared tunnel login` -> browser auth
+  #   3. `cloudflared tunnel create nixos-lt` -> copy UUID into tunnelId
+  #   4. `sops secrets/nixos-lt.yaml` -> add key `cloudflared-credentials`
+  #      with the full JSON content of `~/.cloudflared/<UUID>.json`
+  #   5. In Cloudflare DNS: CNAME `*.nixos-lt` -> `<UUID>.cfargotunnel.com`
+  #   6. Flip `enable = true` below and add apps.
+  services.cloudflare-tunnel = {
+    enable = true;
+    tunnelId = "93fec6bb-b9db-43d3-a290-953d830d1ace";
+    domain = "nixos-lt.marcolongo.dev";
+    # Built-in smoke test — reachable at https://whoami.nixos-lt.marcolongo.dev/.
+    # Flip to false once your own demo apps are wired in via `apps = {...}`.
+    whoami.enable = true;
+    apps = {};
   };
 
   hostUsers = {
