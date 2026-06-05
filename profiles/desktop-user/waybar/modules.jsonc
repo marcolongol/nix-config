@@ -30,6 +30,25 @@
       "class<(.*)pavucontrol(.*)>": "",
       "class<(.*)blueman(.*)>": "",
       "class<(.*)Anytype(.*)>": "",
+      "class<(.*)remmina(.*)>": "",
+      "class<(.*)Remmina(.*)>": "",
+      "class<(.*)teams(.*)>": "",
+      "class<(.*)Teams(.*)>": "",
+      "class<(.*)zoom(.*)>": "",
+      "class<(.*)Zoom(.*)>": "",
+      "class<(.*)obsidian(.*)>": "",
+      "class<(.*)Obsidian(.*)>": "",
+      "class<(.*)jetbrains(.*)>": "",
+      "class<(.*)IntelliJ(.*)>": "",
+      "class<(.*)PyCharm(.*)>": "",
+      "class<(.*)GoLand(.*)>": "",
+      "class<(.*)WebStorm(.*)>": "",
+      "class<(.*)libreoffice(.*)>": "",
+      "class<(.*)Bitwarden(.*)>": "",
+      "class<(.*)bitwarden(.*)>": "",
+      "class<(.*)Element(.*)>": "",
+      "class<(.*)element(.*)>": "",
+      "class<(.*)1Password(.*)>": "",
       "title<.*github.*>": "",
       "title<.*youtube.*>": ""
     },
@@ -37,9 +56,6 @@
       "active": "",
       "default": "",
       "empty": ""
-    },
-    "persistent-workspaces": {
-      "*": 5
     }
   },
   "hyprland/window": {
