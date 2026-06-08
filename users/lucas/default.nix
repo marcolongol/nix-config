@@ -98,6 +98,7 @@ in {
     ".local/share/Steam"
     ".config/spotify"
     ".config/anytype"
+    ".config/Signal"
   ];
 
   # cloudflared origin certificate from `cloudflared tunnel login`.
