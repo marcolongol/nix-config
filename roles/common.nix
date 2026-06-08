@@ -83,6 +83,12 @@
       udisks2.enable = true;
       devmon.enable = true;
       pcscd.enable = true;
+      fstrim.enable = true;
+      # Cap journal disk usage and retention so logs don't grow unbounded
+      journald.extraConfig = ''
+        SystemMaxUse=2G
+        MaxRetentionSec=1month
+      '';
       udev.packages = [ pkgs.yubikey-personalization ];
       comin = {
         enable = true;
@@ -99,6 +105,23 @@
     boot.zfs.forceImportRoot = false;
     boot.loader.systemd-boot.configurationLimit = 10;
 
+    boot.tmp = {
+      useTmpfs = true;
+      tmpfsSize = "50%";
+      cleanOnBoot = true;
+    };
+
+    systemd.oomd = {
+      enable = true;
+      enableRootSlice = true;
+      enableUserSlices = true;
+    };
+
+    documentation = {
+      man.enable = true;
+      dev.enable = true;
+    };
+
     nix.settings = {
       experimental-features = ["nix-command" "flakes"];
       auto-optimise-store = true;
@@ -107,7 +130,7 @@
     nix.gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d";
+      options = "--delete-older-than 7d --max-freed $((10 * 1024 * 1024 * 1024))";
     };
 
     users.defaultUserShell = pkgs.zsh;
