@@ -83,8 +83,8 @@
       udisks2.enable = true;
       devmon.enable = true;
       pcscd.enable = true;
-      fstrim.enable = true;
       # Cap journal disk usage and retention so logs don't grow unbounded
+      # (docker logs ship here too via logDriver = "journald").
       journald.extraConfig = ''
         SystemMaxUse=2G
         MaxRetentionSec=1month
@@ -104,6 +104,8 @@
 
     boot.zfs.forceImportRoot = false;
     boot.loader.systemd-boot.configurationLimit = 10;
+    # Quiet, low-verbosity boot. Hosts can append to this list as needed.
+    boot.kernelParams = ["loglevel=3" "quiet"];
 
     boot.tmp = {
       useTmpfs = true;
