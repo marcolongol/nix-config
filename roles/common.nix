@@ -20,7 +20,6 @@
         wifi.macAddress = "random";
         ethernet.macAddress = "random";
         wifi.scanRandMacAddress = true;
-        # Hand DNS to systemd-resolved (DoT, see services.resolved below).
         dns = "systemd-resolved";
       };
       firewall = {
@@ -54,12 +53,14 @@
       # Fallback resolvers carry #hostname for cert validation.
       resolved = {
         enable = true;
-        dnssec = "true";
-        dnsovertls = "opportunistic";
-        fallbackDns = [
-          "1.1.1.1#cloudflare-dns.com"
-          "9.9.9.9#dns.quad9.net"
-        ];
+        settings.Resolve = {
+          DNSSEC = "allow-downgrade";
+          DNSOverTLS = "opportunistic";
+          FallbackDNS = [
+            "1.1.1.1#cloudflare-dns.com"
+            "9.9.9.9#dns.quad9.net"
+          ];
+        };
       };
       avahi = {
         enable = true;
