@@ -15,6 +15,7 @@ in {
     environment.systemPackages = [
       sddm-astronaut
       pkgs.bibata-cursors
+      pkgs.playerctl
     ];
 
     programs.hyprland = {
@@ -45,6 +46,9 @@ in {
 
     services = {
       printing.enable = lib.mkDefault true;
+      # colord answers CUPS' color-management D-Bus calls. Without it,
+      # cupsd spews "CreateProfile failed: ServiceUnknown" at boot.
+      colord.enable = lib.mkDefault true;
       blueman = {
         enable = lib.mkDefault true;
         # NixOS-generated drop-in collides with upstream blueman-applet.service
@@ -81,8 +85,32 @@ in {
 
     xdg.portal = {
       enable = true;
-      extraPortals = [pkgs.xdg-desktop-portal-hyprland];
-      config.common.default = "*";
+      # gtk portal serves org.freedesktop.portal.Settings (appearance, fonts,
+      # color-scheme). Hyprland portal alone leaves that interface absent,
+      # which breaks waybar's dark-mode detection and GTK app theming.
+      extraPortals = [
+        pkgs.xdg-desktop-portal-hyprland
+        pkgs.xdg-desktop-portal-gtk
+      ];
+      config.common = {
+        default = ["hyprland" "gtk"];
+        "org.freedesktop.impl.portal.Settings" = ["gtk"];
+      };
+    };
+
+    # Long-running MPRIS dispatcher. Waybar's mpris module polls a player
+    # name on D-Bus; without playerctld answering, every poll logs
+    # "Unable to replace properties on 0". With it active, the module is
+    # quiet and seamlessly switches between players (spotify, mpv, browser).
+    systemd.user.services.playerctld = {
+      description = "MPRIS dispatcher daemon (playerctld)";
+      wantedBy = ["graphical-session.target"];
+      partOf = ["graphical-session.target"];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.playerctl}/bin/playerctld daemon";
+        Restart = "on-failure";
+      };
     };
 
     security.rtkit.enable = true;

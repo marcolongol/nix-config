@@ -26,11 +26,6 @@
         CPU_BOOST_ON_AC = 1;
         CPU_BOOST_ON_BAT = 0;
 
-        # ACPI platform profile drives firmware-side thermal/perf tuning;
-        # HP Victus exposes performance/balanced/low-power.
-        PLATFORM_PROFILE_ON_AC = "performance";
-        PLATFORM_PROFILE_ON_BAT = "low-power";
-
         # WiFi power save on battery only; off on AC for stable latency.
         WIFI_PWR_ON_AC = "off";
         WIFI_PWR_ON_BAT = "on";
