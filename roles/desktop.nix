@@ -45,7 +45,13 @@ in {
     };
 
     services = {
-      printing.enable = lib.mkDefault true;
+      printing = {
+        enable = lib.mkDefault true;
+        # Auto-discover IPP/mDNS printers on the current LAN. Pairs with
+        # hardware.printers.ensurePrinters: known printers get stable queue
+        # names; unknown ones (hotels, coworking, etc.) appear automatically.
+        browsed.enable = lib.mkDefault true;
+      };
       # colord answers CUPS' color-management D-Bus calls. Without it,
       # cupsd spews "CreateProfile failed: ServiceUnknown" at boot.
       colord.enable = lib.mkDefault true;

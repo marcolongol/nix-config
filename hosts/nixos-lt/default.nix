@@ -46,6 +46,19 @@ in {
     lucas.enable = true;
   };
 
+  # Networked printer at coworking space (driverless / IPP Everywhere).
+  hardware.printers = {
+    ensurePrinters = [
+      {
+        name = "Epson_ET4950";
+        location = "EpsonSpot";
+        deviceUri = "ipp://EPSONSPOT.local/ipp/print";
+        model = "everywhere";
+      }
+    ];
+    ensureDefaultPrinter = "Epson_ET4950";
+  };
+
   # Monitor layout and workspace bindings
   # eDP-1: Chimei Innolux 1920x1080, built-in display, max refresh 144Hz, primary
   # DP-2: Samsung SMS27A350H 1920x1080, secondary via HP USB-C dock, positioned to the right at 60Hz
