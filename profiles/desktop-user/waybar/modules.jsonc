@@ -269,14 +269,13 @@
       "󰁹"
     ]
   },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "󰅶",
-      "deactivated": "󰾪"
-    },
-    "tooltip-format-activated": "Idle inhibitor: ON (preventing sleep/lock)",
-    "tooltip-format-deactivated": "Idle inhibitor: OFF (sleep/lock allowed)"
+  "custom/inhibit": {
+    "format": "{}",
+    "return-type": "json",
+    "exec": "inhibit-toggle.sh status",
+    "on-click": "inhibit-toggle.sh toggle",
+    "signal": 11,
+    "interval": "once"
   },
   "privacy": {
     "icon-spacing": 6,

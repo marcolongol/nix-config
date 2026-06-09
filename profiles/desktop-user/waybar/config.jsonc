@@ -30,7 +30,7 @@
     "backlight",
     "bluetooth",
     "network",
-    "idle_inhibitor",
+    "custom/inhibit",
     "battery",
     "custom/separator",
     "custom/power-menu"

@@ -331,7 +331,7 @@ tooltip label {
 #bluetooth,
 #wireplumber,
 #backlight,
-#idle_inhibitor,
+#custom-inhibit,
 #battery,
 #custom-weather,
 #privacy {
@@ -357,7 +357,7 @@ tooltip label {
 #bluetooth:hover,
 #wireplumber:hover,
 #backlight:hover,
-#idle_inhibitor:hover,
+#custom-inhibit:hover,
 #battery:hover,
 #custom-weather:hover {
   color: @base07;
@@ -410,13 +410,13 @@ tooltip label {
 }
 
 /* ============================================================================
- * IDLE INHIBITOR
+ * INHIBIT TOGGLE (systemd-inhibit: idle, sleep, lid)
  * ============================================================================ */
-#idle_inhibitor {
+#custom-inhibit {
   color: @neutral_color;
 }
 
-#idle_inhibitor.activated {
+#custom-inhibit.activated {
   color: @base00;
   background:
     linear-gradient(180deg,
