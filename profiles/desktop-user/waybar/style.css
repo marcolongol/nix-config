@@ -16,11 +16,30 @@
 
 /* ---- BASE ---- */
 * {
-  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", sans-serif;
+  font-family: "MesloLGS Nerd Font", sans-serif;
   font-size: 13px;
   min-height: 0;
   border: none;
   border-radius: 0;
+}
+
+/* Bar height: window/config height are ignored, content drives it. */
+.modules-left,
+.modules-center,
+.modules-right {
+  min-height: 36px;
+}
+
+/* Icon-only modules: Mono variant keeps glyph ink inside its advance box,
+ * so GTK centers icons correctly (non-Mono icons overflow to the right). */
+#custom-trayicon,
+#network,
+#bluetooth,
+#custom-inhibit,
+#battery,
+#custom-notification,
+#custom-power-menu {
+  font-family: "MesloLGS Nerd Font Mono";
 }
 
 window#waybar {
@@ -332,6 +351,7 @@ tooltip label {
 #wireplumber,
 #backlight,
 #custom-inhibit,
+#custom-notification,
 #battery,
 #custom-weather,
 #privacy {
@@ -358,6 +378,7 @@ tooltip label {
 #wireplumber:hover,
 #backlight:hover,
 #custom-inhibit:hover,
+#custom-notification:hover,
 #battery:hover,
 #custom-weather:hover {
   color: @base07;
@@ -386,6 +407,21 @@ tooltip label {
   color: @info_color;
 }
 #bluetooth.disabled {
+  color: @neutral_color;
+}
+
+/* ---- notification states ---- */
+#custom-notification {
+  color: @base05;
+}
+#custom-notification.notification,
+#custom-notification.inhibited-notification {
+  color: @warning_color;
+}
+#custom-notification.dnd-none,
+#custom-notification.dnd-notification,
+#custom-notification.dnd-inhibited-none,
+#custom-notification.dnd-inhibited-notification {
   color: @neutral_color;
 }
 
@@ -553,7 +589,7 @@ tooltip label {
 #custom-trayicon {
   color: @base05;
   font-size: 22px;
-  padding: 0 6px 0 10px;
+  padding: 0 8px;
   margin: 2px 2px 2px 4px;
   border-radius: 10px;
   background:

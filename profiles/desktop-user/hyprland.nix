@@ -99,6 +99,8 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, W, exec, wallctl.py next"
         "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
+        "$mod, N, exec, swaync-client -t -sw"
+
         # Rofi launchers
         "$mod, X, exec, rofi-power.sh"
         "$mod, W, exec, rofi-wifi.py"

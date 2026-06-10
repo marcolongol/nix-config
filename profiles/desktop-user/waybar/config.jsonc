@@ -2,7 +2,7 @@
   "layer": "top",
   "position": "top",
   "name": "nixbar",
-  "height": "32px",
+  "height": 36,
   "spacing": 0,
   "reload_style_on_change": true,
   "modules-left": [
@@ -32,6 +32,7 @@
     "network",
     "custom/inhibit",
     "battery",
+    "custom/notification",
     "custom/separator",
     "custom/power-menu"
   ],
@@ -50,11 +51,5 @@
       "custom/trayicon",
       "tray"
     ]
-  },
-  "custom/power-menu": {
-    "format": "",
-    "tooltip-format": "Power menu (rofi)\nSuper+X",
-    "tooltip": true,
-    "on-click": "rofi-power.sh"
   }
 }

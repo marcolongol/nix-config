@@ -174,7 +174,7 @@
   },
   "clock": {
     "interval": 1,
-    "format": "  {:%H:%M %Z / %h %d}",
+    "format": "  {:%H:%M %Z / %h %d}",
     "format-alt": "{:%A, %B %d, %Y (%R) %Z}",
     "timezones": [
       "America/New_York",
@@ -202,26 +202,26 @@
     }
   },
   "network": {
-    "format-wifi": " {icon}",
+    "format-wifi": "{icon}",
     "format-ethernet": "󰈀",
     "format-icons": [
-      "󰤯 ",
-      "󰤟 ",
-      "󰤢 ",
-      "󰤢 ",
-      "󰤨 "
+      "󰤯",
+      "󰤟",
+      "󰤢",
+      "󰤢",
+      "󰤨"
     ],
     "format-disconnected": "󰪎",
     "interval": 5,
-    "tooltip-format-wifi": " {bandwidthDownBytes} |  {bandwidthUpBytes} | {essid}",
+    "tooltip-format-wifi": " {bandwidthDownBytes} |  {bandwidthUpBytes} | {essid}",
     "tooltip-format-disconnected": "Disconnected",
     "on-click": "~/.local/bin/rofi-wifi.py"
   },
   "network#speed": {
     "interval": 1,
     "format": "{ifname}",
-    "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes}",
-    "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-wifi": " {bandwidthDownBytes}   {bandwidthUpBytes}",
+    "format-ethernet": " {bandwidthDownBytes}   {bandwidthUpBytes}",
     "format-disconnected": "󰌙",
     "tooltip-format": "{ipaddr}",
     "format-linked": "󰈁 {ifname} (No IP)",
@@ -269,6 +269,26 @@
       "󰁹"
     ]
   },
+  "custom/notification": {
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "󱅫",
+      "none": "󰂚",
+      "dnd-notification": "󰂛",
+      "dnd-none": "󰂛",
+      "inhibited-notification": "󱅫",
+      "inhibited-none": "󰂚",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰂛"
+    },
+    "return-type": "json",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true,
+    "tooltip-format": "Notifications\nLeft: panel (Super+N)  Right: DND toggle",
+    "tooltip": true
+  },
   "custom/inhibit": {
     "format": "{}",
     "return-type": "json",
@@ -313,7 +333,7 @@
   // SECTION: Custom Modules
   // ------------------------
   "custom/trayicon": {
-    "format": "󱄅 ",
+    "format": "󱄅",
     "tooltip": true,
     "tooltip-format": "Application Launcher\nClick: open rofi",
     "on-click": "rofi -show drun -show-icons"
@@ -323,7 +343,7 @@
     "tooltip": false
   },
   "custom/power-menu": {
-    "format": "",
+    "format": "󰐥",
     "tooltip-format": "Power menu (rofi)\nSuper+X",
     "tooltip": true,
     "on-click": "rofi-power.sh"

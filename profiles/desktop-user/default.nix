@@ -12,6 +12,7 @@
     ./browser.nix
     ./lock.nix
     ./clipboard.nix
+    ./notifications.nix
     ./wayvnc.nix
   ];
 
