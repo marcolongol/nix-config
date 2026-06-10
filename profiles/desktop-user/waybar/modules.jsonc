@@ -205,13 +205,13 @@
     "format-wifi": "{icon}",
     "format-ethernet": "󰈀",
     "format-icons": [
-      "󰤯",
-      "󰤟",
-      "󰤢",
-      "󰤢",
-      "󰤨"
+      "󰢼",
+      "󰢼",
+      "󰢽",
+      "󰢽",
+      "󰢾"
     ],
-    "format-disconnected": "󰪎",
+    "format-disconnected": "󰞃",
     "interval": 5,
     "tooltip-format-wifi": " {bandwidthDownBytes} |  {bandwidthUpBytes} | {essid}",
     "tooltip-format-disconnected": "Disconnected",
