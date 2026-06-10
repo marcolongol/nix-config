@@ -32,6 +32,7 @@ in {
       sddm-astronaut
       pkgs.bibata-cursors
       pkgs.playerctl
+      pkgs.seahorse
     ];
 
     programs.hyprland = {
@@ -61,6 +62,11 @@ in {
     };
 
     services = {
+      # Secret Service daemon (org.freedesktop.secrets). Apps like Anytype
+      # (via libsecret) persist their vault key here instead of prompting
+      # every boot. The login keyring is unlocked by the SDDM password via
+      # pam_gnome_keyring (enabled below). seahorse is the GUI to inspect it.
+      gnome.gnome-keyring.enable = true;
       printing = {
         enable = lib.mkDefault true;
         # Auto-discover IPP/mDNS printers on the current LAN. Pairs with
@@ -129,6 +135,11 @@ in {
         Restart = "on-failure";
       };
     };
+
+    # Unlock the login keyring with the password typed at the SDDM greeter.
+    # pam_ssh_agent_auth (yubikey touch) bypasses this, so keep typing your
+    # password at the display manager for the keyring to auto-unlock.
+    security.pam.services.sddm.enableGnomeKeyring = true;
 
     security.rtkit.enable = true;
     hardware.graphics.enable = true;
