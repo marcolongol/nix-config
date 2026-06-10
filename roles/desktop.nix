@@ -2,12 +2,28 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   sddm-astronaut = pkgs.sddm-astronaut.override {
     # embeddedTheme = "black_hole";
   };
   activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+
+  # Wallpaper rotation: deterministic pick from ./wallpapers/ based on flake
+  # lastModified. Each comin sync produces a new timestamp -> new index ->
+  # different wallpaper + theme. Pure-Nix friendly, no runtime daemon.
+  wallpaperDir = inputs.self + "/wallpapers";
+  wallpaperFiles = lib.pipe (builtins.readDir wallpaperDir) [
+    (lib.filterAttrs (n: t:
+      t
+      == "regular"
+      && builtins.any (ext: lib.hasSuffix ext (lib.toLower n)) [".jpg" ".jpeg" ".png" ".webp"]))
+    lib.attrNames
+    (builtins.sort builtins.lessThan)
+  ];
+  wallpaperIndex = lib.mod inputs.self.lastModified (builtins.length wallpaperFiles);
+  selectedWallpaper = wallpaperDir + "/${builtins.elemAt wallpaperFiles wallpaperIndex}";
 in {
   options.roles.desktop.enable = lib.mkEnableOption "desktop environment (Hyprland, SDDM, Pipewire)";
 
@@ -170,10 +186,7 @@ in {
 
     stylix = {
       enable = true;
-      image = pkgs.fetchurl {
-        url = "https://w.wallhaven.cc/full/96/wallhaven-96gkyx.jpg";
-        hash = "sha256-BK0u8EJcy5pd9KF891joEqcIWixWid8Ce+GZoL1HSko=";
-      };
+      image = selectedWallpaper;
       autoEnable = true;
       polarity = "dark";
       cursor = {
