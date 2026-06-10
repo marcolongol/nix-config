@@ -125,6 +125,49 @@ in {
     hardware.logitech.wireless.enable = true;
     hardware.logitech.wireless.enableGraphical = true;
 
+    # MX Master 3: thumb gesture button (CID 0xc3) -> workspace switching.
+    # Emits Super+Ctrl+Left/Right, bound in hyprland.nix.
+    services.logiops = {
+      enable = true;
+      config = {
+        devices = [
+          {
+            name = "Wireless Mouse MX Master 3";
+            buttons = [
+              {
+                cid = 195; # 0xc3 gesture button
+                action = {
+                  type = "Gestures";
+                  gestures = [
+                    {
+                      direction = "Right";
+                      mode = "OnRelease";
+                      action = {
+                        type = "Keypress";
+                        keys = ["KEY_LEFTMETA" "KEY_LEFTCTRL" "KEY_RIGHT"];
+                      };
+                    }
+                    {
+                      direction = "Left";
+                      mode = "OnRelease";
+                      action = {
+                        type = "Keypress";
+                        keys = ["KEY_LEFTMETA" "KEY_LEFTCTRL" "KEY_LEFT"];
+                      };
+                    }
+                    {
+                      direction = "None";
+                      mode = "NoPress";
+                    }
+                  ];
+                };
+              }
+            ];
+          }
+        ];
+      };
+    };
+
     stylix = {
       enable = true;
       image = pkgs.fetchurl {

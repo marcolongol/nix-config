@@ -111,6 +111,10 @@ lib.mkIf config.profiles.desktopUser.enable {
 
         "CTRL ALT, S, exec, grim -g \"$(slurp)\" - | wl-copy"
 
+        # Workspace prev/next (also emitted by MX Master gesture button via logiops)
+        "$mod CTRL, right, workspace, e+1"
+        "$mod CTRL, left, workspace, e-1"
+
         "$mod, comma, focusmonitor, -1"
         "$mod, period, focusmonitor, +1"
         "$mod SHIFT, comma, movewindow, mon:-1"
