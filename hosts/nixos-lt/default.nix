@@ -61,13 +61,13 @@ in {
 
   # Monitor layout and workspace bindings
   # eDP-1: Chimei Innolux 1920x1080, built-in display, max refresh 144Hz, primary
-  # DP-2: Samsung SMS27A350H 1920x1080, secondary via HP USB-C dock, positioned to the right at 60Hz
+  # DP-2: Samsung SMS27A350H 1920x1080, secondary via HP USB-C dock, positioned to the left at 60Hz (panel max)
   # Workspaces 1-5 on eDP-1 (primary), 6-10 on DP-2 (secondary)
   home-manager.users = lib.genAttrs activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
-        "eDP-1,1920x1080@144,0x0,1"
-        "DP-2,1920x1080@60,1920x0,1"
+        "DP-2,1920x1080@60,0x0,1"
+        "eDP-1,1920x1080@144,1920x0,1"
       ];
       workspace = [
         "1, monitor:eDP-1"
