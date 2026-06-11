@@ -31,7 +31,7 @@
   };
 
   hardware = {
-    enableRedistributableFirmware = true;
+    enableAllFirmware = true;
 
     bluetooth = {
       enable = true;
