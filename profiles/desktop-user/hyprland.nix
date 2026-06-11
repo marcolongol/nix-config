@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 lib.mkIf config.profiles.desktopUser.enable {
@@ -13,6 +14,9 @@ lib.mkIf config.profiles.desktopUser.enable {
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "hyprlang";
+    plugins = [
+      pkgs.hyprlandPlugins.hyprbars
+    ];
     settings = {
       "$mod" = "SUPER";
       "$terminal" = "ghostty";
@@ -94,6 +98,7 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, 0, movetoworkspace, 10"
 
         "$mod, S, togglespecialworkspace, magic"
+        "$mod, D, togglespecialworkspace, minimized"
         "$mod SHIFT, S, movetoworkspace, special:magic"
 
         "$mod SHIFT, W, exec, wallctl.py next"
@@ -120,7 +125,23 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, comma, movewindow, mon:-1"
         "$mod SHIFT, period, movewindow, mon:+1"
       ];
-bindel = [
+      plugin = {
+        hyprbars = {
+          bar_height = 28;
+          bar_color = "rgb(1e1e2e)";
+          "col.text" = "rgb(cdd6f4)";
+          bar_text_size = 11;
+          bar_part_of_window = true;
+          bar_precedence_over_border = true;
+          # buttons render right-to-left
+          "hyprbars-button" = [
+            "rgb(f38ba8), 13, , hyprctl dispatch killactive"
+            "rgb(f9e2af), 13, , hyprctl dispatch fullscreen 1"
+            "rgb(a6e3a1), 13, , hyprctl dispatch movetoworkspacesilent special:minimized"
+          ];
+        };
+      };
+      bindel = [
         ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
         ",XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
         ",XF86AudioMute, exec, wpctl set-mute -l 1 @DEFAULT_AUDIO_SINK@ toggle"
