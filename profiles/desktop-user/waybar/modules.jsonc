@@ -400,8 +400,9 @@
     "scroll-step": 2.0,
     "max-volume": 150.0,
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-middle": "~/.local/bin/rofi-audio-sink.sh",
     "on-click-right": "pavucontrol",
-    "tooltip-format": "Audio: {node_name}\nVolume: {volume}%\nLeft click: mute toggle\nRight click: pavucontrol"
+    "tooltip-format": "Audio: {node_name}\nVolume: {volume}%\nLeft click: mute toggle\nMiddle click: pick output\nRight click: pavucontrol"
   },
   "backlight": {
     "interval": 2,

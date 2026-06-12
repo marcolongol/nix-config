@@ -16,6 +16,7 @@ lib.mkIf config.profiles.desktopUser.enable {
     configType = "hyprlang";
     plugins = [
       pkgs.hyprlandPlugins.hyprbars
+      pkgs.hyprlandPlugins.hyprspace
     ];
     settings = {
       "$mod" = "SUPER";
@@ -59,6 +60,7 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod, M, exit"
         "$mod, V, togglefloating"
         "$mod, space, exec, $menu"
+        "$mod, Tab, exec, hyprctl dispatch overview:toggle"
 
         "$mod, h, movefocus, l"
         "$mod, j, movefocus, d"
@@ -112,7 +114,7 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod, B, exec, rofi-bluetooth.sh"
         "$mod, semicolon, exec, rofi -show emoji"
         "$mod, equal, exec, rofi -show calc -no-show-match -no-sort"
-        "$mod, Tab, exec, rofi -show window"
+        "$mod SHIFT, Tab, exec, rofi -show window"
 
         "CTRL ALT, S, exec, grim -g \"$(slurp)\" - | wl-copy"
 
@@ -126,6 +128,16 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, period, movewindow, mon:+1"
       ];
       plugin = {
+        overview = {
+          centerAligned = true;
+          hideBackgroundLayers = false;
+          exitOnClick = true;
+          exitOnSwitch = true;
+          autoDrag = true;
+          gapsIn = 5;
+          gapsOut = 20;
+          bgCol = "rgb(1e1e2e)";
+        };
         hyprbars = {
           bar_height = 28;
           bar_color = "rgb(1e1e2e)";
