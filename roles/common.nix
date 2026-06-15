@@ -23,10 +23,16 @@
         dns = "systemd-resolved";
       };
       firewall = {
-        allowedTCPPorts = [ 22 80 443 5900 ];
+        allowedTCPPorts = [22 80 443 5900];
         allowedTCPPortRanges = [
-          { from = 3000; to = 3010; }
-          { from = 4200; to = 4210; }
+          {
+            from = 3000;
+            to = 3010;
+          }
+          {
+            from = 4200;
+            to = 4210;
+          }
         ];
         allowPing = true;
       };
@@ -46,6 +52,8 @@
       sops
       yubikey-manager
       notepad-next
+      nix-output-monitor
+      nvd
     ];
 
     services = {
@@ -89,7 +97,7 @@
         SystemMaxUse=2G
         MaxRetentionSec=1month
       '';
-      udev.packages = [ pkgs.yubikey-personalization ];
+      udev.packages = [pkgs.yubikey-personalization];
       comin = {
         enable = true;
         remotes = [
@@ -129,11 +137,21 @@
       auto-optimise-store = true;
     };
 
-    nix.gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d --max-freed $((10 * 1024 * 1024 * 1024))";
+    # nh: modern rebuild frontend (`nh os switch`), wraps nix-output-monitor
+    # for readable build output and shows an nvd package diff after each build.
+    # nh clean replaces nix.gc (don't run both).
+    programs.nh = {
+      enable = true;
+      flake = "/home/lucas/Personal/nix-config";
+      clean = {
+        enable = true;
+        extraArgs = "--keep-since 7d --keep 5";
+      };
     };
+
+    # nix-index-database ships the prebuilt index so `comma` (`, <cmd>`) and
+    # command-not-found work without ever running `nix-index` locally.
+    programs.nix-index-database.comma.enable = true;
 
     users.defaultUserShell = pkgs.zsh;
 

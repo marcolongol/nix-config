@@ -38,6 +38,7 @@ inputs: final: _: {
               inputs.stylix.nixosModules.stylix
               inputs.sops-nix.nixosModules.sops
               inputs.comin.nixosModules.comin
+              inputs.nix-index-database.nixosModules.nix-index
             ]
             ++ (final.attrValues nixosModules)
             ++ (final.attrValues roles)
