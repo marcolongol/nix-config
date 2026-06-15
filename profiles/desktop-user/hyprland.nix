@@ -36,6 +36,23 @@ lib.mkIf config.profiles.desktopUser.enable {
         disable_splash_rendering = true;
         disable_hyprland_logo = true;
       };
+      animations = {
+        enabled = true;
+        bezier = [
+          "easeOutQuint, 0.23, 1, 0.32, 1"
+          "easeInOutCubic, 0.65, 0.05, 0.36, 1"
+          "linear, 0, 0, 1, 1"
+        ];
+        animation = [
+          "windows, 1, 4, easeOutQuint"
+          "windowsIn, 1, 4, easeOutQuint, popin 87%"
+          "windowsOut, 1, 3, easeOutQuint, popin 87%"
+          "border, 1, 6, linear"
+          "fade, 1, 4, easeInOutCubic"
+          "workspaces, 1, 5, easeOutQuint, slide"
+          "specialWorkspace, 1, 5, easeOutQuint, slidevert"
+        ];
+      };
       decoration = {
         rounding = 10;
         active_opacity = 1.0;
@@ -103,7 +120,6 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod, D, togglespecialworkspace, minimized"
         "$mod SHIFT, S, movetoworkspace, special:magic"
 
-        "$mod SHIFT, W, exec, wallctl.py next"
         "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
         "$mod, N, exec, swaync-client -t -sw"
@@ -154,13 +170,56 @@ lib.mkIf config.profiles.desktopUser.enable {
         };
       };
       bindel = [
-        ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
-        ",XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
-        ",XF86AudioMute, exec, wpctl set-mute -l 1 @DEFAULT_AUDIO_SINK@ toggle"
-        ",XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-        ",XF86MonBrightnessUp, exec, brightnessctl -e4 -n2 set 5%+"
-        ",XF86MonBrightnessDown, exec, brightnessctl -e4 -n2 set 5%-"
+        ",XF86AudioRaiseVolume, exec, swayosd-client --output-volume raise"
+        ",XF86AudioLowerVolume, exec, swayosd-client --output-volume lower"
+        ",XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
+        ",XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
+        ",XF86MonBrightnessUp, exec, swayosd-client --brightness raise"
+        ",XF86MonBrightnessDown, exec, swayosd-client --brightness lower"
       ];
     };
+    # Window rules use Hyprland 0.53+ syntax: `windowrule` is a special
+    # category keyed by `name` (must be the first field) with `match:*`
+    # selectors and rule fields. The old flat `windowrulev2 = "float, class:..."`
+    # form is gone in 0.55 (prints a deprecation error + red popup). Emitted as
+    # raw text because the name-first ordering can't survive Nix attr sorting.
+    extraConfig = ''
+      windowrule {
+        name = float-center-pavucontrol
+        match:class = ^(org.pulseaudio.pavucontrol)$
+        float = true
+        center = true
+      }
+      windowrule {
+        name = float-center-blueman
+        match:class = ^(\.blueman-manager-wrapped)$
+        float = true
+        center = true
+      }
+      windowrule {
+        name = float-nautilus-props
+        match:class = ^(org.gnome.Nautilus)$
+        match:title = ^(.*Properties.*)$
+        float = true
+      }
+      windowrule {
+        name = float-center-1password
+        match:class = ^(1password)$
+        float = true
+        center = true
+      }
+      windowrule {
+        name = pip
+        match:title = ^(Picture-in-Picture)$
+        float = true
+        pin = true
+        keep_aspect_ratio = true
+      }
+      windowrule {
+        name = idleinhibit-fullscreen
+        match:class = ^(.*)$
+        idle_inhibit = fullscreen
+      }
+    '';
   };
 }

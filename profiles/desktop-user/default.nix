@@ -46,6 +46,11 @@
 
     services.blueman-applet.enable = true;
 
+    # On-screen volume/brightness popup. Keys are bound to swayosd-client in
+    # hyprland.nix; this runs the server. Brightness write perms come from the
+    # swayosd udev rule enabled in roles/desktop.nix.
+    services.swayosd.enable = true;
+
     xdg.enable = lib.mkDefault true;
 
     persistentFolders = [

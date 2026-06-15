@@ -43,6 +43,10 @@ in {
 
     programs.hyprlock.enable = true;
 
+    # udev rule so swayosd-server (user session) can write /sys/class/backlight
+    # for the brightness OSD without root.
+    services.udev.packages = [pkgs.swayosd];
+
     programs._1password.enable = true;
     programs._1password-gui = {
       enable = true;
