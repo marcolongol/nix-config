@@ -54,6 +54,7 @@ in {
     };
 
     programs.surfshark.enable = true;
+    programs.harmony-sase.enable = true;
 
     environment.etc = {
       "1password/custom_allowed_browsers" = {
