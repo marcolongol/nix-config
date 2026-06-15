@@ -56,6 +56,12 @@
     persistentFolders = [
       ".thunderbird"
       ".local/state/wireplumber"
+      # Harmony SASE (Perimeter81) keeps its session/auth (Cookies, Local
+      # Storage) here; without this the wiped-root impermanence setup forces a
+      # re-login on every boot. Travels with roles.desktop, which enables the
+      # VPN agent. Both the legacy and rebranded config dir names are persisted.
+      ".config/Perimeter81"
+      ".config/Harmony SASE"
     ];
   };
 }

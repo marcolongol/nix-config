@@ -14,6 +14,9 @@
   osquerySpoof = pkgs.runCommand "harmony-sase-osquery-spoof" {} ''
     mkdir -p $out/binaries/osquery/linux
     cp ${pkgs.writeShellScript "osqueryi-spoof" ''
+      # $* (args joined) is sufficient: we only substring-match the distinctive
+      # sentinel path. Non-matching queries delegate with "$@" to preserve arg
+      # boundaries for the real osquery.
       query="$*"
       for p in ${lib.escapeShellArgs cfg.spoofDpcFiles}; do
         if [[ "$query" == *"$p"* ]]; then
@@ -120,28 +123,53 @@ in {
       "L+ /bin/bash - - - - ${lib.getExe pkgs.bash}"
       "L+ /usr/bin/bash - - - - ${lib.getExe pkgs.bash}"
 
-      # daemon-creator's EnvironmentFile path (lowercase)
-      "d /etc/perimeter81 0755 root root -"
-      # helper daemon runtime state (capital P — /etc/Perimeter81/{net,swg,...})
-      "d /etc/Perimeter81 0755 root root -"
+      # daemon-creator's EnvironmentFile path (lowercase). 0700: helper.env may
+      # hold connection secrets and is only read by the root helper service.
+      "d /etc/perimeter81 0700 root root -"
+      # helper daemon runtime state (capital P — /etc/Perimeter81/{net,swg,...}).
+      "d /etc/Perimeter81 0700 root root -"
     ];
 
-    # Upstream installs `ALL ALL=NOPASSWD: /usr/bin/p81-helper-daemon{,-creator}`
-    # so any local user running the GUI can drive the VPN. Matched verbatim per
-    # request (multiple users on shared machines need agent access).
-    security.sudo.extraRules = [
+    # Upstream installs a blanket `ALL ALL=NOPASSWD: /usr/bin/p81-helper-daemon
+    # {,-creator}` with no argument spec — i.e. any user may run the helper as
+    # root with ANY arguments. We keep `users = ALL` (shared machines need it)
+    # but pin the exact subcommands the agent dispatches, so a future upstream
+    # subcommand can't become a free root primitive. The GUI only invokes
+    # `start` via sudo; the rest are enumerated to avoid breaking lifecycle
+    # (stop/restart/status), the sleep hooks (system-{sleep,resume}) and the
+    # installer paths. NOTE: a NEW subcommand in a future agent version that the
+    # GUI calls via sudo must be added here.
+    security.sudo.extraRules = let
+      creator = "/usr/bin/p81-helper-daemon-creator";
+      subcommands = [
+        "start"
+        "stop"
+        "restart"
+        "status"
+        "enable"
+        "disable"
+        "install"
+        "uninstall"
+        "system-sleep"
+        "system-resume"
+      ];
+    in [
       {
         users = ["ALL"];
-        commands = [
-          {
-            command = "/usr/bin/p81-helper-daemon";
+        commands =
+          # The bare daemon, no arguments.
+          [
+            {
+              command = "/usr/bin/p81-helper-daemon \"\"";
+              options = ["NOPASSWD"];
+            }
+          ]
+          # daemon-creator, one entry per known subcommand.
+          ++ map (sub: {
+            command = "${creator} ${sub}";
             options = ["NOPASSWD"];
-          }
-          {
-            command = "/usr/bin/p81-helper-daemon-creator";
-            options = ["NOPASSWD"];
-          }
-        ];
+          })
+          subcommands;
       }
     ];
 

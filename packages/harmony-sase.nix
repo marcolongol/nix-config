@@ -3,7 +3,7 @@
   stdenv,
   fetchurl,
   makeWrapper,
-  wrapGAppsHook3,
+  writeText,
   # Runtime libs (Electron GUI + node/pkg helper daemons)
   alsa-lib,
   at-spi2-atk,
@@ -66,6 +66,19 @@
   # (mkdir /opt/Perimeter81/yarkon). The NixOS module presents this exact path
   # as a writable overlay over the store, so the launchers target it directly.
   prefix = "/opt/Perimeter81";
+
+  desktopItem = writeText "perimeter81.desktop" ''
+    [Desktop Entry]
+    Name=Harmony SASE
+    Exec=${pname} %U
+    Terminal=false
+    Type=Application
+    Icon=perimeter81
+    StartupWMClass=Perimeter81
+    Comment=Check Point Harmony SASE (Perimeter81) agent
+    MimeType=x-scheme-handler/harmonysase;x-scheme-handler/perimeter81;
+    Categories=Network;
+  '';
 
   # The helper daemon + daemon-creator + p81daemonhelper are vercel/pkg bundles:
   # the JS payload is appended to the ELF, so they CANNOT be patchelf'd (it
@@ -159,15 +172,15 @@ in
       hash = "sha256-ijAmpUYmmi24JcTtLJu9iGHnRZNEmF61eHyXSAKUdmI=";
     };
 
-    nativeBuildInputs = [
-      makeWrapper
-      wrapGAppsHook3
-    ];
+    nativeBuildInputs = [makeWrapper];
 
     dontConfigure = true;
     dontBuild = true;
-    dontFixup = true; # never patchelf — would corrupt the pkg payloads
-    dontWrapGApps = true; # wrap the launcher manually below
+    # Never run the fixup phase: it would strip/patchelf the binaries, which
+    # corrupts the appended vercel/pkg payloads (same failure class as patchelf).
+    # The GUI is plain Electron and gets its GTK/GIO env from nix-ld + the
+    # ambient session, so no wrapGAppsHook is needed.
+    dontFixup = true;
 
     installPhase = ''
       runHook preInstall
@@ -182,8 +195,7 @@ in
       # sandboxed) so its `sudo p81-helper-daemon-creator start` can escalate.
       makeWrapper "$out/opt/Perimeter81/perimeter81" "$out/bin/${pname}" \
         --add-flags "--no-sandbox" \
-        ${lib.escapeShellArgs nixLdArgs} \
-        "''${gappsWrapperArgs[@]}"
+        ${lib.escapeShellArgs nixLdArgs}
 
       # Privileged helpers, symlinked into /usr/bin/p81-helper-daemon{,-creator}
       # by the NixOS module and invoked via sudo by the GUI.
@@ -192,18 +204,8 @@ in
       makeWrapper "$out/opt/Perimeter81/artifacts/daemon-creator" \
         "$out/bin/${pname}-daemon-creator" ${lib.escapeShellArgs nixLdArgs}
 
-      install -Dm644 /dev/stdin $out/share/applications/perimeter81.desktop <<EOF
-      [Desktop Entry]
-      Name=Harmony SASE
-      Exec=${pname} %U
-      Terminal=false
-      Type=Application
-      Icon=perimeter81
-      StartupWMClass=Perimeter81
-      Comment=Check Point Harmony SASE (Perimeter81) agent
-      MimeType=x-scheme-handler/harmonysase;x-scheme-handler/perimeter81;
-      Categories=Network;
-      EOF
+      install -Dm644 ${desktopItem} \
+        $out/share/applications/perimeter81.desktop
 
       runHook postInstall
     '';
