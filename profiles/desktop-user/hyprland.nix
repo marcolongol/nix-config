@@ -225,6 +225,17 @@ lib.mkIf config.profiles.desktopUser.enable {
         match:class = ^(.*)$
         idle_inhibit = fullscreen
       }
+
+      # Frost the swaync control center: its CSS background is translucent,
+      # this blurs the desktop behind it. ignore_alpha keeps fully-transparent
+      # regions (gaps between cards) from rendering a blur rectangle.
+      # layerrule is a special category (same 0.53+ syntax as windowrule).
+      layerrule {
+        name = blur-swaync-control-center
+        match:namespace = swaync-control-center
+        blur = true
+        ignore_alpha = 0.5
+      }
     '';
   };
 }
