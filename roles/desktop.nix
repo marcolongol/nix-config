@@ -55,6 +55,9 @@ in {
 
     programs.surfshark.enable = true;
     programs.harmony-sase.enable = true;
+    # TEMPORARY: same posture-check spoof as nixos-lt — macOS-only server-side
+    # profile hits Linux too. Remove once the admin-console profile is corrected.
+    programs.harmony-sase.spoofDpcFiles = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
 
     environment.etc = {
       "1password/custom_allowed_browsers" = {

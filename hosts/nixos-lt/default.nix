@@ -22,11 +22,6 @@ in {
     docker.enable = true;
   };
 
-  # TEMPORARY: force the Harmony SASE device-posture file-check to pass while a
-  # mis-scoped (macOS-only) server-side posture profile is corrected for Linux.
-  # Remove once the admin-console profile is fixed. See modules/nixos/harmony-sase.
-  programs.harmony-sase.spoofDpcFiles = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
-
   # Cloudflare tunnel for ad-hoc demo hosting. Setup (do once):
   #   1. `nix shell nixpkgs#cloudflared`
   #   2. `cloudflared tunnel login` -> browser auth
