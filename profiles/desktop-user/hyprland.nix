@@ -197,6 +197,11 @@ lib.mkIf config.profiles.desktopUser.enable {
         center = true
       }
       windowrule {
+        name = nautilus-opacity
+        match:class = ^(org.gnome.Nautilus)$
+        opacity = 0.90 0.82
+      }
+      windowrule {
         name = float-nautilus-props
         match:class = ^(org.gnome.Nautilus)$
         match:title = ^(.*Properties.*)$
