@@ -12,7 +12,10 @@
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true;
-      gamescopeSession.enable = true;
+      gamescopeSession = {
+        enable = true;
+        args = ["--hdr-enabled" "--hdr-itm-enable"];
+      };
       protontricks.enable = true;
 
       extraCompatPackages = with pkgs; [
