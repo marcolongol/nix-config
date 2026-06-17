@@ -126,7 +126,7 @@ lib.mkIf config.profiles.desktopUser.enable {
 
         # Rofi launchers
         "$mod, X, exec, rofi-power.sh"
-        "$mod, W, exec, rofi-wifi.py"
+        "$mod, W, exec, rofi-wifi.sh"
         "$mod, B, exec, rofi-bluetooth.sh"
         "$mod, semicolon, exec, rofi -show emoji"
         "$mod, equal, exec, rofi -show calc -no-show-match -no-sort"

@@ -7,7 +7,7 @@
   c = config.lib.stylix.colors.withHashtag;
 in
   lib.mkIf config.profiles.desktopUser.enable {
-    # notify-send for scripts (rofi-wifi.py, rofi-bluetooth.sh, ...)
+    # notify-send for scripts (rofi-wifi.sh, rofi-bluetooth.sh, ...)
     home.packages = [pkgs.libnotify];
 
     # Stylix only wires colors into swaync (flat, sharp borders). Take full
