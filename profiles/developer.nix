@@ -111,7 +111,7 @@
             key = "<c-g>";
             context = "files";
             description = "Generate AI commit message (copies to clipboard)";
-            command = ''git diff --staged | claude -p "Generate a git commit message following the Conventional Commits spec for this diff. Output only the raw commit message (subject line + optional body). Do not use markdown, code blocks, backticks, or any other formatting. Plain text only." | wl-copy && echo "Commit message copied to clipboard."'';
+            command = ''git diff --staged | claude -p --setting-sources "" --system-prompt "You are a git commit message generator. You receive a staged diff on stdin and output ONLY the raw commit message (Conventional Commits: subject line plus optional body). No markdown, no code blocks, no backticks, no preamble, no explanation, no trailing commentary. Plain text commit message only." | wl-copy && echo "Commit message copied to clipboard."'';
             output = "terminal";
           }
         ];
