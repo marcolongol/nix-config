@@ -3,7 +3,14 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  ponytail = pkgs.fetchFromGitHub {
+    owner = "DietrichGebert";
+    repo = "ponytail";
+    rev = "45f7d2f83fb430a65fd512a98ad7b14d79e06636";
+    hash = "sha256-BAwav7tf6RuHZ/A7TF/1k1TXWhYAdshlsYB3LbdgUD8=";
+  };
+in {
   config = lib.mkIf config.profiles.developer.enable {
     programs.claude-code = {
       enable = true;
@@ -13,6 +20,10 @@
       # ────────────────────────────────────────────
       settings = {
         alwaysThinkingEnabled = true;
+        statusLine = {
+          type = "command";
+          command = "bash \"${ponytail}/hooks/ponytail-statusline.sh\"";
+        };
         # false: don't auto-run MCP servers from cloned project repos (code-exec on clone)
         enableAllProjectMcpServers = false;
         env = {
@@ -119,12 +130,7 @@
         # repo root is both plugin and marketplace
         # NOTE: lifecycle hooks need `node` on PATH (provided by modules/home/nodejs.nix,
         # same profiles.developer.enable gate); without node, hooks stay quiet (skills still work)
-        (pkgs.fetchFromGitHub {
-          owner = "DietrichGebert";
-          repo = "ponytail";
-          rev = "45f7d2f83fb430a65fd512a98ad7b14d79e06636";
-          hash = "sha256-BAwav7tf6RuHZ/A7TF/1k1TXWhYAdshlsYB3LbdgUD8=";
-        })
+        ponytail
       ];
 
       # ────────────────────────────────────────────
