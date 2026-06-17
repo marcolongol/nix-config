@@ -16,7 +16,7 @@ lib.mkIf config.profiles.desktopUser.enable {
       });
     in {
       ExtensionSettings = mkExtensionSettings {
-        "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = "vimium";
+        "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = "vimium-ff";
       };
       Homepage = {
         URL = "https://homepage.marcolongo.dev";
