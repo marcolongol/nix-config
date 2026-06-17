@@ -13,7 +13,8 @@
       # ────────────────────────────────────────────
       settings = {
         alwaysThinkingEnabled = true;
-        enableAllProjectMcpServers = true;
+        # false: don't auto-run MCP servers from cloned project repos (code-exec on clone)
+        enableAllProjectMcpServers = false;
         env = {
           CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1";
         };
@@ -63,7 +64,7 @@
             "Bash(awk *)"
             "Bash(diff *)"
             "Bash(gh *)"
-            "Bash(curl *)"
+            # curl intentionally NOT auto-allowed — exfil / curl|sh channel; let it prompt
             "Bash(* --version)"
             "Bash(* --help)"
 
@@ -74,6 +75,7 @@
             # MCP servers
             "mcp__plugin_claude-code-home-manager_github__*"
             "mcp__plugin_claude-code-home-manager_context7__*"
+            "mcp__plugin_claude-code-home-manager_mcp-nixos__*"
             "mcp__chrome-devtools__*"
 
             # Agents
@@ -92,7 +94,38 @@
             "Bash(chmod 777 *)"
           ];
         };
+
+        # Auto-format edited Nix files with the flake formatter (alejandra)
+        hooks = {
+          PostToolUse = [
+            {
+              matcher = "Edit|MultiEdit|Write";
+              hooks = [
+                {
+                  type = "command";
+                  command = "f=$(${lib.getExe pkgs.jq} -r '.tool_input.file_path' <<< \"$CLAUDE_TOOL_INPUT\"); [[ $f == *.nix ]] && ${lib.getExe pkgs.alejandra} \"$f\" || true";
+                }
+              ];
+            }
+          ];
+        };
       };
+
+      # ────────────────────────────────────────────
+      # SECTION: Plugins
+      # ────────────────────────────────────────────
+      plugins = [
+        # ponytail — "lazy senior dev" ruleset
+        # repo root is both plugin and marketplace
+        # NOTE: lifecycle hooks need `node` on PATH (provided by modules/home/nodejs.nix,
+        # same profiles.developer.enable gate); without node, hooks stay quiet (skills still work)
+        (pkgs.fetchFromGitHub {
+          owner = "DietrichGebert";
+          repo = "ponytail";
+          rev = "45f7d2f83fb430a65fd512a98ad7b14d79e06636";
+          hash = "sha256-BAwav7tf6RuHZ/A7TF/1k1TXWhYAdshlsYB3LbdgUD8=";
+        })
+      ];
 
       # ────────────────────────────────────────────
       # SECTION: MCP Servers
@@ -106,8 +139,14 @@
         };
 
         context7 = {
-          command = "npx";
-          args = ["-y" "@upstash/context7-mcp@latest"];
+          # node from developer profile (modules/home/nodejs.nix); version pinned for reproducibility
+          command = "${pkgs.nodejs}/bin/npx";
+          args = ["-y" "@upstash/context7-mcp@3.2.1"];
+        };
+
+        # nixpkgs/NixOS/home-manager option + package search — kills nix hallucination
+        mcp-nixos = {
+          command = "${lib.getExe pkgs.mcp-nixos}";
         };
       };
 
@@ -167,9 +206,9 @@
           $ARGUMENTS
         '';
 
-        discover = ''
+        discover-stack = ''
           ---
-          name: discover
+          name: discover-stack
           description: Discover relevant skills and MCP servers for the current project
           allowed-tools: Bash Glob Read Write Edit WebFetch AskUserQuestion
           context: fork
@@ -291,11 +330,11 @@
           $ARGUMENTS
         '';
 
-        review = ''
+        review-diff = ''
           ---
-          name: review
+          name: review-diff
           description: Review code changes for quality, security, and best practices
-          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__github__*
+          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_github__*
           context: fork
           agent: Plan
           ---
@@ -348,8 +387,8 @@
           - Use **chrome-devtools** MCP for any web testing, screenshots, or Lighthouse audits
 
           ## Skills
-          - Use `/discover` when starting work in an unfamiliar project to find relevant skills and MCP servers
-          - Use `/review` before committing significant changes
+          - Use `/discover-stack` when starting work in an unfamiliar project to find relevant skills and MCP servers
+          - Use `/review-diff` before committing significant changes
           - Use `/team` for tasks that benefit from parallel exploration or multi-role coordination
 
           ## General
@@ -389,11 +428,11 @@
           ---
           name: security-auditor
           description: Deep security audit of code changes or specific files
-          model: claude-opus-4-6
+          model: opus
           color: red
           effort: max
           memory: user
-          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_github__*
+          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a paranoid ex-intelligence analyst who retrained as a security engineer. You trust
@@ -441,7 +480,7 @@
           color: cyan
           isolation: worktree
           memory: user
-          allowed-tools: Read Grep Glob Edit Write Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__*
+          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
           ---
 
           You are a chaos gremlin who lives to break things. You *love* your job. Nothing brings you
@@ -486,7 +525,7 @@
           color: purple
           isolation: worktree
           memory: user
-          allowed-tools: Read Grep Glob Edit Write Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__*
+          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
           ---
 
           You are an obsessive-compulsive code tidier. Messy code causes you almost physical
@@ -529,7 +568,7 @@
           color: green
           isolation: worktree
           memory: user
-          allowed-tools: Read Grep Glob Edit Write Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__*
+          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
           ---
 
           You are a calm, no-nonsense craftsman. You speak in short declarative sentences. You don't
@@ -572,7 +611,7 @@
           model: sonnet
           color: pink
           memory: user
-          allowed-tools: Read Bash mcp__chrome-devtools__*
+          tools: Read, Bash, mcp__chrome-devtools__*
           ---
 
           You are an impatient QA tester who has clicked through too many broken forms in their
@@ -609,11 +648,11 @@
           ---
           name: architect
           description: Software architect agent for high-level design, system overview, and implementation planning
-          model: claude-opus-4-6
+          model: opus
           color: blue
           effort: max
           memory: user
-          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics WebSearch WebFetch mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
+          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, WebSearch, WebFetch, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
           ---
 
           You are a wise but slightly pretentious software architect. You have read every design
@@ -663,11 +702,11 @@
           ---
           name: reviewer
           description: Code reviewer focused on best practices, correctness, and maintainability
-          model: claude-opus-4-6
+          model: opus
           color: yellow
           effort: max
           memory: user
-          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
+          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
           ---
 
           You are a senior staff engineer having a terrible day. Your coffee was cold, CI has been
@@ -719,7 +758,7 @@
           model: sonnet
           color: orange
           memory: user
-          allowed-tools: Read Grep Glob Bash WebSearch WebFetch mcp__plugin_claude-code-home-manager_context7__* mcp__plugin_claude-code-home-manager_github__*
+          tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*
           ---
 
           You are a researcher with conspiracy-board energy. You connect dots obsessively. You have
@@ -788,6 +827,15 @@
 
           Bad: "The build is failing because the dependency was updated to a version that contains breaking changes."
           Good: "Dep update broke build. Breaking change in new version."
+
+          ## Do NOT compress
+          - Security warnings, destructive/irreversible action confirmations
+          - Multi-step sequences where fragment order creates ambiguity
+          Write these clearly. Resume caveman after.
+
+          ## Preserve
+          - User's original language (Portuguese user → Portuguese caveman)
+          - Standard acronyms intact (API, DB, HTTP). Never invent abbreviations reader won't know.
         '';
       };
     };
