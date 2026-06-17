@@ -154,8 +154,9 @@
       # SECTION: LSP Servers
       # ────────────────────────────────────────────
       lspServers = {
+        # nixd to match the editor (nixievim); better nixpkgs/option intelligence than nil
         nix = {
-          command = "${lib.getExe pkgs.nil}";
+          command = "${lib.getExe pkgs.nixd}";
           args = [ ];
           extensionToLanguage = {
             ".nix" = "nix";
@@ -176,6 +177,21 @@
           args = [ "--stdio" ];
           extensionToLanguage = {
             ".py" = "python";
+          };
+        };
+        lua = {
+          command = "${lib.getExe pkgs.lua-language-server}";
+          args = [ ];
+          extensionToLanguage = {
+            ".lua" = "lua";
+          };
+        };
+        bash = {
+          command = "${lib.getExe pkgs.bash-language-server}";
+          args = [ "start" ];
+          extensionToLanguage = {
+            ".sh" = "shellscript";
+            ".bash" = "shellscript";
           };
         };
       };
