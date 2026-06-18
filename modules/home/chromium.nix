@@ -1,13 +1,16 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 lib.mkIf config.profiles.desktopUser.enable {
-  home.packages = with pkgs; [
-    chromium
-  ];
+  programs.chromium = {
+    enable = true;
+    commandLineArgs = [
+      "--no-first-run"
+      "--no-default-browser-check"
+    ];
+  };
 
   # Systemd user service to run Chromium in background with DevTools enabled
   systemd.user.services.chromium-devtools = {
@@ -20,7 +23,7 @@ lib.mkIf config.profiles.desktopUser.enable {
     Service = {
       Type = "simple";
       # Run Chromium in headless mode with remote debugging enabled
-      ExecStart = "${pkgs.chromium}/bin/chromium --headless --disable-gpu --remote-debugging-port=9222 --no-first-run --no-default-browser-check";
+      ExecStart = "${config.programs.chromium.finalPackage}/bin/chromium --headless --disable-gpu --remote-debugging-port=9222";
       Restart = "on-failure";
       RestartSec = 5;
       # Allow time for startup
