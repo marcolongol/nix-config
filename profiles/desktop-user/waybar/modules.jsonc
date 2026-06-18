@@ -215,7 +215,7 @@
     "interval": 5,
     "tooltip-format-wifi": " {bandwidthDownBytes} |  {bandwidthUpBytes} | {essid}",
     "tooltip-format-disconnected": "Disconnected",
-    "on-click": "~/.local/bin/rofi-wifi.py"
+    "on-click": "~/.local/bin/rofi-wifi.sh"
   },
   "network#speed": {
     "interval": 1,
