@@ -214,7 +214,7 @@ in {
           };
         };
         python = {
-          command = "${lib.getExe pkgs.pyright}";
+          command = "${lib.getExe' pkgs.pyright "pyright-langserver"}";
           args = [ "--stdio" ];
           extensionToLanguage = {
             ".py" = "python";
