@@ -19,7 +19,6 @@ in {
   home = {
     packages = with pkgs; [
       vim
-      freecad
       spotify
       keymapp
       telegram-desktop
