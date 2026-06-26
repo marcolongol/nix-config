@@ -43,6 +43,7 @@
       restic
       rsync
       sox
+      systemctl-tui
       talhelper
       talosctl
       tcpdump
