@@ -32,7 +32,7 @@ in {
   home-manager.users = lib.genAttrs activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
-        "DP-2,2560x1440@164.96,0x0,1,bitdepth,10,cm,hdr,sdrbrightness,3.5,vrr,2"
+        "DP-2,2560x1440@164.96,0x0,1,bitdepth,10,cm,hdr,sdrbrightness,5,vrr,2"
         "HDMI-A-1,3840x2160@30,2560x0,1.5,transform,3"
       ];
       workspace = [
