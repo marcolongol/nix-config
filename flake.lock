@@ -365,11 +365,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1783001339,
-        "narHash": "sha256-KLrA+iXPVKaJ+YbPZ01QC1I6aTM/Auq8lHKMn6De064=",
+        "lastModified": 1783559642,
+        "narHash": "sha256-SXZorGzcTStfQiGaaRYe9GGQ0jNW9FUoANavL/xz224=",
         "owner": "marcolongol",
         "repo": "nixievim",
-        "rev": "4090b650a7aefce6133291ab83893beb2ecc6490",
+        "rev": "6972beef17d3c014af8b2a13f7a00d2c75f59dc3",
         "type": "github"
       },
       "original": {
