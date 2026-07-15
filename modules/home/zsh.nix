@@ -21,6 +21,8 @@
       top = "btm";
       du = "dust";
       ps = "procs";
+      scrcpy = "scrcpy --no-audio --stay-awake --turn-screen-off";
+      scrcpy-wifi = "scrcpy --no-audio --stay-awake --turn-screen-off --tcpip";
     };
     history = {
       append = true;
