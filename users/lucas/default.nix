@@ -25,6 +25,7 @@ in {
       signal-desktop
       anytype
       tz
+      scrcpy
     ];
 
     sessionVariables = {
