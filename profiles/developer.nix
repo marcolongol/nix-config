@@ -38,6 +38,7 @@
       ngrok
       openssl.dev
       pkg-config
+      postgresql
       psqlodbc
       readline.dev
       restic
