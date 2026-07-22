@@ -27,7 +27,7 @@ in {
     enableCorectrl = mkOption {
       type = types.bool;
       default = false;
-      description = "Enable CoreCtrl for GPU fan/clock control. Grants wheel users polkit access.";
+      description = "Enable CoreCtrl for GPU fan/clock control. Adds users to the corectrl group.";
     };
 
     enableRedistributableFirmware = mkOption {
@@ -60,27 +60,19 @@ in {
 
     environment.systemPackages = with pkgs;
       [rocmPackages.rocm-smi]
-      ++ optionals cfg.enableOpenCL [clinfo]
-      ++ optionals cfg.enableCorectrl [corectrl];
+      ++ optionals cfg.enableOpenCL [clinfo];
 
-    # Grant render/video group access for OpenCL/ROCm
-    users.users = mkIf cfg.enableOpenCL (
+    # NixOS ships CoreCtrl: package + polkit rule (authorizes the corectrl group)
+    programs.corectrl.enable = cfg.enableCorectrl;
+
+    # Grant group access: render/video for OpenCL/ROCm, corectrl for CoreCtrl
+    users.users =
       genAttrs
-      (lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers))
-      (_: {extraGroups = ["render" "video"];})
-    );
-
-    # Allow wheel users to run CoreCtrl without password prompt
-    security.polkit.extraConfig = mkIf cfg.enableCorectrl ''
-      polkit.addRule(function(action, subject) {
-        if ((action.id == "org.corectrl.helper.init" ||
-             action.id == "org.corectrl.helperkiller.init") &&
-            subject.local == true &&
-            subject.active == true &&
-            subject.isInGroup("wheel")) {
-          return polkit.Result.YES;
-        }
+      (attrNames (filterAttrs (_: u: u.enable) config.hostUsers))
+      (_: {
+        extraGroups =
+          optionals cfg.enableOpenCL ["render" "video"]
+          ++ optionals cfg.enableCorectrl ["corectrl"];
       });
-    '';
   };
 }
