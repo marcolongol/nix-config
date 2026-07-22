@@ -28,11 +28,8 @@
       append = true;
       extended = true;
       ignoreAllDups = true;
-      ignoreSpace = true;
       saveNoDups = true;
-      save = 10000;
       path = "${config.home.homeDirectory}/.zsh_history";
-      size = 10000;
       share = true;
     };
     plugins = [

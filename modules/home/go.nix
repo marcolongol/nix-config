@@ -18,7 +18,6 @@
 
   home.sessionVariables = {
     GOPATH = "${config.home.homeDirectory}/.local/share/go";
-    GOBIN = "${config.home.homeDirectory}/.local/share/go/bin";
     GOTELEMETRY = "off";
   };
 

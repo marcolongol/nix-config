@@ -51,8 +51,6 @@
     # swayosd udev rule enabled in roles/desktop.nix.
     services.swayosd.enable = true;
 
-    xdg.enable = lib.mkDefault true;
-
     persistentFolders = [
       ".thunderbird"
       ".local/state/wireplumber"

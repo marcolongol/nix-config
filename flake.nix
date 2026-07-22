@@ -56,8 +56,7 @@
     systems,
     flake-parts,
     ...
-  } @ inputs: let
-  in
+  } @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import systems;
       _module.args = {inherit inputs;};

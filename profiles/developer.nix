@@ -129,8 +129,6 @@
       enableDefaultConfig = false;
       extraConfig = ''
         AddKeysToAgent yes
-        ServerAliveInterval 60
-        ServerAliveCountMax 3
       '';
     };
 
@@ -162,8 +160,6 @@
       ".kube"
       ".local/share/DBeaverData"
     ];
-
-    persistentFiles = [ ];
 
     home.sessionPath = ["$HOME/.krew/bin"];
 
