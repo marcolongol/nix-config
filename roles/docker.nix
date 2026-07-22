@@ -49,6 +49,11 @@
         listen-address = "127.0.0.55";
         bind-interfaces = true;
         address = "/.k3d.local/127.0.0.1";
+        # Don't read resolved's resolv.conf as upstream: it lists 127.0.0.55
+        # (ourselves), a self-loop that intermittently shadows the address rule
+        # and forwards *.k3d.local upstream (-> NXDOMAIN). resolved only routes
+        # ~k3d.local here, so no upstream is ever needed.
+        no-resolv = true;
       };
     };
   };
