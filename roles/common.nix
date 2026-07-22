@@ -23,7 +23,8 @@
         dns = "systemd-resolved";
       };
       firewall = {
-        allowedTCPPorts = [22 80 443 5900];
+        # 22: SSH. Dev ranges stay open for LAN testing of dev servers.
+        allowedTCPPorts = [22];
         allowedTCPPortRanges = [
           {
             from = 3000;
