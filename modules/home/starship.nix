@@ -7,7 +7,7 @@ in {
       format = ''
         [](fg:#${c.base01})$os$username$hostname[](fg:#${c.base01} bg:#${c.base02})$directory[](fg:#${c.base02} bg:#${c.base00})$git_branch$git_status[](fg:#${c.base00})$nodejs$python$rust$golang$java$docker_context$nix_shell[](fg:#${c.base00})
         $character'';
-      right_format = "$kubernetes$cmd_duration$time";
+      right_format = "$battery$kubernetes$cmd_duration$time";
       add_newline = true;
 
       os = {

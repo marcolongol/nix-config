@@ -30,7 +30,7 @@ in {
 
     sessionVariables = {
       EDITOR = "vim";
-      TERMINAL = "alacritty";
+      TERMINAL = "ghostty";
     };
   };
 
@@ -84,14 +84,7 @@ in {
     };
   };
 
-  programs.spotify-player = {
-    enable = true;
-    settings = {
-      autostart = true;
-      noTrayIcon = false;
-      startMinimized = true;
-    };
-  };
+  programs.spotify-player.enable = true;
 
   persistentFolders = [
     ".config/1Password"

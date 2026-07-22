@@ -144,7 +144,8 @@ in {
               hooks = [
                 {
                   type = "command";
-                  command = "f=$(${lib.getExe pkgs.jq} -r '.tool_input.file_path' <<< \"$CLAUDE_TOOL_INPUT\"); [[ $f == *.nix ]] && ${lib.getExe pkgs.alejandra} \"$f\" || true";
+                  # hook payload arrives as JSON on stdin
+                  command = "f=$(${lib.getExe pkgs.jq} -r '.tool_input.file_path'); [[ $f == *.nix ]] && ${lib.getExe pkgs.alejandra} \"$f\" || true";
                 }
               ];
             }

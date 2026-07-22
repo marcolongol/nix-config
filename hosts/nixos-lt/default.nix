@@ -34,9 +34,7 @@ in {
     enable = true;
     tunnelId = "93fec6bb-b9db-43d3-a290-953d830d1ace";
     domain = "nixos-lt.marcolongo.dev";
-    # Built-in smoke test — reachable at https://whoami.nixos-lt.marcolongo.dev/.
-    # Flip to false once your own demo apps are wired in via `apps = {...}`.
-    whoami.enable = true;
+    whoami.enable = false;
     apps = {
       demo = 4200;
     };

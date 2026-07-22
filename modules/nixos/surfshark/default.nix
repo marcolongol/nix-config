@@ -96,7 +96,6 @@ in
     systemd.user.services.surfsharkd = {
       description = "Surfshark User Daemon";
       wantedBy = [ "default.target" ];
-      after = [ "surfsharkd2.service" ];
 
       environment.GI_TYPELIB_PATH = lib.makeSearchPath "lib/girepository-1.0" [
         pkgs.networkmanager

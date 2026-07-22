@@ -155,7 +155,6 @@
     };
 
     persistentFolders = [
-      ".config/Code"
       ".config/direnv"
       ".config/github-copilot"
       ".copilot"
