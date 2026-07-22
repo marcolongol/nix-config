@@ -7,8 +7,8 @@
     cache="/tmp/tmux-weather"
     if [ ! -f "$cache" ] || [ "$(( $(date +%s) - $(date +%s -r "$cache" 2>/dev/null || echo 0) ))" -gt 1800 ]; then
       json=$(curl -sf --max-time 5 "https://api.open-meteo.com/v1/forecast?latitude=43.1566&longitude=-77.6088&current=temperature_2m,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York") || { printf "? N/A" > "$cache"; cat "$cache"; exit 0; }
-      temp=$(printf '%s' "$json" | grep -o '"temperature_2m":[0-9.]*' | grep -o '[0-9.]*$')
-      code=$(printf '%s' "$json" | grep -o '"weathercode":[0-9]*' | grep -o '[0-9]*$')
+      temp=$(printf '%s' "$json" | ${pkgs.jq}/bin/jq -r '.current.temperature_2m')
+      code=$(printf '%s' "$json" | ${pkgs.jq}/bin/jq -r '.current.weathercode')
       case "$code" in
         0)            icon="☀" ;;
         1|2|3)        icon="⛅" ;;

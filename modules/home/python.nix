@@ -8,11 +8,7 @@
     (python3.withPackages (ps:
       with ps; [
         ipython
-        black
-        flake8
-        isort
         mypy
-        pylint
         pyright
         ruff
         pytest

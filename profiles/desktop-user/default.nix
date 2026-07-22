@@ -46,6 +46,12 @@
 
     services.blueman-applet.enable = true;
 
+    # Long-running MPRIS dispatcher. Waybar's mpris module polls a player
+    # name on D-Bus; without playerctld answering, every poll logs
+    # "Unable to replace properties on 0". With it active, the module is
+    # quiet and seamlessly switches between players (spotify, mpv, browser).
+    services.playerctld.enable = true;
+
     # On-screen volume/brightness popup. Keys are bound to swayosd-client in
     # hyprland.nix; this runs the server. Brightness write perms come from the
     # swayosd udev rule enabled in roles/desktop.nix.

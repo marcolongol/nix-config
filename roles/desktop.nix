@@ -129,21 +129,6 @@ in {
       };
     };
 
-    # Long-running MPRIS dispatcher. Waybar's mpris module polls a player
-    # name on D-Bus; without playerctld answering, every poll logs
-    # "Unable to replace properties on 0". With it active, the module is
-    # quiet and seamlessly switches between players (spotify, mpv, browser).
-    systemd.user.services.playerctld = {
-      description = "MPRIS dispatcher daemon (playerctld)";
-      wantedBy = ["graphical-session.target"];
-      partOf = ["graphical-session.target"];
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = "${pkgs.playerctl}/bin/playerctld daemon";
-        Restart = "on-failure";
-      };
-    };
-
     # Unlock the login keyring with the password typed at the SDDM greeter.
     # pam_ssh_agent_auth (yubikey touch) bypasses this, so keep typing your
     # password at the display manager for the keyring to auto-unlock.

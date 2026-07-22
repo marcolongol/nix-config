@@ -6,6 +6,16 @@
 }:
 let
   cfg = config.programs.surfshark;
+
+  # GJS scripts use GObject introspection — typelib files must be reachable.
+  # Both daemons import at minimum: NM, GLib, GObject, Gio, Notify, Secret.
+  giTypelibPath = lib.makeSearchPath "lib/girepository-1.0" [
+    pkgs.networkmanager
+    pkgs.glib
+    pkgs.libnotify
+    pkgs.libsecret
+    pkgs.gsettings-desktop-schemas
+  ];
 in
 {
   options.programs.surfshark = {
@@ -50,15 +60,7 @@ in
       };
     };
 
-    # GJS scripts use GObject introspection — typelib files must be reachable.
-    # Both daemons import at minimum: NM, GLib, GObject, Gio, Notify, Secret.
-    environment.variables.GI_TYPELIB_PATH = lib.makeSearchPath "lib/girepository-1.0" [
-      pkgs.networkmanager
-      pkgs.glib
-      pkgs.libnotify
-      pkgs.libsecret
-      pkgs.gsettings-desktop-schemas
-    ];
+    environment.variables.GI_TYPELIB_PATH = giTypelibPath;
 
     # System-scope daemon (surfsharkd2) — manages network/VPN operations.
     # The .js files use #!/usr/bin/gjs; we invoke gjs explicitly so the shebang
@@ -71,13 +73,7 @@ in
         "NetworkManager.service"
       ];
 
-      environment.GI_TYPELIB_PATH = lib.makeSearchPath "lib/girepository-1.0" [
-        pkgs.networkmanager
-        pkgs.glib
-        pkgs.libnotify
-        pkgs.libsecret
-        pkgs.gsettings-desktop-schemas
-      ];
+      environment.GI_TYPELIB_PATH = giTypelibPath;
 
       serviceConfig = {
         ExecStart = "${pkgs.gjs}/bin/gjs ${cfg.package.data}/opt/Surfshark/resources/dist/resources/surfsharkd2.js";
@@ -97,13 +93,7 @@ in
       description = "Surfshark User Daemon";
       wantedBy = [ "default.target" ];
 
-      environment.GI_TYPELIB_PATH = lib.makeSearchPath "lib/girepository-1.0" [
-        pkgs.networkmanager
-        pkgs.glib
-        pkgs.libnotify
-        pkgs.libsecret
-        pkgs.gsettings-desktop-schemas
-      ];
+      environment.GI_TYPELIB_PATH = giTypelibPath;
 
       serviceConfig = {
         ExecStart = "${pkgs.gjs}/bin/gjs ${cfg.package.data}/opt/Surfshark/resources/dist/resources/surfsharkd.js";
