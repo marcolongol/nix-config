@@ -41,6 +41,7 @@
       postgresql
       psqlodbc
       sqlcmd
+      freetds
       readline.dev
       restic
       rsync
