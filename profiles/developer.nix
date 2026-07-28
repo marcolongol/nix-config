@@ -40,6 +40,7 @@
       pkg-config
       postgresql
       psqlodbc
+      sqlcmd
       readline.dev
       restic
       rsync
