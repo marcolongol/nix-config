@@ -16,7 +16,9 @@ lib.mkIf config.profiles.desktopUser.enable {
     configType = "hyprlang";
     plugins = [
       pkgs.hyprlandPlugins.hyprbars
-      pkgs.hyprlandPlugins.hyprspace
+      # ponytail: hyprspace can't build against hyprland 0.56 (removed managers/animation/AnimationManager.hpp);
+      # upstream unfixed as of 2026-05-28. Re-add when it supports 0.56, and restore $mod+Tab + plugin.overview below.
+      # pkgs.hyprlandPlugins.hyprspace
     ];
     settings = {
       "$mod" = "SUPER";
@@ -77,7 +79,8 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod, M, exit"
         "$mod, V, togglefloating"
         "$mod, space, exec, $menu"
-        "$mod, Tab, exec, hyprctl dispatch overview:toggle"
+        # ponytail: needs hyprspace, disabled for hyprland 0.56 — restore with plugin above
+        # "$mod, Tab, exec, hyprctl dispatch overview:toggle"
 
         "$mod, h, movefocus, l"
         "$mod, j, movefocus, d"
@@ -144,16 +147,17 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, period, movewindow, mon:+1"
       ];
       plugin = {
-        overview = {
-          centerAligned = true;
-          hideBackgroundLayers = false;
-          exitOnClick = true;
-          exitOnSwitch = true;
-          autoDrag = true;
-          gapsIn = 5;
-          gapsOut = 20;
-          bgCol = "rgb(1e1e2e)";
-        };
+        # ponytail: hyprspace disabled for hyprland 0.56 — restore with plugin above
+        # overview = {
+        #   centerAligned = true;
+        #   hideBackgroundLayers = false;
+        #   exitOnClick = true;
+        #   exitOnSwitch = true;
+        #   autoDrag = true;
+        #   gapsIn = 5;
+        #   gapsOut = 20;
+        #   bgCol = "rgb(1e1e2e)";
+        # };
         hyprbars = {
           bar_height = 28;
           bar_color = "rgb(1e1e2e)";
