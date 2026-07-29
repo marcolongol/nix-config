@@ -12,6 +12,7 @@
       webex
       todoist
       libreoffice
+      simplescreenrecorder
     ];
 
     persistentFolders = [
