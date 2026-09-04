@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   options.roles.laptop.enable = lib.mkEnableOption "laptop power management";
@@ -29,8 +30,31 @@
         # WiFi power save on battery only; off on AC for stable latency.
         WIFI_PWR_ON_AC = "off";
         WIFI_PWR_ON_BAT = "on";
+
+        # BT audio dropouts: btusb runtime PM. Pairs with the modprobe option
+        # below — that stops the driver, this stops TLP re-enabling it.
+        USB_EXCLUDE_BTUSB = 1;
       };
     };
 
+    # btusb enables runtime PM at probe time; TLP's exclusion only skips the
+    # device, it never reverts it.
+    boot.extraModprobeConfig = "options btusb enable_autosuspend=0";
+
+    # Intel CNVi shares one antenna between WiFi and BT, so a 2.4GHz AP fights
+    # BT audio. Docked on ethernet, WiFi is redundant — drop the radio.
+    # Only NM-managed devices reach the dispatcher, so bridges/veths are moot.
+    networking.networkmanager.dispatcherScripts = [
+      {
+        type = "basic";
+        source = pkgs.writeShellScript "wifi-off-on-ethernet" ''
+          [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.TYPE device show "$1")" = ethernet ] || exit 0
+          case "$2" in
+            up) ${pkgs.networkmanager}/bin/nmcli radio wifi off ;;
+            down) ${pkgs.networkmanager}/bin/nmcli radio wifi on ;;
+          esac
+        '';
+      }
+    ];
   };
 }
