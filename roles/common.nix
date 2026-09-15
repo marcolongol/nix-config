@@ -94,10 +94,10 @@
       pcscd.enable = true;
       # Cap journal disk usage and retention so logs don't grow unbounded
       # (docker logs ship here too via logDriver = "journald").
-      journald.extraConfig = ''
-        SystemMaxUse=2G
-        MaxRetentionSec=1month
-      '';
+      journald.settings.Journal = {
+        SystemMaxUse = "2G";
+        MaxRetentionSec = "1month";
+      };
       udev.packages = [pkgs.yubikey-personalization];
       comin = {
         enable = true;

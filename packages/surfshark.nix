@@ -54,10 +54,9 @@
   libxscrnsaver,
   libxtst,
   zip,
-}:
-let
+}: let
   pname = "surfshark";
-  version = "3.10.1";
+  version = "3.13.0";
 
   # Extract the .deb contents into the Nix store.
   # We intentionally skip autoPatchelfHook here because Surfshark bundles its
@@ -68,10 +67,10 @@ let
 
     src = fetchurl {
       url = "https://ocean.surfshark.com/debian/pool/main/s/surfshark_${version}_amd64.deb";
-      hash = "sha256-AEUH5NDIyyW21PZj38q8UGFj4gAuSuTr0lMg8ARLU5o=";
+      hash = "sha256-Z1QhmwTdMal6dDPY0KBHgMkcNRjBIWbzdlX9uwWD/MA=";
     };
 
-    nativeBuildInputs = [ dpkg ];
+    nativeBuildInputs = [dpkg];
 
     dontBuild = true;
     dontFixup = true; # no patching — FHS env handles runtime libs
@@ -84,103 +83,103 @@ let
 
     meta.license = lib.licenses.unfree;
   };
-
 in
-# Extend the buildFHSEnv derivation with a `data` attribute pointing to the
-# unpacked .deb contents, so the NixOS module can reference the daemon scripts.
-(buildFHSEnv {
-  inherit pname version;
+  # Extend the buildFHSEnv derivation with a `data` attribute pointing to the
+  # unpacked .deb contents, so the NixOS module can reference the daemon scripts.
+  (buildFHSEnv {
+    inherit pname version;
 
-  name = pname; # buildFHSEnv uses `name` for the wrapper binary
+    name = pname; # buildFHSEnv uses `name` for the wrapper binary
 
-  # Packages made available inside the FHS chroot at runtime.
-  # We reference the outer function args directly to avoid a redundant `with`.
-  targetPkgs = _: [
-    # Electron / Chromium dependencies
-    alsa-lib
-    at-spi2-atk
-    at-spi2-core
-    atk
-    cairo
-    cups
-    expat
-    gdk-pixbuf
-    glib
-    gtk3
-    libdrm
-    libgbm
-    libxkbcommon
-    mesa
-    udev
-    nspr
-    nss
-    pango
-    libx11
-    libxcb
-    libxcomposite
-    libxcursor
-    libxdamage
-    libxext
-    libxfixes
-    libxi
-    libxrandr
-    libxrender
-    libxscrnsaver
-    libxtst
+    # Packages made available inside the FHS chroot at runtime.
+    # We reference the outer function args directly to avoid a redundant `with`.
+    targetPkgs = _: [
+      # Electron / Chromium dependencies
+      alsa-lib
+      at-spi2-atk
+      at-spi2-core
+      atk
+      cairo
+      cups
+      expat
+      gdk-pixbuf
+      glib
+      gtk3
+      libdrm
+      libgbm
+      libxkbcommon
+      mesa
+      udev
+      nspr
+      nss
+      pango
+      libx11
+      libxcb
+      libxcomposite
+      libxcursor
+      libxdamage
+      libxext
+      libxfixes
+      libxi
+      libxrandr
+      libxrender
+      libxscrnsaver
+      libxtst
 
-    # Surfshark declared dependencies (deduped against Electron set above)
-    libnotify
-    gjs
-    networkmanager
-    networkmanager-openvpn
-    gnome-keyring
-    libappindicator-gtk3
-    libsecret
-    curl
-    zip
-    dbus
-    iproute2
-    iputils
-    iptables
-    wireguard-tools
+      # Surfshark declared dependencies (deduped against Electron set above)
+      libnotify
+      gjs
+      networkmanager
+      networkmanager-openvpn
+      gnome-keyring
+      libappindicator-gtk3
+      libsecret
+      curl
+      zip
+      dbus
+      iproute2
+      iputils
+      iptables
+      wireguard-tools
 
-    # Needed by surfsharkd.js / surfsharkd2.js subprocess calls
-    coreutils
-    procps
-    which
-    gnugrep
-    gnused
-  ];
+      # Needed by surfsharkd.js / surfsharkd2.js subprocess calls
+      coreutils
+      procps
+      which
+      gnugrep
+      gnused
+    ];
 
-  # Bind the extracted .deb contents into the FHS environment so Surfshark
-  # finds its files at the expected /opt/Surfshark path.
-  extraBwrapArgs = [
-    "--bind ${surfsharkUnpacked}/opt /opt"
-  ];
+    # Bind the extracted .deb contents into the FHS environment so Surfshark
+    # finds its files at the expected /opt/Surfshark path.
+    extraBwrapArgs = [
+      "--bind ${surfsharkUnpacked}/opt /opt"
+    ];
 
-  # Electron's chrome-sandbox requires setuid, which the Nix store cannot
-  # provide.  --no-sandbox is the same workaround used by discord, slack, etc.
-  runScript = "/opt/Surfshark/surfshark --no-sandbox";
+    # Electron's chrome-sandbox requires setuid, which the Nix store cannot
+    # provide.  --no-sandbox is the same workaround used by discord, slack, etc.
+    runScript = "/opt/Surfshark/surfshark --no-sandbox";
 
-  # Install a corrected desktop entry (Exec must point to the wrapper, not
-  # /opt/Surfshark/surfshark) and symlink the bundled hicolor icons.
-  extraInstallCommands = ''
-    install -Dm644 <(sed 's|Exec=.*|Exec=surfshark %U|' \
-      ${surfsharkUnpacked}/usr/share/applications/surfshark.desktop) \
-      $out/share/applications/surfshark.desktop
+    # Install a corrected desktop entry (Exec must point to the wrapper, not
+    # /opt/Surfshark/surfshark) and symlink the bundled hicolor icons.
+    extraInstallCommands = ''
+      install -Dm644 <(sed 's|Exec=.*|Exec=surfshark %U|' \
+        ${surfsharkUnpacked}/usr/share/applications/surfshark.desktop) \
+        $out/share/applications/surfshark.desktop
 
-    for size in 128x128 256x256 512x512; do
-      install -Dm644 \
-        ${surfsharkUnpacked}/usr/share/icons/hicolor/$size/apps/surfshark.png \
-        $out/share/icons/hicolor/$size/apps/surfshark.png
-    done
-  '';
+      for size in 128x128 256x256 512x512; do
+        install -Dm644 \
+          ${surfsharkUnpacked}/usr/share/icons/hicolor/$size/apps/surfshark.png \
+          $out/share/icons/hicolor/$size/apps/surfshark.png
+      done
+    '';
 
-  meta = with lib; {
-    description = "Surfshark VPN client for Linux";
-    homepage = "https://surfshark.com/download/linux";
-    license = licenses.unfree;
-    platforms = [ "x86_64-linux" ];
-    mainProgram = pname;
-  };
-}) // { data = surfsharkUnpacked; }
+    meta = with lib; {
+      description = "Surfshark VPN client for Linux";
+      homepage = "https://surfshark.com/download/linux";
+      license = licenses.unfree;
+      platforms = ["x86_64-linux"];
+      mainProgram = pname;
+    };
+  })
+  // {data = surfsharkUnpacked;}
