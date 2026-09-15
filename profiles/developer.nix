@@ -104,10 +104,10 @@
     programs.lazygit = {
       enable = true;
       settings = {
-        git.pagers = [
+        git.diffRenderers = [
           {
             colorArg = "always";
-            pager = "delta --color-only --dark --paging=never";
+            command = "delta --color-only --dark --paging=never";
           }
         ];
         customCommands = [

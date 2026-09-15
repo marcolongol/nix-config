@@ -14,6 +14,13 @@ lib.mkIf config.profiles.desktopUser.enable {
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "hyprlang";
+    # uwsm owns the session (programs.hyprland.withUWSM). HM's own integration
+    # injects an exec-once that stops/starts hyprland-session.target, and that
+    # target now carries PropagatesStopTo=graphical-session.target — under uwsm
+    # the stop cascades into uwsm's graphical-session and SIGTERMs Hyprland ~2s
+    # after login (login loop). Our units bind to graphical-session.target, so
+    # nothing needs hyprland-session.target.
+    systemd.enable = false;
     plugins = [
       pkgs.hyprlandPlugins.hyprbars
       # ponytail: hyprspace can't build against hyprland 0.56 (removed managers/animation/AnimationManager.hpp);
