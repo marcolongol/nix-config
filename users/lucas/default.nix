@@ -18,14 +18,15 @@ in {
 
   home = {
     packages = with pkgs; [
-      vim
-      spotify
-      keymapp
-      telegram-desktop
-      signal-desktop
       anytype
-      tz
+      keymapp
+      obsidian
       scrcpy
+      signal-desktop
+      spotify
+      telegram-desktop
+      tz
+      vim
     ];
 
     sessionVariables = {
