@@ -27,6 +27,7 @@ in {
       telegram-desktop
       tz
       vim
+      qgis-ltr
     ];
 
     sessionVariables = {
