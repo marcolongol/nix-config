@@ -27,13 +27,13 @@ in {
 
   # Monitor layout and workspace bindings are host-specific so they live here rather than in the desktop-user profile.
   # DP-2: LG ULTRAGEAR 2560x1440, main monitor, max refresh (164.96Hz)
-  # HDMI-A-1: Samsung U28H75x 4K, secondary, portrait (transform=1), 30Hz max over HDMI
+  # HDMI-A-1: Samsung U28H75x 4K, secondary, landscape, 30Hz max over HDMI (1.5 scale -> 2560x1440 logical)
   # Workspaces 1-5 on DP-2 (main), 6-10 on HDMI-A-1 (secondary)
   home-manager.users = lib.genAttrs activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
         "DP-2,2560x1440@164.96,0x0,1,bitdepth,10,cm,hdr,sdrbrightness,5,vrr,2"
-        "HDMI-A-1,3840x2160@30,2560x0,1.5,transform,1"
+        "HDMI-A-1,3840x2160@30,2560x0,1.5"
       ];
       workspace = [
         "1, monitor:DP-2"
@@ -41,11 +41,11 @@ in {
         "3, monitor:DP-2"
         "4, monitor:DP-2"
         "5, monitor:DP-2"
-        "6, monitor:HDMI-A-1, layoutopt:orientation:top"
-        "7, monitor:HDMI-A-1, layoutopt:orientation:top"
-        "8, monitor:HDMI-A-1, layoutopt:orientation:top"
-        "9, monitor:HDMI-A-1, layoutopt:orientation:top"
-        "10, monitor:HDMI-A-1, layoutopt:orientation:top"
+        "6, monitor:HDMI-A-1"
+        "7, monitor:HDMI-A-1"
+        "8, monitor:HDMI-A-1"
+        "9, monitor:HDMI-A-1"
+        "10, monitor:HDMI-A-1"
       ];
     };
   });
