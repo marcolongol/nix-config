@@ -54,7 +54,13 @@ in {
     # notifications. Lives with the upower block rather than in the host so a
     # second laptop gets it for free.
     home-manager.users = lib.genAttrs activeUsers (_: {
-      services.poweralertd.enable = true;
+      services.poweralertd = {
+        enable = true;
+        # -i line-power: the ACAD on/offline alert duplicates the battery's own
+        #   charging/discharging one, so it fired twice per unplug.
+        # -s: no replay of current state at login.
+        extraArgs = ["-s" "-i" "line-power"];
+      };
     });
 
     # btusb enables runtime PM at probe time; TLP's exclusion only skips the
