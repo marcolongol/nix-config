@@ -156,7 +156,10 @@
     "on-click": "ghostty -e btop"
   },
   "custom/gpu-temp": {
-    "interval": 3,
+    // nvidia-smi wakes the dGPU out of D3cold on every call, so polling this
+    // costs the runtime-suspend that offload mode exists for. 5 min is the
+    // compromise: still a readout, 100x fewer wakes than the old 3s.
+    "interval": 300,
     "exec": "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null || echo 'N/A'",
     "format": "<span color='#d9a3c5'></span>  {}°C",
     "tooltip": true,

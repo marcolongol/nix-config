@@ -17,8 +17,13 @@ in {
     services.tlp = {
       enable = lib.mkDefault (!config.services.power-profiles-daemon.enable);
       settings = {
-        # Governor: full perf on AC, powersave on battery.
-        CPU_SCALING_GOVERNOR_ON_AC = "performance";
+        # Governor: powersave on both. On intel_pstate "powersave" still
+        # boosts to full turbo on demand — it only lets the cores drop back
+        # down between wakeups, which "performance" refuses to do. With k3s
+        # ticking in the background that meant ~3.5 GHz around the clock and
+        # 24 min of logged package throttling. EPP below still biases toward
+        # performance on AC, so loaded work is unaffected.
+        CPU_SCALING_GOVERNOR_ON_AC = "powersave";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
         # EPP hint to the intel_pstate driver (Alder Lake-HX honors this).

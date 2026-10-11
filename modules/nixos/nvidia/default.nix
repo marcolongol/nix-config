@@ -245,8 +245,17 @@ in {
       ++ optionals cfg.settings.useGBM
       ["nvidia.NVreg_PreserveVideoMemoryAllocations=1"];
 
-    # Load NVIDIA modules early
-    boot.initrd.kernelModules = ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
+    # Load NVIDIA modules early — but NOT in offload mode. Loading them from
+    # the initrd binds 0000:01:00.0 before switch-root, so the finegrained
+    # `ACTION=="bind" ... ATTR{power/control}="auto"` udev rule (99-local.rules)
+    # never sees the event and power/control stays at the kernel default "on".
+    # The dGPU then never runtime-suspends: measured 99.97% active, 0 ms
+    # suspended, ~2 W and 69 C with nothing plugged into its connectors.
+    # Offload mode drives every display off the iGPU, so there is nothing to
+    # gain from early KMS here anyway.
+    boot.initrd.kernelModules =
+      optionals (!cfg.hybrid.enable || cfg.hybrid.mode != "offload")
+      ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
 
     # Warnings for missing bus IDs in hybrid mode
     warnings =
