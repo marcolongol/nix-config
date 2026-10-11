@@ -3,7 +3,9 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in {
   options.roles.laptop.enable = lib.mkEnableOption "laptop power management";
 
   config = lib.mkIf config.roles.laptop.enable {
@@ -36,6 +38,24 @@
         USB_EXCLUDE_BTUSB = 1;
       };
     };
+
+    # No upower means no low-battery warning and no critical-battery action:
+    # the pack just runs flat and the machine dies mid-write (it did, twice —
+    # Oct 10 02:00 and Oct 11 11:28). Shut down cleanly at the critical
+    # threshold instead; PowerOff over Hibernate because resume is unproven
+    # (no resumeDevice set, nvidia in the mix).
+    services.upower = {
+      enable = true;
+      criticalPowerAction = "PowerOff";
+    };
+
+    # upower only *acts* at percentageAction; nothing on Hyprland warns you
+    # before that. poweralertd turns upower's warning-level changes into
+    # notifications. Lives with the upower block rather than in the host so a
+    # second laptop gets it for free.
+    home-manager.users = lib.genAttrs activeUsers (_: {
+      services.poweralertd.enable = true;
+    });
 
     # btusb enables runtime PM at probe time; TLP's exclusion only skips the
     # device, it never reverts it.
