@@ -114,6 +114,12 @@ in {
       };
     };
 
+    # ensurePrinters queues are declared by hostname (ipp://NAME.local), so
+    # lpadmin exits 1 whenever you are not on the LAN that printer lives on —
+    # which fails the whole activation. Unreachable printer is the only
+    # realistic failure here, so let exit 1 pass.
+    systemd.services.ensure-printers.serviceConfig.SuccessExitStatus = [0 1];
+
     xdg.portal = {
       enable = true;
       # gtk portal serves org.freedesktop.portal.Settings (appearance, fonts,
