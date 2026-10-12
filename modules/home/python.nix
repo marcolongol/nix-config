@@ -11,6 +11,7 @@
         mypy
         pyright
         ruff
+        openpyxl
         pytest
         requests
         numpy
