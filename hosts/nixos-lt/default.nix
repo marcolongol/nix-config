@@ -59,12 +59,13 @@ in {
 
   # Monitor layout and workspace bindings
   # eDP-1: Chimei Innolux 1920x1080, built-in display, max refresh 144Hz, primary
-  # DP-2: ASUS VG278 1920x1080, secondary via HP USB-C dock HDMI, positioned to the left at 60Hz (converter max)
-  # Workspaces 1-5 on eDP-1 (primary), 6-10 on DP-2 (secondary)
+  # ASUS VG278 1920x1080@144, secondary via HP USB-C dock DisplayPort, positioned to the left
+  # Matched by description: the dock renumbers connectors per port (DP-2 was the dock HDMI path, DP-3 is DP)
+  # Workspaces 1-5 on eDP-1 (primary), 6-10 on the VG278 (secondary)
   home-manager.users = lib.genAttrs activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
-        "DP-2,1920x1080@60,0x0,1"
+        "desc:ASUSTek COMPUTER INC VG278 J5LMQS064651,1920x1080@144,0x0,1"
         "eDP-1,1920x1080@144,1920x0,1"
       ];
       workspace = [
@@ -73,11 +74,11 @@ in {
         "3, monitor:eDP-1"
         "4, monitor:eDP-1"
         "5, monitor:eDP-1"
-        "6, monitor:DP-2"
-        "7, monitor:DP-2"
-        "8, monitor:DP-2"
-        "9, monitor:DP-2"
-        "10, monitor:DP-2"
+        "6, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
+        "7, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
+        "8, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
+        "9, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
+        "10, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
       ];
     };
   });
