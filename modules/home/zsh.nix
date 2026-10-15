@@ -116,6 +116,9 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    # Atuin owns Ctrl-R (sourced after fzf); drop fzf's history widget so
+    # home-manager stops warning about the collision.
+    historyWidget.zsh.command = "";
   };
 
   programs.bat = {

@@ -74,14 +74,15 @@ in {
 
   programs.ssh = {
     enableDefaultConfig = false;
-    matchBlocks = {
+    # settings replaces matchBlocks; keys are upstream ssh_config directives.
+    settings = {
       "*" = {
-        serverAliveInterval = 60;
-        serverAliveCountMax = 3;
-        compression = true;
+        ServerAliveInterval = 60;
+        ServerAliveCountMax = 3;
+        Compression = true;
       };
       "github.com" = {
-        user = "git";
+        User = "git";
       };
     };
   };

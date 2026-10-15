@@ -49,6 +49,28 @@
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Claude Code plugins/skills: plain repos (no flake.nix), tracked as inputs
+    # so `nix flake update` bumps them instead of hand-edited rev+hash pairs.
+    claude-ponytail = {
+      url = "github:DietrichGebert/ponytail";
+      flake = false;
+    };
+
+    claude-ui-ux-pro-max = {
+      url = "github:nextlevelbuilder/ui-ux-pro-max-skill";
+      flake = false;
+    };
+
+    claude-code-upstream = {
+      url = "github:anthropics/claude-code";
+      flake = false;
+    };
+
+    claude-angular-skills = {
+      url = "github:oguzhan18/angular-ecosystem-skills";
+      flake = false;
+    };
   };
 
   outputs = {

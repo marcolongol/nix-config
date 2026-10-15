@@ -144,7 +144,7 @@ in {
     hardware.graphics.enable = true;
     hardware.keyboard.zsa.enable = true;
     hardware.logitech.wireless.enable = true;
-    hardware.logitech.wireless.enableGraphical = true;
+    programs.solaar.enable = true; # was hardware.logitech.wireless.enableGraphical
 
     # MX Master 3: thumb gesture button (CID 0xc3) -> workspace switching.
     # Emits Super+Ctrl+Left/Right, bound in hyprland.nix.

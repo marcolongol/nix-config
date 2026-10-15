@@ -1,43 +1,19 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
 }: let
-  ponytail = pkgs.fetchFromGitHub {
-    owner = "DietrichGebert";
-    repo = "ponytail";
-    rev = "45f7d2f83fb430a65fd512a98ad7b14d79e06636";
-    hash = "sha256-BAwav7tf6RuHZ/A7TF/1k1TXWhYAdshlsYB3LbdgUD8=";
-  };
-
-  # UI/UX Pro Max — design-system generator skill; repo root carries .claude-plugin/
-  uiUxProMax = pkgs.fetchFromGitHub {
-    owner = "nextlevelbuilder";
-    repo = "ui-ux-pro-max-skill";
-    rev = "bdf1179bcf641cca49ee7a5f76df14c3015fd38c";
-    hash = "sha256-vemRH1giNPVH3Lh+drb6u6fHJ9N7KGW2LvhKPhWCjUE=";
-  };
-
   # Frontend Design (official Anthropic) lives in a subdir of the claude-code
   # monorepo; point --plugin-dir straight at the subpath holding .claude-plugin/
-  frontendDesign = "${pkgs.fetchFromGitHub {
-    owner = "anthropics";
-    repo = "claude-code";
-    rev = "2aa6ef3d35ec45f8eea1c44c672781f183333809";
-    hash = "sha256-Xeb05Qo9MwiF5gPiLsS9IsedohLIq0g788M4vd/2oxw=";
-  }}/plugins/frontend-design";
+  frontendDesign = "${inputs.claude-code-upstream}/plugins/frontend-design";
 
   # angular-ecosystem-skills ships bare skills/ with no plugin manifest, so it
   # can't ride `plugins` as-is; wrap it into a minimal plugin (Angular + Nx).
-  angularEcosystem = pkgs.runCommand "angular-ecosystem-plugin" { } ''
+  angularEcosystem = pkgs.runCommand "angular-ecosystem-plugin" {} ''
     mkdir -p $out/.claude-plugin
-    ln -s ${pkgs.fetchFromGitHub {
-      owner = "oguzhan18";
-      repo = "angular-ecosystem-skills";
-      rev = "842f82faa9831e005d4be8230e50afdabc44dab5";
-      hash = "sha256-mQTbs6oxgbZq53N3CBboLs6fCGjaHwqiskmI3TmkaEE=";
-    }}/skills $out/skills
+    ln -s ${inputs.claude-angular-skills}/skills $out/skills
     echo '{"name":"angular-ecosystem","version":"0.0.0","description":"Angular + Nx ecosystem skills (oguzhan18)"}' > $out/.claude-plugin/plugin.json
   '';
 in {
@@ -52,7 +28,7 @@ in {
         alwaysThinkingEnabled = true;
         statusLine = {
           type = "command";
-          command = "bash \"${ponytail}/hooks/ponytail-statusline.sh\"";
+          command = "bash \"${inputs.claude-ponytail}/hooks/ponytail-statusline.sh\"";
         };
         # false: don't auto-run MCP servers from cloned project repos (code-exec on clone)
         enableAllProjectMcpServers = false;
@@ -156,18 +132,20 @@ in {
       # ────────────────────────────────────────────
       # SECTION: Plugins
       # ────────────────────────────────────────────
-      plugins = [
+      # Attrset (not list): plugin directory names stay stable instead of being
+      # derived from store path basenames.
+      plugins = {
         # ponytail — "lazy senior dev" ruleset
         # repo root is both plugin and marketplace
         # NOTE: lifecycle hooks need `node` on PATH (provided by modules/home/nodejs.nix,
         # same profiles.developer.enable gate); without node, hooks stay quiet (skills still work)
-        ponytail
+        ponytail = inputs.claude-ponytail;
 
         # Frontend UI/design plugins
-        uiUxProMax # design-system generator (50+ styles, palettes, font pairings)
-        frontendDesign # official Anthropic: deliberate aesthetic before any CSS
-        angularEcosystem # Angular + Nx ecosystem skills
-      ];
+        ui-ux-pro-max = inputs.claude-ui-ux-pro-max; # design-system generator (50+ styles, palettes, font pairings)
+        frontend-design = frontendDesign; # official Anthropic: deliberate aesthetic before any CSS
+        angular-ecosystem = angularEcosystem; # Angular + Nx ecosystem skills
+      };
 
       # ────────────────────────────────────────────
       # SECTION: MCP Servers
@@ -199,14 +177,14 @@ in {
         # nixd to match the editor (nixievim); better nixpkgs/option intelligence than nil
         nix = {
           command = "${lib.getExe pkgs.nixd}";
-          args = [ ];
+          args = [];
           extensionToLanguage = {
             ".nix" = "nix";
           };
         };
         typescript = {
           command = "${lib.getExe pkgs.typescript-language-server}";
-          args = [ "--stdio" ];
+          args = ["--stdio"];
           extensionToLanguage = {
             ".ts" = "typescript";
             ".tsx" = "typescriptreact";
@@ -216,21 +194,21 @@ in {
         };
         python = {
           command = "${lib.getExe' pkgs.pyright "pyright-langserver"}";
-          args = [ "--stdio" ];
+          args = ["--stdio"];
           extensionToLanguage = {
             ".py" = "python";
           };
         };
         lua = {
           command = "${lib.getExe pkgs.lua-language-server}";
-          args = [ ];
+          args = [];
           extensionToLanguage = {
             ".lua" = "lua";
           };
         };
         bash = {
           command = "${lib.getExe pkgs.bash-language-server}";
-          args = [ "start" ];
+          args = ["start"];
           extensionToLanguage = {
             ".sh" = "shellscript";
             ".bash" = "shellscript";
