@@ -97,9 +97,18 @@ in {
           "workdir=/var/lib/perimeter81/work"
         ];
         wantedBy = ["multi-user.target"];
+        # Mounts default to Before=local-fs.target, but tmpfiles-setup (which
+        # creates the backing dirs) runs After=local-fs.target: a cycle systemd
+        # breaks by dropping either this mount or local-fs.target. Opt out of
+        # default deps and restore only the umount.target ones.
         after = ["systemd-tmpfiles-setup.service"];
         requires = ["systemd-tmpfiles-setup.service"];
-        unitConfig.RequiresMountsFor = "/var/lib";
+        before = ["umount.target"];
+        conflicts = ["umount.target"];
+        unitConfig = {
+          DefaultDependencies = false;
+          RequiresMountsFor = "/var/lib";
+        };
       }
     ];
 

@@ -30,6 +30,7 @@
   pango,
   systemd,
   vulkan-loader,
+  xz,
   zlib,
   libx11,
   libxcb,
@@ -110,6 +111,7 @@
     pango
     systemd # libudev + libsystemd (p81daemonhelper)
     vulkan-loader
+    xz # liblzma — p81daemonhelper (since 10.1.1.339)
     zlib # libz — swglib.so plugin + osquery
     libx11
     libxcb
