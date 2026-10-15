@@ -56,7 +56,7 @@
   zip,
 }: let
   pname = "surfshark";
-  version = "3.13.0";
+  version = "3.14.0";
 
   # Extract the .deb contents into the Nix store.
   # We intentionally skip autoPatchelfHook here because Surfshark bundles its
@@ -67,7 +67,7 @@
 
     src = fetchurl {
       url = "https://ocean.surfshark.com/debian/pool/main/s/surfshark_${version}_amd64.deb";
-      hash = "sha256-Z1QhmwTdMal6dDPY0KBHgMkcNRjBIWbzdlX9uwWD/MA=";
+      hash = "sha256-YeIM9WfakXoDj0Dcbko8sABqMsrD4hKmL4y3/jSVQLY=";
     };
 
     nativeBuildInputs = [dpkg];

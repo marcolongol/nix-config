@@ -59,7 +59,7 @@
   wireguard-tools,
 }: let
   pname = "harmony-sase";
-  version = "10.1.0.53";
+  version = "10.1.1.339";
 
   # The agent hardcodes absolute /opt/Perimeter81 paths (it spawns its own
   # sibling binaries by that path) and needs to write into its install dir
@@ -80,7 +80,7 @@
     Categories=Network;
   '';
 
-  # The helper daemon + daemon-creator + p81daemonhelper are vercel/pkg bundles:
+  # The helper daemon + p81daemonhelper are vercel/pkg bundles:
   # the JS payload is appended to the ELF, so they CANNOT be patchelf'd (it
   # corrupts the payload offsets). Instead we leave every binary untouched and
   # run them through nix-ld, which supplies /lib64/ld-linux + these libraries.
@@ -148,7 +148,7 @@
   ];
 
   # nix-ld env applied to every wrapped entrypoint. sudo's env_reset wipes
-  # NIX_LD* on the GUI's `sudo p81-helper-daemon-creator` call, so each wrapper
+  # NIX_LD* on the GUI's `sudo p81-helper-daemon` call, so each wrapper
   # must set them itself rather than relying on the global nix-ld variables.
   nixLdArgs = [
     "--set"
@@ -169,7 +169,7 @@ in
 
     src = fetchurl {
       url = "https://static.perimeter81.com/agents/linux/Perimeter81_${version}.tar.xz";
-      hash = "sha256-ijAmpUYmmi24JcTtLJu9iGHnRZNEmF61eHyXSAKUdmI=";
+      hash = "sha256-mbP239SFKunMa/5PZ9m6LSUeZBTUo/I7Yyw8ZDytzPk=";
     };
 
     nativeBuildInputs = [makeWrapper];
@@ -192,17 +192,17 @@ in
       # writes state via ABSOLUTE /opt/Perimeter81 paths (not execPath-relative),
       # so the module's writable overlay at ${prefix} satisfies those at runtime
       # regardless of where the launcher execs from. GUI runs natively (NOT
-      # sandboxed) so its `sudo p81-helper-daemon-creator start` can escalate.
+      # sandboxed) so its `sudo p81-helper-daemon system-ctl start` can escalate.
       makeWrapper "$out/opt/Perimeter81/perimeter81" "$out/bin/${pname}" \
         --add-flags "--no-sandbox" \
         ${lib.escapeShellArgs nixLdArgs}
 
-      # Privileged helpers, symlinked into /usr/bin/p81-helper-daemon{,-creator}
-      # by the NixOS module and invoked via sudo by the GUI.
+      # Privileged helper, symlinked into /usr/bin/p81-helper-daemon by the
+      # NixOS module and invoked via sudo by the GUI. Since 10.1.1.339 this is
+      # a multi-call binary: the separate daemon-creator is gone and its
+      # actions moved under `p81-helper-daemon system-ctl <action>`.
       makeWrapper "$out/opt/Perimeter81/artifacts/daemon" \
         "$out/bin/${pname}-daemon" ${lib.escapeShellArgs nixLdArgs}
-      makeWrapper "$out/opt/Perimeter81/artifacts/daemon-creator" \
-        "$out/bin/${pname}-daemon-creator" ${lib.escapeShellArgs nixLdArgs}
 
       install -Dm644 ${desktopItem} \
         $out/share/applications/perimeter81.desktop

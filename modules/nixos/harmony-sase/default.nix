@@ -107,7 +107,6 @@ in {
       # GUI invokes the helper by ABSOLUTE path via sudo; NixOS has no populated
       # /usr/bin, so symlink the nix-ld/PATH-wrapped helpers in.
       "L+ /usr/bin/p81-helper-daemon - - - - ${cfg.package}/bin/harmony-sase-daemon"
-      "L+ /usr/bin/p81-helper-daemon-creator - - - - ${cfg.package}/bin/harmony-sase-daemon-creator"
 
       # Tools the agent calls by absolute path (hardcoded in the binaries).
       # NixOS lacks /sbin and /usr/sbin, so create them before symlinking in.
@@ -123,60 +122,60 @@ in {
       "L+ /bin/bash - - - - ${lib.getExe pkgs.bash}"
       "L+ /usr/bin/bash - - - - ${lib.getExe pkgs.bash}"
 
-      # daemon-creator's EnvironmentFile path (lowercase). 0700: helper.env may
+      # The helper service's EnvironmentFile path (lowercase). 0700: helper.env may
       # hold connection secrets and is only read by the root helper service.
       "d /etc/perimeter81 0700 root root -"
       # helper daemon runtime state (capital P — /etc/Perimeter81/{net,swg,...}).
       "d /etc/Perimeter81 0700 root root -"
     ];
 
-    # Upstream installs a blanket `ALL ALL=NOPASSWD: /usr/bin/p81-helper-daemon
-    # {,-creator}` with no argument spec — i.e. any user may run the helper as
-    # root with ANY arguments. We keep `users = ALL` (shared machines need it)
-    # but pin the exact subcommands the agent dispatches, so a future upstream
-    # subcommand can't become a free root primitive. The GUI only invokes
-    # `start` via sudo; the rest are enumerated to avoid breaking lifecycle
-    # (stop/restart/status), the sleep hooks (system-{sleep,resume}) and the
-    # installer paths. NOTE: a NEW subcommand in a future agent version that the
-    # GUI calls via sudo must be added here.
+    # Upstream installs `%wheel ALL=NOPASSWD: /usr/bin/p81-helper-daemon
+    # system-ctl start|stop`. Since 10.1.1.339 the helper is a multi-call
+    # binary (daemon-creator is gone) whose privileged actions are:
+    #
+    #   system-ctl start | stop
+    #   system-ctl ipc system-resume|system-sleep|pre-uninstall-actions
+    #   system-ctl ipc network-manager-dispatch-event <iface> <event>
+    #   system-ctl install-app   deb|rpm|tar <path>
+    #   system-ctl uninstall-app deb|rpm|tar
+    #
+    # We keep `users = ALL` (shared machines need it) and pin exact argument
+    # vectors. install-app/uninstall-app are deliberately NOT granted: they run
+    # apt/yum/tar as root on a caller-supplied path, which is a root primitive,
+    # and on NixOS the agent's self-update is inert anyway. The ipc actions only
+    # emit a signal on the daemon's socket, so they stay. NOTE: a NEW subcommand
+    # that the GUI calls via sudo must be added here.
     security.sudo.extraRules = let
-      creator = "/usr/bin/p81-helper-daemon-creator";
-      subcommands = [
-        "start"
-        "stop"
-        "restart"
-        "status"
-        "enable"
-        "disable"
-        "install"
-        "uninstall"
-        "system-sleep"
-        "system-resume"
+      helper = "/usr/bin/p81-helper-daemon";
+      args = [
+        "system-ctl start"
+        "system-ctl stop"
+        "system-ctl ipc system-sleep"
+        "system-ctl ipc system-resume"
       ];
     in [
       {
         users = ["ALL"];
         commands =
-          # The bare daemon, no arguments.
+          # The bare daemon, no arguments (foreground helper, as the unit runs it).
           [
             {
-              command = "/usr/bin/p81-helper-daemon \"\"";
+              command = "${helper} \"\"";
               options = ["NOPASSWD"];
             }
           ]
-          # daemon-creator, one entry per known subcommand.
-          ++ map (sub: {
-            command = "${creator} ${sub}";
+          ++ map (a: {
+            command = "${helper} ${a}";
             options = ["NOPASSWD"];
           })
-          subcommands;
+          args;
       }
     ];
 
     # Privileged helper service. Declared here instead of letting the GUI run
-    # `daemon-creator install` (which would try to write a unit into the
-    # read-only Nix-managed /etc/systemd/system). Template taken verbatim from
-    # the daemon-creator binary's embedded unit.
+    # `system-ctl install-app` (which would try to write a unit into the
+    # read-only Nix-managed /etc/systemd/system). Template taken from the
+    # perimeter81helper.service that upstream ships in the tarball.
     systemd.services.perimeter81helper = {
       description = "Perimeter81 helper service";
       wantedBy = ["multi-user.target"];
@@ -188,6 +187,9 @@ in {
         EnvironmentFile = "-/etc/perimeter81/helper.env";
         ExecStart = "${cfg.package}/bin/harmony-sase-daemon";
         KillMode = "process";
+        # Never let an inherited NODE_OPTIONS inject code into the root helper
+        # (it orchestrates the autoupdater); upstream's own unit does this too.
+        Environment = ["NODE_OPTIONS="];
         Restart = "on-failure";
         RestartSec = 1;
       };
@@ -203,9 +205,13 @@ in {
           case "$1" in
             tun0 | ipsec0 | p81) exit 0 ;;
           esac
+          # 10.1.1.339 replaced network-interface-{up,down} with a single
+          # dispatch event taking <iface> <event>, matching after-install.sh.
           case "$2" in
-            up)   /usr/bin/p81-helper-daemon-creator network-interface-up ;;
-            down) /usr/bin/p81-helper-daemon-creator network-interface-down ;;
+            up | down | dhcp4-change | dhcp6-change)
+              /usr/bin/p81-helper-daemon system-ctl ipc \
+                network-manager-dispatch-event "$1" "$2"
+              ;;
           esac
         '';
       }
