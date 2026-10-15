@@ -16,7 +16,7 @@ lib.mkIf config.profiles.desktopUser.enable {
       rofi-calc
     ];
     theme = ./rofi/glass.rasi;
-    extraConfig = {
+    settings = {
       modi = "drun,run,window,emoji,calc";
       show-icons = true;
       drun-display-format = "{name}";

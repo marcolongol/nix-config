@@ -18,6 +18,10 @@
   '';
 in {
   config = lib.mkIf config.profiles.developer.enable {
+    # Bash sandbox deps (settings.sandbox below); claude-code falls back to
+    # running unsandboxed if either is missing.
+    home.packages = [pkgs.bubblewrap pkgs.socat];
+
     programs.claude-code = {
       enable = true;
 
@@ -32,6 +36,58 @@ in {
         };
         # false: don't auto-run MCP servers from cloned project repos (code-exec on clone)
         enableAllProjectMcpServers = false;
+
+        # OS-enforced (bubblewrap) boundary around Bash. Sandboxed commands are
+        # auto-approved, so the permissions.allow list below is mostly moot now;
+        # it still governs the unsandboxed retry path. Needs claude-code >= 2.1.29x.
+        # Note: file tools, MCP servers and hooks run OUTSIDE the sandbox.
+        sandbox = {
+          enabled = true;
+
+          # Secrets stay unreadable to sandboxed shell commands even though
+          # `Bash(cat *)` is allowed. sops-nix HM secrets live under
+          # $XDG_RUNTIME_DIR; system secrets under /run/secrets.
+          credentials.files = [
+            {
+              path = "~/.ssh";
+              mode = "deny";
+            }
+            {
+              path = "~/.gnupg";
+              mode = "deny";
+            }
+            {
+              path = "/run/user/1000/secrets";
+              mode = "deny";
+            }
+            {
+              path = "/run/user/1000/secrets.d";
+              mode = "deny";
+            }
+            {
+              path = "/run/secrets";
+              mode = "deny";
+            }
+          ];
+
+          # Egress allowlist; anything else prompts. Extend when a fetch fails.
+          network.allowedDomains = [
+            "github.com"
+            "api.github.com"
+            "codeload.github.com"
+            "objects.githubusercontent.com"
+            "raw.githubusercontent.com"
+            "cache.nixos.org"
+            "channels.nixos.org"
+            "registry.npmjs.org"
+            "pypi.org"
+            "files.pythonhosted.org"
+            "crates.io"
+            "static.crates.io"
+            "proxy.golang.org"
+            "sum.golang.org"
+          ];
+        };
         env = {
           CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1";
         };
@@ -616,7 +672,7 @@ in {
           ---
           name: browser
           description: Browse, test, and audit web pages using Chrome DevTools
-          model: sonnet
+          model: haiku
           color: pink
           memory: user
           tools: Read, Bash, mcp__chrome-devtools__*
@@ -738,7 +794,7 @@ in {
           ---
           name: researcher
           description: Deep research on technical topics using web search and documentation
-          model: sonnet
+          model: haiku
           color: orange
           memory: user
           tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*
