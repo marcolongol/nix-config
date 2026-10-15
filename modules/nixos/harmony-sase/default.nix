@@ -82,7 +82,13 @@ in {
     # read-only store tree as a writable overlay so both work.
     systemd.mounts = [
       {
-        what = "overlay";
+        # overlayfs ignores the mount source, so stamp the agent version here
+        # instead of keeping the only version marker inside Options: switch-to-configuration
+        # *reloads* a .mount whose Options alone changed, and overlayfs cannot
+        # swap lowerdir on remount ("Failed to reload opt-Perimeter81.mount",
+        # leaving the old version mounted under the new daemon). A changed What
+        # makes it restart instead, which is the only way to pick up a bump.
+        what = "overlay-${cfg.package.version}";
         where = "/opt/Perimeter81";
         type = "overlay";
         options = lib.concatStringsSep "," [
@@ -186,7 +192,14 @@ in {
         Type = "simple";
         EnvironmentFile = "-/etc/perimeter81/helper.env";
         ExecStart = "${cfg.package}/bin/harmony-sase-daemon";
-        KillMode = "process";
+        # Upstream's own unit: SIGTERM the main process, then take the rest of
+        # the cgroup, and cap the wait. With KillMode=process and no timeout a
+        # stop that the daemon ignores blocks switch-to-configuration for the
+        # full DefaultTimeoutStopSec (90s), which deadlocks activation.
+        KillMode = "mixed";
+        KillSignal = "SIGTERM";
+        RestartKillSignal = "SIGTERM";
+        TimeoutStopSec = "25s";
         # Never let an inherited NODE_OPTIONS inject code into the root helper
         # (it orchestrates the autoupdater); upstream's own unit does this too.
         Environment = ["NODE_OPTIONS="];
