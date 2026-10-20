@@ -5,7 +5,7 @@
   ...
 }: lib.mkIf config.profiles.developer.enable {
   home.packages = with pkgs.dotnetCorePackages; [
-    sdk_9_0
+    sdk_10_0
   ];
 
   home.sessionVariables = {
