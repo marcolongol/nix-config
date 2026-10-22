@@ -37,19 +37,11 @@ in {
         # false: don't auto-run MCP servers from cloned project repos (code-exec on clone)
         enableAllProjectMcpServers = false;
 
-        # OS-enforced (bubblewrap) boundary around Bash. Sandboxed commands are
-        # auto-approved, so the permissions.allow list below is mostly moot now;
-        # it still governs the unsandboxed retry path. Needs claude-code >= 2.1.29x.
-        # Note: file tools, MCP servers and hooks run OUTSIDE the sandbox.
+        # bwrap around Bash only; Bash(...) allow rules are the unsandboxed fallback.
         sandbox = {
           enabled = true;
 
-          # Secrets stay unreadable to sandboxed shell commands even though
-          # `Bash(cat *)` is allowed. sops-nix HM secrets live under
-          # $XDG_RUNTIME_DIR; system secrets under /run/secrets.
-          # Deny the real *.d dirs only: `secrets` is a symlink to
-          # `secrets.d/<gen>`, and bwrap fails every command ("Can't mkdir
-          # parents for /run/secrets.d/2") when asked to mask the symlink.
+          # Deny sops secrets.d dirs, not the `secrets` symlinks (bwrap can't mask those).
           credentials.files = [
             {
               path = "~/.ssh";
@@ -136,7 +128,7 @@ in {
             "Bash(awk *)"
             "Bash(diff *)"
             "Bash(gh *)"
-            # curl intentionally NOT auto-allowed — exfil / curl|sh channel; let it prompt
+            # curl intentionally not allowed
             "Bash(* --version)"
             "Bash(* --help)"
 
@@ -145,9 +137,9 @@ in {
             "mcp__ide__getDiagnostics"
 
             # MCP servers
-            "mcp__plugin_claude-code-home-manager_github__*"
-            "mcp__plugin_claude-code-home-manager_context7__*"
-            "mcp__plugin_claude-code-home-manager_mcp-nixos__*"
+            "mcp__plugin_hm_github__*"
+            "mcp__plugin_hm_context7__*"
+            "mcp__plugin_hm_mcp-nixos__*"
             "mcp__chrome-devtools__*"
 
             # Agents
@@ -425,7 +417,7 @@ in {
           ---
           name: review-diff
           description: Review code changes for quality, security, and best practices
-          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_claude-code-home-manager_github__*
+          allowed-tools: Read Grep Glob Bash LSP mcp__ide__getDiagnostics mcp__plugin_hm_github__*
           context: fork
           agent: Plan
           ---
@@ -523,7 +515,7 @@ in {
           color: red
           effort: max
           memory: user
-          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_github__*
+          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_hm_github__*
           ---
 
           You are a security auditor. Treat every input as hostile until proven otherwise; assume breach.
@@ -565,7 +557,7 @@ in {
           color: cyan
           isolation: worktree
           memory: user
-          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
+          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_hm_context7__*, mcp__plugin_hm_mcp-nixos__*
           ---
 
           You are an adversarial test writer: hunt the edge cases nobody thought about (null,
@@ -603,7 +595,7 @@ in {
           color: purple
           isolation: worktree
           memory: user
-          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
+          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_hm_context7__*, mcp__plugin_hm_mcp-nixos__*
           ---
 
           You are a meticulous refactorer: improve structure without changing behavior.
@@ -638,7 +630,7 @@ in {
           color: green
           isolation: worktree
           memory: user
-          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
+          tools: Read, Grep, Glob, Edit, Write, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_hm_context7__*, mcp__plugin_hm_mcp-nixos__*
           ---
 
           You are a pragmatic implementer: ship solid, working code without ceremony.
@@ -709,7 +701,7 @@ in {
           color: blue
           effort: max
           memory: user
-          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, WebSearch, WebFetch, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
+          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, WebSearch, WebFetch, mcp__plugin_hm_context7__*, mcp__plugin_hm_github__*, mcp__plugin_hm_mcp-nixos__*
           ---
 
           You are a software architect: pragmatic, thorough, focused on actionable plans.
@@ -754,7 +746,7 @@ in {
           color: yellow
           effort: max
           memory: user
-          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*, mcp__plugin_claude-code-home-manager_mcp-nixos__*
+          tools: Read, Grep, Glob, Bash, LSP, mcp__ide__getDiagnostics, mcp__plugin_hm_context7__*, mcp__plugin_hm_github__*, mcp__plugin_hm_mcp-nixos__*
           ---
 
           You are a strict senior reviewer: by the book, no hand-waving, concrete findings only.
@@ -796,7 +788,7 @@ in {
           model: haiku
           color: orange
           memory: user
-          tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, mcp__plugin_claude-code-home-manager_context7__*, mcp__plugin_claude-code-home-manager_github__*
+          tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, mcp__plugin_hm_context7__*, mcp__plugin_hm_github__*
           ---
 
           You are a thorough researcher: cross-reference sources and dig until you find the real
