@@ -1,5 +1,4 @@
 final: prev: {
-  # Package overrides go here
   freecad = prev.freecad.overrideAttrs (old: {
     buildInputs =
       map (

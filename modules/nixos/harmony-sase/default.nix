@@ -6,21 +6,15 @@
 }: let
   cfg = config.programs.harmony-sase;
 
-  # Shim osqueryi that fakes Device-Posture file-existence checks for the listed
-  # sentinel paths and delegates every other query to the real osquery, so all
-  # other posture rules still evaluate truthfully. Shadows the bundled osqueryi
-  # via a higher-priority overlay lowerdir (below). See spoofDpcFiles.
+  # osqueryi shim faking Device-Posture sentinel file checks; other queries go to real osquery. See spoofDpcFiles.
   realOsqueryi = "${cfg.package}/opt/Perimeter81/binaries/osquery/linux/osqueryi";
   osquerySpoof = pkgs.runCommand "harmony-sase-osquery-spoof" {} ''
     mkdir -p $out/binaries/osquery/linux
     cp ${pkgs.writeShellScript "osqueryi-spoof" ''
-      # $* (args joined) is sufficient: we only substring-match the distinctive
-      # sentinel path. Non-matching queries delegate with "$@" to preserve arg
-      # boundaries for the real osquery.
+      # Non-matching queries delegate to real osquery with "$@".
       query="$*"
       for p in ${lib.escapeShellArgs cfg.spoofDpcFiles}; do
         if [[ "$query" == *"$p"* ]]; then
-          # Minimal `osqueryi --json` output: pretend the sentinel file exists.
           printf '[{"path":"%s"}]\n' "$p"
           exit 0
         fi
@@ -30,8 +24,7 @@
     chmod +x $out/binaries/osquery/linux/osqueryi
   '';
 
-  # Overlay lowerdirs, highest priority first. The spoof dir only contributes
-  # binaries/osquery/linux/osqueryi; everything else falls through to the agent.
+  # Overlay lowerdirs, highest priority first; the spoof dir only provides osqueryi.
   lowerdir =
     if cfg.spoofDpcFiles == []
     then "${cfg.package}/opt/Perimeter81"
@@ -63,31 +56,21 @@ in {
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
 
-    # The agent's GUI + helper binaries are unpatched generic/pkg ELFs. nix-ld
-    # supplies /lib64/ld-linux so they run unmodified (patchelf corrupts the
-    # vercel/pkg payloads). The library set covers p81daemonhelper, which the
-    # GUI spawns directly without going through our wrappers.
+    # Agent binaries are unpatched pkg ELFs (patchelf corrupts them); nix-ld runs them,
+    # including p81daemonhelper spawned directly by the GUI.
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = cfg.package.runtimeLibs;
 
-    # The agent connects over WireGuard / OpenVPN and drives the link via
-    # NetworkManager (its dispatcher hook fires on tun0/ipsec0/p81 changes).
+    # Agent drives VPN links via NetworkManager.
     networking.networkmanager.enable = true;
     networking.wireguard.enable = lib.mkDefault true;
     boot.kernelModules = ["wireguard"];
 
-    # The agent assumes a writable FHS install at /opt/Perimeter81 and spawns
-    # its own siblings (p81daemonhelper, osquery) by that absolute path, while
-    # also writing state into it (mkdir /opt/Perimeter81/yarkon). Present the
-    # read-only store tree as a writable overlay so both work.
+    # Agent expects a writable FHS /opt/Perimeter81; overlay it on the store tree.
     systemd.mounts = [
       {
-        # overlayfs ignores the mount source, so stamp the agent version here
-        # instead of keeping the only version marker inside Options: switch-to-configuration
-        # *reloads* a .mount whose Options alone changed, and overlayfs cannot
-        # swap lowerdir on remount ("Failed to reload opt-Perimeter81.mount",
-        # leaving the old version mounted under the new daemon). A changed What
-        # makes it restart instead, which is the only way to pick up a bump.
+        # Version stamped in What: overlayfs can't remount with a new lowerdir, so a changed What
+        # forces a restart instead of a reload.
         what = "overlay-${cfg.package.version}";
         where = "/opt/Perimeter81";
         type = "overlay";
@@ -97,10 +80,7 @@ in {
           "workdir=/var/lib/perimeter81/work"
         ];
         wantedBy = ["multi-user.target"];
-        # Mounts default to Before=local-fs.target, but tmpfiles-setup (which
-        # creates the backing dirs) runs After=local-fs.target: a cycle systemd
-        # breaks by dropping either this mount or local-fs.target. Opt out of
-        # default deps and restore only the umount.target ones.
+        # Drop default deps (Before=local-fs.target cycles with tmpfiles-setup); keep umount.target ones.
         after = ["systemd-tmpfiles-setup.service"];
         requires = ["systemd-tmpfiles-setup.service"];
         before = ["umount.target"];
@@ -119,12 +99,10 @@ in {
       "d /var/lib/perimeter81/work 0755 root root -"
       "d /opt/Perimeter81 0755 root root -"
 
-      # GUI invokes the helper by ABSOLUTE path via sudo; NixOS has no populated
-      # /usr/bin, so symlink the nix-ld/PATH-wrapped helpers in.
+      # GUI calls the helper by absolute /usr/bin path via sudo.
       "L+ /usr/bin/p81-helper-daemon - - - - ${cfg.package}/bin/harmony-sase-daemon"
 
-      # Tools the agent calls by absolute path (hardcoded in the binaries).
-      # NixOS lacks /sbin and /usr/sbin, so create them before symlinking in.
+      # Agent hardcodes these tool paths; NixOS lacks /sbin and /usr/sbin.
       "d /sbin 0755 root root -"
       "d /usr/sbin 0755 root root -"
       "L+ /sbin/ip - - - - ${lib.getExe' pkgs.iproute2 "ip"}"
@@ -132,34 +110,18 @@ in {
       "L+ /usr/sbin/iptables - - - - ${lib.getExe' pkgs.iptables "iptables"}"
       "L+ /usr/sbin/ip6tables - - - - ${lib.getExe' pkgs.iptables "ip6tables"}"
 
-      # The bundled wg-quick (and the agent's troubleshooting helper) are
-      # #!/bin/bash scripts; NixOS ships neither /bin/bash nor /usr/bin/bash.
+      # Bundled wg-quick and helpers use #!/bin/bash.
       "L+ /bin/bash - - - - ${lib.getExe pkgs.bash}"
       "L+ /usr/bin/bash - - - - ${lib.getExe pkgs.bash}"
 
-      # The helper service's EnvironmentFile path (lowercase). 0700: helper.env may
-      # hold connection secrets and is only read by the root helper service.
+      # EnvironmentFile dir; 0700 because helper.env may hold secrets.
       "d /etc/perimeter81 0700 root root -"
-      # helper daemon runtime state (capital P — /etc/Perimeter81/{net,swg,...}).
+      # Helper daemon runtime state.
       "d /etc/Perimeter81 0700 root root -"
     ];
 
-    # Upstream installs `%wheel ALL=NOPASSWD: /usr/bin/p81-helper-daemon
-    # system-ctl start|stop`. Since 10.1.1.339 the helper is a multi-call
-    # binary (daemon-creator is gone) whose privileged actions are:
-    #
-    #   system-ctl start | stop
-    #   system-ctl ipc system-resume|system-sleep|pre-uninstall-actions
-    #   system-ctl ipc network-manager-dispatch-event <iface> <event>
-    #   system-ctl install-app   deb|rpm|tar <path>
-    #   system-ctl uninstall-app deb|rpm|tar
-    #
-    # We keep `users = ALL` (shared machines need it) and pin exact argument
-    # vectors. install-app/uninstall-app are deliberately NOT granted: they run
-    # apt/yum/tar as root on a caller-supplied path, which is a root primitive,
-    # and on NixOS the agent's self-update is inert anyway. The ipc actions only
-    # emit a signal on the daemon's socket, so they stay. NOTE: a NEW subcommand
-    # that the GUI calls via sudo must be added here.
+    # Pin exact argument vectors for the multi-call helper (system-ctl start|stop, ipc <action>).
+    # install-app/uninstall-app are deliberately not granted (root primitive); add new GUI sudo subcommands here.
     security.sudo.extraRules = let
       helper = "/usr/bin/p81-helper-daemon";
       args = [
@@ -172,7 +134,6 @@ in {
       {
         users = ["ALL"];
         commands =
-          # The bare daemon, no arguments (foreground helper, as the unit runs it).
           [
             {
               command = "${helper} \"\"";
@@ -187,10 +148,7 @@ in {
       }
     ];
 
-    # Privileged helper service. Declared here instead of letting the GUI run
-    # `system-ctl install-app` (which would try to write a unit into the
-    # read-only Nix-managed /etc/systemd/system). Template taken from the
-    # perimeter81helper.service that upstream ships in the tarball.
+    # Declared here because the GUI's install-app can't write units to read-only /etc/systemd/system.
     systemd.services.perimeter81helper = {
       description = "Perimeter81 helper service";
       wantedBy = ["multi-user.target"];
@@ -201,25 +159,19 @@ in {
         Type = "simple";
         EnvironmentFile = "-/etc/perimeter81/helper.env";
         ExecStart = "${cfg.package}/bin/harmony-sase-daemon";
-        # Upstream's own unit: SIGTERM the main process, then take the rest of
-        # the cgroup, and cap the wait. With KillMode=process and no timeout a
-        # stop that the daemon ignores blocks switch-to-configuration for the
-        # full DefaultTimeoutStopSec (90s), which deadlocks activation.
+        # Upstream stop semantics; without a timeout an ignored stop deadlocks switch-to-configuration.
         KillMode = "mixed";
         KillSignal = "SIGTERM";
         RestartKillSignal = "SIGTERM";
         TimeoutStopSec = "25s";
-        # Never let an inherited NODE_OPTIONS inject code into the root helper
-        # (it orchestrates the autoupdater); upstream's own unit does this too.
+        # Block inherited NODE_OPTIONS injection into the root helper.
         Environment = ["NODE_OPTIONS="];
         Restart = "on-failure";
         RestartSec = 1;
       };
     };
 
-    # NetworkManager dispatcher hook — notifies the helper of link up/down so it
-    # can react to underlying network changes (replicated from after-install.sh,
-    # skipping the agent's own tun0/ipsec0/p81 interfaces).
+    # NM dispatcher hook: tells the helper about link changes, skipping agent interfaces.
     networking.networkmanager.dispatcherScripts = [
       {
         type = "basic";
@@ -227,8 +179,7 @@ in {
           case "$1" in
             tun0 | ipsec0 | p81) exit 0 ;;
           esac
-          # 10.1.1.339 replaced network-interface-{up,down} with a single
-          # dispatch event taking <iface> <event>, matching after-install.sh.
+          # 10.1.1.339: single dispatch event taking <iface> <event>.
           case "$2" in
             up | down | dhcp4-change | dhcp6-change)
               /usr/bin/p81-helper-daemon system-ctl ipc \

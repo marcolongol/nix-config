@@ -33,14 +33,14 @@
   fileSystems = {
     "/persist".neededForBoot = true;
 
-    # Mount the existing Windows EFI partition — do NOT let disko format it.
+    # Existing Windows EFI partition; disko must not format it.
     "/boot" = {
       device = "/dev/nvme0n1p1";
       fsType = "vfat";
       options = ["fmask=0077" "dmask=0077"];
     };
 
-    # Steam library drive — existing filesystem, never formatted by disko.
+    # Existing Steam library drive; disko must not format it.
     "/games" = {
       device = "/dev/nvme1n1p1";
       fsType = "ntfs3";
@@ -48,8 +48,7 @@
     };
   };
 
-  # Wipe and recreate the root subvolume on every boot.
-  # Old roots are kept for 30 days under /old_roots for recovery.
+  # Wipe root subvolume on boot; old roots kept 30 days in /old_roots.
   boot.initrd.systemd.services.rollback-root = {
     description = "Rollback btrfs root subvolume";
     wantedBy = ["initrd.target"];

@@ -62,10 +62,8 @@ in {
       [rocmPackages.rocm-smi]
       ++ optionals cfg.enableOpenCL [clinfo];
 
-    # NixOS ships CoreCtrl: package + polkit rule (authorizes the corectrl group)
     programs.corectrl.enable = cfg.enableCorectrl;
 
-    # Grant group access: render/video for OpenCL/ROCm, corectrl for CoreCtrl
     users.users =
       genAttrs
       (attrNames (filterAttrs (_: u: u.enable) config.hostUsers))

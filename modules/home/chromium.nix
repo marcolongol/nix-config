@@ -12,7 +12,6 @@ lib.mkIf config.profiles.desktopUser.enable {
     ];
   };
 
-  # Systemd user service to run Chromium in background with DevTools enabled
   systemd.user.services.chromium-devtools = {
     Unit = {
       Description = "Chromium with DevTools Protocol";
@@ -22,11 +21,9 @@ lib.mkIf config.profiles.desktopUser.enable {
 
     Service = {
       Type = "simple";
-      # Run Chromium in headless mode with remote debugging enabled
       ExecStart = "${config.programs.chromium.finalPackage}/bin/chromium --headless --disable-gpu --remote-debugging-port=9222";
       Restart = "on-failure";
       RestartSec = 5;
-      # Allow time for startup
       StartLimitInterval = 200;
       StartLimitBurst = 5;
     };
@@ -36,7 +33,6 @@ lib.mkIf config.profiles.desktopUser.enable {
     };
   };
 
-  # Persist Chromium cache and config
   persistentFolders = [
     ".cache/chromium"
     ".config/chromium"

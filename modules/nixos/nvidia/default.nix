@@ -140,10 +140,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Basic NVIDIA configuration
     services.xserver.videoDrivers = ["nvidia"];
 
-    # Hardware configuration
     hardware = {
       graphics = {
         enable = true;
@@ -162,14 +160,12 @@ in {
         modesetting.enable = cfg.settings.modesetting;
         powerManagement.enable = cfg.powerManagement.enable;
         powerManagement.finegrained = cfg.powerManagement.finegrained;
-        open = false; # Use proprietary driver
-        nvidiaSettings = true; # Enable nvidia-settings
+        open = false;
+        nvidiaSettings = true;
         package = cfg.package;
 
-        # Force composition pipeline if enabled
         forceFullCompositionPipeline = cfg.settings.forceCompositionPipeline;
 
-        # Prime configuration for hybrid graphics
         prime =
           mkIf cfg.hybrid.enable {
             sync.enable = cfg.hybrid.mode == "sync";
@@ -179,7 +175,6 @@ in {
             };
             reverseSync.enable = cfg.hybrid.mode == "reverse-sync";
 
-            # Use new busId options if available, fall back to deprecated ones
             nvidiaBusId =
               if cfg.hybrid.busId.nvidia != null
               then cfg.hybrid.busId.nvidia
@@ -190,7 +185,6 @@ in {
               then cfg.hybrid.busId.intel
               else cfg.hybrid.intelBusId;
           }
-          # Only set amdgpuBusId if it's actually configured
           // (lib.optionalAttrs (cfg.hybrid.busId.amd != null) {
             amdgpuBusId = cfg.hybrid.busId.amd;
           });
@@ -200,10 +194,8 @@ in {
         cfg.settings.hardware.enableRedistributableFirmware;
     };
 
-    # Environment variables
     environment = {
       variables = mkMerge [
-        # Only set NVIDIA-specific variables when NOT in offload mode
         (mkIf (!cfg.hybrid.enable || cfg.hybrid.mode != "offload") {
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
         })
@@ -216,18 +208,14 @@ in {
 
       systemPackages = with pkgs;
         mkMerge [
-          # Always include basic NVIDIA tools and Mesa for hybrid graphics
           [
             nvidia-vaapi-driver
             egl-wayland
             mesa
-            mesa-demos # For debugging OpenGL issues (includes glxinfo)
+            mesa-demos
           ]
-          # CUDA packages
           (mkIf cfg.enableCUDA [cudatoolkit cudaPackages.cudnn])
-          # OpenCL packages
           (mkIf cfg.enableOpenCL [clinfo opencl-info])
-          # Vulkan packages
           (mkIf cfg.enableVulkan [
             vulkan-tools
             vulkan-loader
@@ -236,28 +224,19 @@ in {
         ];
     };
 
-    # Blacklist nouveau if enabled
     boot.blacklistedKernelModules = mkIf cfg.blacklistNouveau ["nouveau"];
 
-    # Kernel parameters for better stability
     boot.kernelParams =
       ["nvidia-drm.modeset=1"]
       ++ optionals cfg.settings.useGBM
       ["nvidia.NVreg_PreserveVideoMemoryAllocations=1"];
 
-    # Load NVIDIA modules early — but NOT in offload mode. Loading them from
-    # the initrd binds 0000:01:00.0 before switch-root, so the finegrained
-    # `ACTION=="bind" ... ATTR{power/control}="auto"` udev rule (99-local.rules)
-    # never sees the event and power/control stays at the kernel default "on".
-    # The dGPU then never runtime-suspends: measured 99.97% active, 0 ms
-    # suspended, ~2 W and 69 C with nothing plugged into its connectors.
-    # Offload mode drives every display off the iGPU, so there is nothing to
-    # gain from early KMS here anyway.
+    # Not in offload mode: initrd loading binds the dGPU before the udev power/control=auto rule
+    # runs, so it never runtime-suspends.
     boot.initrd.kernelModules =
       optionals (!cfg.hybrid.enable || cfg.hybrid.mode != "offload")
       ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
 
-    # Warnings for missing bus IDs in hybrid mode
     warnings =
       optionals (cfg.hybrid.enable
         && cfg.hybrid.busId.nvidia == null

@@ -15,8 +15,7 @@
 
     persistentFolders = ["/var/lib/docker"];
 
-    # Allow inbound traffic from Docker bridge networks (br+) to host services.
-    # Required for k3d pods to reach host-local servers (e.g. Prefect UI at port 4200).
+    # Let Docker bridge networks (br+) reach host services (k3d pods -> Prefect UI :4200).
     networking.firewall.extraInputRules = ''
       iifname "br*" accept
     '';

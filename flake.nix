@@ -50,8 +50,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Claude Code plugins/skills: plain repos (no flake.nix), tracked as inputs
-    # so `nix flake update` bumps them instead of hand-edited rev+hash pairs.
+    # Claude Code plugins/skills: plain repos without flake.nix.
     claude-ponytail = {
       url = "github:DietrichGebert/ponytail";
       flake = false;

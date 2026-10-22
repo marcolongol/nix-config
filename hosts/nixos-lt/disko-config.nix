@@ -1,16 +1,13 @@
 # disko configuration for nixos-lt
-# This file defines declarative disk partitioning with impermanence support
 {lib, ...}: {
-  # Disk partitioning configuration
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = "/dev/nvme0n1"; # Adjust this to match your actual disk device
+        device = "/dev/nvme0n1";
         content = {
           type = "gpt";
           partitions = {
-            # ESP boot partition
             ESP = {
               size = "1G";
               type = "EF00";
@@ -22,15 +19,13 @@
               };
             };
 
-            # Swap partition
             swap = {
-              size = "16G"; # 16GB swap for better performance and hibernation support
+              size = "16G";
               content = {type = "swap";};
             };
 
-            # Persistent storage partition
             persist = {
-              size = "100%"; # Most space goes to persistent data where it's actually needed
+              size = "100%";
               content = {
                 type = "filesystem";
                 format = "ext4";
@@ -39,16 +34,15 @@
               };
             };
 
-            # Root partition with btrfs for proper impermanence
             root = {
-              size = "120G"; # Space for btrfs subvolumes and snapshots
+              size = "120G";
               content = {
                 type = "btrfs";
                 extraArgs = [
                   "-f"
                   "-L"
                   "nixos"
-                ]; # Override existing partition and set label
+                ];
                 subvolumes = {
                   "/root" = {
                     mountpoint = "/";
@@ -69,9 +63,7 @@
 
   fileSystems."/persist".neededForBoot = true;
 
-  # Impermanence: Wipe root subvolume on boot
-  # This script runs during boot to create a fresh root subvolume
-  # while preserving old roots for 30 days for recovery purposes
+  # Impermanence: wipe root subvolume on boot, keep old roots 30 days.
   boot.initrd.systemd.services.rollback-root = {
     description = "Rollback btrfs root subvolume";
     wantedBy = ["initrd.target"];

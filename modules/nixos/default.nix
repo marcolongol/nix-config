@@ -58,11 +58,7 @@ in {
         [(import pubkeysPath).ssh.publicKey];
     });
 
-    # GPG auth subkey (stored on YubiKey) via pam_ssh_agent_auth.
-    # gpg-agent exposes the [A] subkey as an SSH key; pam_ssh_agent_auth
-    # checks it against /etc/ssh/authorized_keys.d/%u (populated from
-    # openssh.authorizedKeys.keys). UIF touch on the auth slot ensures
-    # physical presence on every auth. Password remains as fallback.
+    # GPG auth subkey on YubiKey via pam_ssh_agent_auth, checked against authorized_keys.d; password is fallback.
     security.pam.sshAgentAuth.enable = true;
 
     security.pam.services = {
@@ -72,7 +68,7 @@ in {
       sddm.sshAgentAuth = true;
     };
 
-    # sudo must run PAM so the touch-to-auth path triggers.
+    # sudo must run PAM for the touch-to-auth path.
     security.sudo.wheelNeedsPassword = true;
 
     home-manager = {

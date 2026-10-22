@@ -15,7 +15,6 @@
       inherit hostName;
       networkmanager = {
         enable = true;
-        # Randomize MAC per-connection for privacy on untrusted networks.
         # Switch to "stable" if captive portals or DHCP reservations break.
         wifi.macAddress = "random";
         ethernet.macAddress = "random";
@@ -23,7 +22,7 @@
         dns = "systemd-resolved";
       };
       firewall = {
-        # 22: SSH. Dev ranges stay open for LAN testing of dev servers.
+        # Dev port ranges stay open for LAN testing.
         allowedTCPPorts = [22];
         allowedTCPPortRanges = [
           {
@@ -58,8 +57,7 @@
     ];
 
     services = {
-      # Encrypted DNS over TLS, opportunistic so captive portals still work.
-      # Fallback resolvers carry #hostname for cert validation.
+      # Opportunistic so captive portals work; fallbacks carry #hostname for cert validation.
       resolved = {
         enable = true;
         settings.Resolve = {
@@ -92,8 +90,7 @@
       udisks2.enable = true;
       devmon.enable = true;
       pcscd.enable = true;
-      # Cap journal disk usage and retention so logs don't grow unbounded
-      # (docker logs ship here too via logDriver = "journald").
+      # Cap journal size and retention (docker logs ship here too).
       journald.settings.Journal = {
         SystemMaxUse = "2G";
         MaxRetentionSec = "1month";
@@ -113,7 +110,6 @@
 
     boot.zfs.forceImportRoot = false;
     boot.loader.systemd-boot.configurationLimit = 10;
-    # Quiet, low-verbosity boot. Hosts can append to this list as needed.
     boot.kernelParams = ["loglevel=3" "quiet"];
 
     boot.tmp = {
@@ -138,9 +134,7 @@
       auto-optimise-store = true;
     };
 
-    # nh: modern rebuild frontend (`nh os switch`), wraps nix-output-monitor
-    # for readable build output and shows an nvd package diff after each build.
-    # nh clean replaces nix.gc (don't run both).
+    # nh clean replaces nix.gc; don't enable both.
     programs.nh = {
       enable = true;
       flake = "/home/lucas/Personal/nix-config";
@@ -150,8 +144,7 @@
       };
     };
 
-    # nix-index-database ships the prebuilt index so `comma` (`, <cmd>`) and
-    # command-not-found work without ever running `nix-index` locally.
+    # Prebuilt index for comma and command-not-found.
     programs.nix-index-database.comma.enable = true;
 
     users.defaultUserShell = pkgs.zsh;
@@ -166,8 +159,7 @@
 
     hardware.gpgSmartcards.enable = true;
 
-    # Passwordless sudo by default. Flipped to require auth when a user
-    # declares a YubiKey (see modules/nixos/default.nix).
+    # Flipped to require auth when a user declares a YubiKey (modules/nixos/default.nix).
     security.sudo.wheelNeedsPassword = lib.mkDefault false;
 
     sops = {

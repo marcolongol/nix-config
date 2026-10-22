@@ -10,8 +10,7 @@ in
     # notify-send for scripts (rofi-wifi.sh, rofi-bluetooth.sh, ...)
     home.packages = [pkgs.libnotify];
 
-    # Stylix only wires colors into swaync (flat, sharp borders). Take full
-    # control of the look here while still pulling the palette from stylix.
+    # Stylix's swaync theme is flat; style it here, palette still from stylix.
     stylix.targets.swaync.enable = false;
 
     services.swaync = {
@@ -39,9 +38,7 @@ in
           padding: 12px;
         }
 
-        /* base08 (the base16 "red" slot) can be non-red in a wallpaper-derived
-           palette, so use a fixed alert red for critical urgency. Matches the
-           hyprbars close-button red. */
+        /* Fixed alert red: base08 can be non-red in wallpaper-derived palettes. */
         .notification.critical .notification-content,
         .notification-row.critical .notification-content {
           border-left: 3px solid #f38ba8;
@@ -88,9 +85,7 @@ in
           color: ${c.base00};
         }
 
-        /* Control center (swaync-client -t). Translucent so the Hyprland blur
-           layerrule (swaync-control-center namespace) frosts the desktop
-           behind it. Cards stay solid for readability. */
+        /* Control center: translucent so the blur layerrule shows through; cards stay solid. */
         .control-center {
           background: alpha(${c.base00}, 0.55);
           border: 1px solid ${c.base02};

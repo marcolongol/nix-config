@@ -45,7 +45,7 @@
       };
     };
 
-    # SystemD user service limits (systemd ignores PAM limits by design)
+    # systemd ignores PAM limits
     systemd.user.settings.Manager = {
       DefaultLimitNOFILE = "2097152:2097152";
     };

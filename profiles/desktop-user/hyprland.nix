@@ -14,17 +14,12 @@ lib.mkIf config.profiles.desktopUser.enable {
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "hyprlang";
-    # uwsm owns the session (programs.hyprland.withUWSM). HM's own integration
-    # injects an exec-once that stops/starts hyprland-session.target, and that
-    # target now carries PropagatesStopTo=graphical-session.target — under uwsm
-    # the stop cascades into uwsm's graphical-session and SIGTERMs Hyprland ~2s
-    # after login (login loop). Our units bind to graphical-session.target, so
-    # nothing needs hyprland-session.target.
+    # uwsm owns the session. HM's hyprland-session.target stop cascades into uwsm's
+    # graphical-session and kills Hyprland ~2s after login.
     systemd.enable = false;
     plugins = [
       pkgs.hyprlandPlugins.hyprbars
-      # ponytail: hyprspace can't build against hyprland 0.56 (removed managers/animation/AnimationManager.hpp);
-      # upstream unfixed as of 2026-05-28. Re-add when it supports 0.56, and restore $mod+Tab + plugin.overview below.
+      # hyprspace doesn't build against hyprland 0.56; re-add with $mod+Tab and plugin.overview below once it does.
       # pkgs.hyprlandPlugins.hyprspace
     ];
     settings = {
@@ -86,7 +81,6 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod, M, exit"
         "$mod, V, togglefloating"
         "$mod, space, exec, $menu"
-        # ponytail: needs hyprspace, disabled for hyprland 0.56 — restore with plugin above
         # "$mod, Tab, exec, hyprctl dispatch overview:toggle"
 
         "$mod, h, movefocus, l"
@@ -154,7 +148,6 @@ lib.mkIf config.profiles.desktopUser.enable {
         "$mod SHIFT, period, movewindow, mon:+1"
       ];
       plugin = {
-        # ponytail: hyprspace disabled for hyprland 0.56 — restore with plugin above
         # overview = {
         #   centerAligned = true;
         #   hideBackgroundLayers = false;
@@ -189,11 +182,7 @@ lib.mkIf config.profiles.desktopUser.enable {
         ",XF86MonBrightnessDown, exec, swayosd-client --brightness lower"
       ];
     };
-    # Window rules use Hyprland 0.53+ syntax: `windowrule` is a special
-    # category keyed by `name` (must be the first field) with `match:*`
-    # selectors and rule fields. The old flat `windowrulev2 = "float, class:..."`
-    # form is gone in 0.55 (prints a deprecation error + red popup). Emitted as
-    # raw text because the name-first ordering can't survive Nix attr sorting.
+    # 0.53+ `windowrule` blocks need `name` first, so they're raw text (Nix attr sorting breaks order).
     extraConfig = ''
       windowrule {
         name = float-center-pavucontrol
@@ -237,10 +226,7 @@ lib.mkIf config.profiles.desktopUser.enable {
         idle_inhibit = fullscreen
       }
 
-      # Frost the swaync control center: its CSS background is translucent,
-      # this blurs the desktop behind it. ignore_alpha keeps fully-transparent
-      # regions (gaps between cards) from rendering a blur rectangle.
-      # layerrule is a special category (same 0.53+ syntax as windowrule).
+      # Blur behind the translucent swaync control center; ignore_alpha skips transparent gaps.
       layerrule {
         name = blur-swaync-control-center
         match:namespace = swaync-control-center

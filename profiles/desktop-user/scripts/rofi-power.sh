@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# Unified rofi power menu — replaces the waybar power-group drawer.
-# Single entry point, no nested confirms: dangerous actions ask once.
+# Unified rofi power menu.
 set -euo pipefail
 
-# Glyph + label pairs (Nerd Font v3). Label-only string goes to rofi so the
-# glyph stays in front of the human-readable name.
+# Glyph + label pairs (Nerd Font v3); rofi gets the label-only string.
 declare -a entries=(
   "  Lock"
   "󰤄  Suspend"
@@ -20,7 +18,6 @@ choice=$(printf '%s\n' "${entries[@]}" \
          -no-custom \
          -theme-str 'window { width: 280px; }')
 
-# Strip the leading icon + 2 spaces to get the bare action name.
 action="${choice##*  }"
 
 confirm() {

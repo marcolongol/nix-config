@@ -1,6 +1,5 @@
 final: _: {
-  # Map an attribute set to a list, applying a function to each attribute,
-  # filtering out null values and converting back to an attribute set
+  # Map attrs to a list via f, dropping nulls, back to an attrset.
   mapAttrsMaybe = f: attrs:
     final.pipe attrs [
       (final.mapAttrsToList f)
@@ -8,8 +7,7 @@ final: _: {
       builtins.listToAttrs
     ];
 
-  # Apply a function to all .nix files in a directory, returning an attribute set.
-  # Handles both plain .nix files and subdirectories containing a default.nix.
+  # Apply f to every .nix file (or dir with default.nix) in a directory.
   forAllNixFiles = dir: f:
     if builtins.pathExists dir
     then
@@ -26,7 +24,6 @@ final: _: {
       ]
     else {};
 
-  # Recursively map all .nix files in a set of directories,
-  # returning an attribute set of attribute sets (dir name → file name → path)
+  # mkDirMap over several directories: dir name -> file name -> path.
   mkDirMap = final.mapAttrs (_: dir: final.forAllNixFiles dir (fn: fn));
 }

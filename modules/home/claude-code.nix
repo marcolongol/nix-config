@@ -5,12 +5,10 @@
   pkgs,
   ...
 }: let
-  # Frontend Design (official Anthropic) lives in a subdir of the claude-code
-  # monorepo; point --plugin-dir straight at the subpath holding .claude-plugin/
+  # Lives in a subdir of the claude-code monorepo
   frontendDesign = "${inputs.claude-code-upstream}/plugins/frontend-design";
 
-  # angular-ecosystem-skills ships bare skills/ with no plugin manifest, so it
-  # can't ride `plugins` as-is; wrap it into a minimal plugin (Angular + Nx).
+  # Upstream ships bare skills/ without a plugin manifest; wrap it
   angularEcosystem = pkgs.runCommand "angular-ecosystem-plugin" {} ''
     mkdir -p $out/.claude-plugin
     ln -s ${inputs.claude-angular-skills}/skills $out/skills
@@ -18,8 +16,7 @@
   '';
 in {
   config = lib.mkIf config.profiles.developer.enable {
-    # Bash sandbox deps (settings.sandbox below); claude-code falls back to
-    # running unsandboxed if either is missing.
+    # Sandbox deps; without them claude-code runs Bash unsandboxed
     home.packages = [pkgs.bubblewrap pkgs.socat];
 
     programs.claude-code = {
@@ -34,7 +31,7 @@ in {
           type = "command";
           command = "bash \"${inputs.claude-ponytail}/hooks/ponytail-statusline.sh\"";
         };
-        # false: don't auto-run MCP servers from cloned project repos (code-exec on clone)
+        # Don't auto-run MCP servers from cloned repos
         enableAllProjectMcpServers = false;
 
         # bwrap around Bash only; Bash(...) allow rules are the unsandboxed fallback.
@@ -167,7 +164,6 @@ in {
               hooks = [
                 {
                   type = "command";
-                  # hook payload arrives as JSON on stdin
                   command = "f=$(${lib.getExe pkgs.jq} -r '.tool_input.file_path'); [[ $f == *.nix ]] && ${lib.getExe pkgs.alejandra} \"$f\" || true";
                 }
               ];
@@ -179,13 +175,9 @@ in {
       # ────────────────────────────────────────────
       # SECTION: Plugins
       # ────────────────────────────────────────────
-      # Attrset (not list): plugin directory names stay stable instead of being
-      # derived from store path basenames.
+      # Attrset so plugin dir names stay stable
       plugins = {
-        # ponytail — "lazy senior dev" ruleset
-        # repo root is both plugin and marketplace
-        # NOTE: lifecycle hooks need `node` on PATH (provided by modules/home/nodejs.nix,
-        # same profiles.developer.enable gate); without node, hooks stay quiet (skills still work)
+        # Lifecycle hooks need `node` on PATH (modules/home/nodejs.nix)
         ponytail = inputs.claude-ponytail;
 
         # Frontend UI/design plugins
@@ -206,12 +198,11 @@ in {
         };
 
         context7 = {
-          # node from developer profile (modules/home/nodejs.nix); version pinned for reproducibility
+          # Version pinned for reproducibility
           command = "${pkgs.nodejs}/bin/npx";
           args = ["-y" "@upstash/context7-mcp@3.2.1"];
         };
 
-        # nixpkgs/NixOS/home-manager option + package search — kills nix hallucination
         mcp-nixos = {
           command = "${lib.getExe pkgs.mcp-nixos}";
         };
@@ -221,7 +212,6 @@ in {
       # SECTION: LSP Servers
       # ────────────────────────────────────────────
       lspServers = {
-        # nixd to match the editor (nixievim); better nixpkgs/option intelligence than nil
         nix = {
           command = "${lib.getExe pkgs.nixd}";
           args = [];

@@ -33,7 +33,6 @@ print_status() {
   if is_active; then
     printf '{"text":"󰅶","alt":"activated","class":"activated","tooltip":"Inhibit: ON (idle, sleep, lid-switch all blocked)"}\n'
   else
-    # Clean stale pidfile if the held process is gone.
     [[ -f "$PIDFILE" ]] && rm -f "$PIDFILE"
     printf '{"text":"󰾪","alt":"deactivated","class":"deactivated","tooltip":"Inhibit: OFF (sleep/lid allowed)"}\n'
   fi

@@ -25,7 +25,6 @@ in {
     lucas.enable = true;
   };
 
-  # Monitor layout and workspace bindings are host-specific so they live here rather than in the desktop-user profile.
   # DP-2: LG ULTRAGEAR 2560x1440, main monitor, max refresh (164.96Hz)
   # HDMI-A-1: Samsung U28H75x 4K, secondary, landscape, 30Hz max over HDMI (1.5 scale -> 2560x1440 logical)
   # Workspaces 1-5 on DP-2 (main), 6-10 on HDMI-A-1 (secondary)

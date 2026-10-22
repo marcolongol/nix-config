@@ -38,10 +38,8 @@ case "$choice" in
       && notify-send "WiFi" "Disconnected" -i network-wireless
     ;;
   *)
-    # Field 2 is the SSID (lock glyph is field 1, signal trails).
     ssid=$(awk '{print $2}' <<<"$choice")
     [[ -z "$ssid" ]] && exit 0
-    # Known connection? bring it up. Else connect fresh (prompt password on fail).
     if nmcli -t -f NAME connection show | grep -qxF "$ssid"; then
       nmcli connection up "$ssid" >/dev/null \
         && notify-send "WiFi" "Connected to $ssid" -i network-wireless

@@ -5,16 +5,12 @@
   ...
 }: let
   cfg = config.services."cloudflare-tunnel";
-  # Caddy listens here on loopback only. cloudflared forwards all
-  # *.${domain} traffic into this port; Caddy fans out by Host header.
+  # Caddy loopback port; cloudflared forwards all *.${domain} traffic here.
   caddyPort = 8080;
-  # Internal port for the bundled whoami smoke test. Chosen high to
-  # avoid clashing with user demo apps (which typically grab 3000-8000).
+  # whoami smoke-test port; high to avoid user demo apps.
   whoamiPort = 8081;
 
-  # User apps + (optionally) the built-in whoami entry. User wins on
-  # name collision so a real `apps.whoami = N;` always overrides the
-  # smoke test.
+  # User apps override the built-in whoami on name collision.
   effectiveApps =
     (lib.optionalAttrs cfg.whoami.enable {whoami = whoamiPort;})
     // cfg.apps;
@@ -64,11 +60,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # services.cloudflared runs with `DynamicUser=true`, meaning the
-    # `cloudflared` user only exists while the unit is active. sops-nix
-    # chowns secrets during activation (before the unit starts), so the
-    # name must resolve in /etc/passwd. Declare the user statically and
-    # opt the unit out of DynamicUser to keep the names stable.
+    # DynamicUser users don't exist at sops-nix activation; declare statically so chown resolves.
     users.users.cloudflared = {
       isSystemUser = true;
       group = "cloudflared";
@@ -81,7 +73,6 @@ in {
       Group = "cloudflared";
     };
 
-    # Tunnel credentials JSON, decrypted at boot under /run/secrets.
     sops.secrets.cloudflared-credentials = {
       mode = "0400";
       owner = "cloudflared";
@@ -92,7 +83,6 @@ in {
       enable = true;
       tunnels.${cfg.tunnelId} = {
         credentialsFile = config.sops.secrets.cloudflared-credentials.path;
-        # Single wildcard rule — host-header routing happens in Caddy below.
         ingress = {
           "*.${cfg.domain}" = "http://localhost:${toString caddyPort}";
         };
@@ -100,9 +90,7 @@ in {
       };
     };
 
-    # Cloudflare terminates TLS at the edge, so the origin proxy is plain
-    # HTTP bound to loopback only. No inbound public ports required —
-    # cloudflared maintains an outbound persistent connection to Cloudflare.
+    # Cloudflare terminates TLS; origin is plain HTTP on loopback.
     services.caddy = {
       enable = true;
       globalConfig = ''
@@ -121,8 +109,7 @@ in {
           )
           effectiveApps)
         // {
-          # Catch-all for *.${domain} subdomains not in the apps list.
-          # Without this, Caddy would serve its default "no site" page.
+          # Catch-all for subdomains not in the apps list.
           "http://" = {
             extraConfig = ''
               bind 127.0.0.1
@@ -132,9 +119,7 @@ in {
         };
     };
 
-    # Built-in smoke test target. Runs as a dynamic user, loopback-only
-    # (whoami's default is 0.0.0.0 but Caddy is the only thing that
-    # talks to it via 127.0.0.1).
+    # Smoke-test target, loopback only.
     systemd.services.whoami = lib.mkIf cfg.whoami.enable {
       description = "Traefik whoami (cloudflare-tunnel smoke test)";
       wantedBy = ["multi-user.target"];

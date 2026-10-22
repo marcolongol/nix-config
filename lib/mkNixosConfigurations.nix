@@ -1,6 +1,5 @@
 inputs: final: _: {
-  # Create NixOS configurations for a set of hosts discovered via mkDirMap.
-  # Automatically applies overlays, injects specialArgs, and includes standard modules.
+  # NixOS configurations for hosts found via mkDirMap, with overlays, specialArgs and standard modules.
   mkNixosConfigurations = {
     hosts,
     system ? "x86_64-linux",

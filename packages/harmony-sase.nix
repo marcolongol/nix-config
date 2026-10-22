@@ -4,7 +4,6 @@
   fetchurl,
   makeWrapper,
   writeText,
-  # Runtime libs (Electron GUI + node/pkg helper daemons)
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -45,7 +44,6 @@
   libxscrnsaver,
   libxshmfence,
   libxtst,
-  # Helper daemon / VPN engine PATH deps
   curl,
   iproute2,
   iptables,
@@ -62,10 +60,7 @@
   pname = "harmony-sase";
   version = "10.1.1.339";
 
-  # The agent hardcodes absolute /opt/Perimeter81 paths (it spawns its own
-  # sibling binaries by that path) and needs to write into its install dir
-  # (mkdir /opt/Perimeter81/yarkon). The NixOS module presents this exact path
-  # as a writable overlay over the store, so the launchers target it directly.
+  # Agent hardcodes absolute /opt/Perimeter81 paths; the NixOS module overlays that path writable.
   prefix = "/opt/Perimeter81";
 
   desktopItem = writeText "perimeter81.desktop" ''
@@ -81,10 +76,7 @@
     Categories=Network;
   '';
 
-  # The helper daemon + p81daemonhelper are vercel/pkg bundles:
-  # the JS payload is appended to the ELF, so they CANNOT be patchelf'd (it
-  # corrupts the payload offsets). Instead we leave every binary untouched and
-  # run them through nix-ld, which supplies /lib64/ld-linux + these libraries.
+  # pkg bundles can't be patchelf'd (corrupts the payload); run untouched via nix-ld.
   runtimeLibs = [
     alsa-lib
     at-spi2-atk
@@ -132,8 +124,7 @@
   libPath = lib.makeLibraryPath runtimeLibs;
   loader = stdenv.cc.bintools.dynamicLinker;
 
-  # Tools the helper / engines shell out to (wg-quick, openvpn, charon call
-  # `ip`, `iptables`, `modprobe`, etc. by name).
+  # Tools the helper/engines call by name.
   helperPath = lib.makeBinPath [
     iproute2
     iptables
@@ -149,9 +140,7 @@
     wireguard-tools # wg / wg-quick
   ];
 
-  # nix-ld env applied to every wrapped entrypoint. sudo's env_reset wipes
-  # NIX_LD* on the GUI's `sudo p81-helper-daemon` call, so each wrapper
-  # must set them itself rather than relying on the global nix-ld variables.
+  # sudo env_reset wipes NIX_LD*, so each wrapper sets them itself.
   nixLdArgs = [
     "--set"
     "NIX_LD"
@@ -178,10 +167,7 @@ in
 
     dontConfigure = true;
     dontBuild = true;
-    # Never run the fixup phase: it would strip/patchelf the binaries, which
-    # corrupts the appended vercel/pkg payloads (same failure class as patchelf).
-    # The GUI is plain Electron and gets its GTK/GIO env from nix-ld + the
-    # ambient session, so no wrapGAppsHook is needed.
+    # Fixup would strip/patchelf and corrupt the pkg payloads.
     dontFixup = true;
 
     installPhase = ''
@@ -190,19 +176,13 @@ in
       mkdir -p "$out/opt/Perimeter81"
       cp -a . "$out/opt/Perimeter81/"
 
-      # Run the store binaries directly. The agent spawns its siblings and
-      # writes state via ABSOLUTE /opt/Perimeter81 paths (not execPath-relative),
-      # so the module's writable overlay at ${prefix} satisfies those at runtime
-      # regardless of where the launcher execs from. GUI runs natively (NOT
-      # sandboxed) so its `sudo p81-helper-daemon system-ctl start` can escalate.
+      # Run store binaries directly; the module's overlay satisfies the absolute /opt paths.
+      # GUI is not sandboxed so its `sudo p81-helper-daemon system-ctl start` can escalate.
       makeWrapper "$out/opt/Perimeter81/perimeter81" "$out/bin/${pname}" \
         --add-flags "--no-sandbox" \
         ${lib.escapeShellArgs nixLdArgs}
 
-      # Privileged helper, symlinked into /usr/bin/p81-helper-daemon by the
-      # NixOS module and invoked via sudo by the GUI. Since 10.1.1.339 this is
-      # a multi-call binary: the separate daemon-creator is gone and its
-      # actions moved under `p81-helper-daemon system-ctl <action>`.
+      # Privileged helper, symlinked to /usr/bin/p81-helper-daemon by the module; since 10.1.1.339 a multi-call binary.
       makeWrapper "$out/opt/Perimeter81/artifacts/daemon" \
         "$out/bin/${pname}-daemon" ${lib.escapeShellArgs nixLdArgs}
 
@@ -212,8 +192,7 @@ in
       runHook postInstall
     '';
 
-    # Exposed so the NixOS module can feed the same set to programs.nix-ld for
-    # GUI-spawned children (p81daemonhelper) that we don't wrap directly.
+    # Exposed so the module can feed the same set to programs.nix-ld.
     passthru = {inherit runtimeLibs;};
 
     meta = with lib; {

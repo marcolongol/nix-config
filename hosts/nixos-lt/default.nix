@@ -83,7 +83,6 @@ in {
     };
   });
 
-  # secrets
   sops = {
     secrets = {
       host-secret = {

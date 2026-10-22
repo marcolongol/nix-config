@@ -5,17 +5,9 @@
   modulesPath,
   ...
 }: let
-  # Collect SSH keys for the live CD's built-in `nixos` user so we can SSH in
-  # during installation without a password.
-  #
-  # We use the `users` specialArg (injected by lib.nix) rather than a relative
-  # path like ../../../users/lucas/pubkeys.nix, because relative paths that
-  # escape the host directory break under pure evaluation mode (--pure-eval /
-  # flake evaluation).  The specialArg is already resolved to an absolute store
-  # path before evaluation begins, so it is safe to use here.
-  #
-  # To add another installer's key, append:
-  #   (import (users.<name> + "/pubkeys.nix")).ssh.publicKey
+  # SSH keys for the live CD's `nixos` user. Use the `users` specialArg, not a relative
+  # path: paths escaping the host dir break under pure eval.
+  # To add another key: (import (users.<name> + "/pubkeys.nix")).ssh.publicKey
   authorizedKeys = [
     (import (users.lucas + "/pubkeys.nix")).ssh.publicKey
   ];
@@ -28,37 +20,27 @@ in {
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
-  # Only the common role is enabled. hostUsers is intentionally empty on the live CD.
-  # The normal hostUsers mechanism creates user accounts backed by SOPS-encrypted
-  # passwords. SOPS is disabled here (no persistent host key), so we grant SSH
-  # access by injecting public keys into the stock `nixos` user instead.
+  # hostUsers stays empty: user accounts need SOPS passwords, which the live CD can't decrypt.
   roles.common.enable = true;
 
   isoImage.squashfsCompression = "gzip -Xcompression-level 1";
 
   services.comin.enable = lib.mkForce false;
 
-  # Clear all SOPS configuration: the live CD has no persistent host key to
-  # decrypt secrets, so nothing here can be decrypted.  We also clear
-  # defaultSopsFile (which common.nix sets to secrets/<hostName>.yaml) to
-  # avoid an activation error from a file that does not exist for this host.
+  # No persistent host key, so clear SOPS config. defaultSopsFile is set by common.nix to a
+  # per-host file that doesn't exist here.
   sops.secrets = lib.mkForce {};
   sops.age.sshKeyPaths = lib.mkForce [];
   sops.defaultSopsFile = lib.mkForce "/dev/null";
 
-  # Stylix is always injected via lib.nix but requires a base16 scheme with
-  # no default, which would cause an eval error — disable it for the live CD
+  # Stylix has no default base16 scheme; eval fails without disabling it.
   stylix.enable = false;
 
-  # Grant SSH access to the live CD's built-in `nixos` user using the
-  # installer's public key.  This is the only way to get key-based SSH access
-  # without SOPS (which is disabled above): we bypass the normal user module
-  # entirely and write the key directly into the stock account.
+  # Bypass the user module (needs SOPS) and inject the key into the stock `nixos` user.
   users.users.nixos.openssh.authorizedKeys.keys = authorizedKeys;
 
   environment.systemPackages = with pkgs; [
     disko
-    # Helper script summarising the install workflow
     (writeShellScriptBin "install-help" ''
       echo ""
       echo "NixOS Installation Steps"

@@ -4,7 +4,6 @@
   fetchurl,
   dpkg,
   buildFHSEnv,
-  # Runtime deps
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -58,10 +57,7 @@
   pname = "surfshark";
   version = "3.14.0";
 
-  # Extract the .deb contents into the Nix store.
-  # We intentionally skip autoPatchelfHook here because Surfshark bundles its
-  # own Electron libs (libffmpeg.so etc.) that conflict with it.  The FHS
-  # wrapper below provides all required system libraries at runtime instead.
+  # No autoPatchelfHook: bundled Electron libs (libffmpeg.so etc.) conflict; the FHS wrapper supplies libs.
   surfsharkUnpacked = stdenv.mkDerivation {
     inherit pname version;
 
@@ -84,17 +80,13 @@
     meta.license = lib.licenses.unfree;
   };
 in
-  # Extend the buildFHSEnv derivation with a `data` attribute pointing to the
-  # unpacked .deb contents, so the NixOS module can reference the daemon scripts.
+  # `data` points at the unpacked .deb so the module can reference the daemon scripts.
   (buildFHSEnv {
     inherit pname version;
 
     name = pname; # buildFHSEnv uses `name` for the wrapper binary
 
-    # Packages made available inside the FHS chroot at runtime.
-    # We reference the outer function args directly to avoid a redundant `with`.
     targetPkgs = _: [
-      # Electron / Chromium dependencies
       alsa-lib
       at-spi2-atk
       at-spi2-core
@@ -126,7 +118,6 @@ in
       libxscrnsaver
       libxtst
 
-      # Surfshark declared dependencies (deduped against Electron set above)
       libnotify
       gjs
       networkmanager
@@ -150,18 +141,15 @@ in
       gnused
     ];
 
-    # Bind the extracted .deb contents into the FHS environment so Surfshark
-    # finds its files at the expected /opt/Surfshark path.
+    # Bind the .deb contents at /opt/Surfshark.
     extraBwrapArgs = [
       "--bind ${surfsharkUnpacked}/opt /opt"
     ];
 
-    # Electron's chrome-sandbox requires setuid, which the Nix store cannot
-    # provide.  --no-sandbox is the same workaround used by discord, slack, etc.
+    # chrome-sandbox needs setuid, unavailable in the store.
     runScript = "/opt/Surfshark/surfshark --no-sandbox";
 
-    # Install a corrected desktop entry (Exec must point to the wrapper, not
-    # /opt/Surfshark/surfshark) and symlink the bundled hicolor icons.
+    # Desktop entry Exec must point to the wrapper; link bundled hicolor icons.
     extraInstallCommands = ''
       install -Dm644 <(sed 's|Exec=.*|Exec=surfshark %U|' \
         ${surfsharkUnpacked}/usr/share/applications/surfshark.desktop) \
