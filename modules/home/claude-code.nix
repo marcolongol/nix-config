@@ -47,6 +47,9 @@ in {
           # Secrets stay unreadable to sandboxed shell commands even though
           # `Bash(cat *)` is allowed. sops-nix HM secrets live under
           # $XDG_RUNTIME_DIR; system secrets under /run/secrets.
+          # Deny the real *.d dirs only: `secrets` is a symlink to
+          # `secrets.d/<gen>`, and bwrap fails every command ("Can't mkdir
+          # parents for /run/secrets.d/2") when asked to mask the symlink.
           credentials.files = [
             {
               path = "~/.ssh";
@@ -57,15 +60,11 @@ in {
               mode = "deny";
             }
             {
-              path = "/run/user/1000/secrets";
-              mode = "deny";
-            }
-            {
               path = "/run/user/1000/secrets.d";
               mode = "deny";
             }
             {
-              path = "/run/secrets";
+              path = "/run/secrets.d";
               mode = "deny";
             }
           ];
