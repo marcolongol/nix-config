@@ -9,6 +9,15 @@
   config = lib.mkIf config.roles.gaming.enable {
     programs.steam = {
       enable = true;
+      # PRIME offload hosts: render games on dGPU, not iGPU
+      package = lib.mkIf config.hardware.nvidia.prime.offload.enable (pkgs.steam.override {
+        extraEnv = {
+          __NV_PRIME_RENDER_OFFLOAD = "1";
+          __NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
+          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+          __VK_LAYER_NV_optimus = "NVIDIA_only";
+        };
+      });
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true;
