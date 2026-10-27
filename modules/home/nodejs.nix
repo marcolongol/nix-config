@@ -6,7 +6,7 @@
 }:
 lib.mkIf config.profiles.developer.enable {
   home.packages = [
-    pkgs.nodejs
+    pkgs.nodejs_26
     pkgs.pnpm
     pkgs.yarn
     pkgs.npm-check-updates
