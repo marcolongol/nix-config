@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./themes.nix
     ./hyprland.nix
@@ -13,13 +8,11 @@
     ./lock.nix
     ./clipboard.nix
     ./notifications.nix
+    ./chromium.nix
   ];
 
-  options.profiles.desktopUser.enable = lib.mkEnableOption "desktop user profile (Hyprland, Waybar, Zen Browser)";
-
-  # Packages, scripts, and persistence for the desktop-user profile.
-  # Each sub-file guards itself with lib.mkIf config.profiles.desktopUser.enable.
-  config = lib.mkIf config.profiles.desktopUser.enable {
+  # Home side of roles.desktop, applied to every user via home-manager.sharedModules.
+  config = {
     home.packages = with pkgs; [
       file-roller
       filezilla
@@ -53,7 +46,7 @@
 
     # On-screen volume/brightness popup. Keys are bound to swayosd-client in
     # hyprland.nix; this runs the server. Brightness write perms come from the
-    # swayosd udev rule enabled in roles/desktop.nix.
+    # swayosd udev rule enabled in roles/desktop/default.nix.
     services.swayosd.enable = true;
 
     persistentFolders = [

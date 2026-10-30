@@ -1,12 +1,6 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
-  options.profiles.gamer.enable = lib.mkEnableOption "gaming tools (Mangohud, Discord)";
-
-  config = lib.mkIf config.profiles.gamer.enable {
+# Home side of roles.gaming, applied to every user via home-manager.sharedModules.
+{pkgs, ...}: {
+  config = {
     programs.mangohud = {
       enable = true;
       settings = {
@@ -33,6 +27,7 @@
 
     persistentFolders = [
       ".config/Discord"
+      ".local/share/Steam"
     ];
   };
 }

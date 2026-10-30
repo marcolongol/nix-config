@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-lib.mkIf config.profiles.desktopUser.enable {
+}: {
   services.hyprpaper = {
     settings = {
       splash = false;

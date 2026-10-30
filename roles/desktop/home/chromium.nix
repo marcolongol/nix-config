@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-lib.mkIf config.profiles.desktopUser.enable {
+}: {
   programs.chromium = {
     enable = true;
     commandLineArgs = [

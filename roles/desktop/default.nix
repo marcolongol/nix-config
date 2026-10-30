@@ -28,6 +28,8 @@ in {
   options.roles.desktop.enable = lib.mkEnableOption "desktop environment (Hyprland, SDDM, Pipewire)";
 
   config = lib.mkIf config.roles.desktop.enable {
+    home-manager.sharedModules = [./home];
+
     environment.systemPackages = [
       sddm-astronaut
       pkgs.bibata-cursors

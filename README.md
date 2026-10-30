@@ -35,24 +35,18 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 │   └── nixos/            # NixOS system modules (amd, nvidia, surfshark)
 ├── roles/                 # System roles — each declares its own option
 │   ├── common.nix        # Base system config
-│   ├── desktop.nix       # Hyprland, SDDM, Pipewire, Stylix
+│   ├── desktop/          # Hyprland, SDDM, Pipewire, Stylix
+│   │   ├── default.nix   # System side
+│   │   └── home/         # Home side (Waybar, Zen, Rofi, etc.) via sharedModules
 │   ├── laptop.nix        # Power management
 │   ├── impermanent.nix   # Ephemeral root with /persist
 │   ├── nfs-client.nix    # NFS automounts
-│   ├── gaming.nix        # Steam, Proton, GameMode
+│   ├── gaming/           # Steam, Proton, GameMode; home side: MangoHud, Discord
 │   └── docker.nix        # Docker daemon + k3d DNS
 ├── profiles/              # User profiles — each declares its own option
 │   ├── common.nix        # Essential tools (vim, btop, ghostty, nvim)
 │   ├── developer.nix     # Dev tools, git, k8s, direnv
-│   ├── desktop-user/     # GUI environment (Hyprland, Waybar, Zen, etc.)
-│   │   ├── default.nix   # Packages, scripts, rofi
-│   │   ├── hyprland.nix
-│   │   ├── waybar.nix
-│   │   ├── browser.nix
-│   │   ├── lock.nix
-│   │   ├── clipboard.nix
-│   │   └── themes.nix
-│   └── gamer.nix         # MangoHud, Discord
+│   └── worker.nix
 ├── users/                 # User-specific configurations
 │   └── lucas/
 ├── secrets/               # Encrypted secrets (sops-nix)
@@ -142,9 +136,7 @@ This separation means you can:
 {
   profiles = {
     common.enable = true;
-    desktopUser.enable = true;
     developer.enable = true;
-    gamer.enable = true;
   };
   # Personal git config, SSH settings, GPG, etc.
 }
@@ -153,8 +145,8 @@ This separation means you can:
 **Profiles** define collections of software and settings. Each profile declares its own option:
 - **common**: Essential tools, ghostty, btop, nixievim, sops config
 - **developer**: Git, direnv, kubectl/helm/talosctl/k9s, lazygit, claude-code
-- **desktopUser**: Hyprland, Waybar, Zen Browser, Rofi, cliphist, hypridle
-- **gamer**: MangoHud, Discord
+
+Roles with a user-facing side (`desktop`, `gaming`) ship it via `home-manager.sharedModules`, so every user on that host gets it — no matching profile to keep in sync.
 
 ### Key Components
 

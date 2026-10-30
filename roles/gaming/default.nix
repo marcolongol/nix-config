@@ -7,6 +7,8 @@
   options.roles.gaming.enable = lib.mkEnableOption "Steam and gaming support";
 
   config = lib.mkIf config.roles.gaming.enable {
+    home-manager.sharedModules = [./home.nix];
+
     programs.steam = {
       enable = true;
       # PRIME offload hosts: render games on dGPU, not iGPU

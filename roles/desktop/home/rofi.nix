@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-lib.mkIf config.profiles.desktopUser.enable {
+}: {
   # Let our glass theme own the look. Stylix would otherwise inject its own
   # colors and clobber the rasi accents.
   stylix.targets.rofi.enable = false;

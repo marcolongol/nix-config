@@ -10,9 +10,7 @@ in {
 
   profiles = {
     common.enable = true;
-    desktopUser.enable = true;
     developer.enable = true;
-    gamer.enable = true;
     worker.enable = true;
   };
 
@@ -91,7 +89,6 @@ in {
 
   persistentFolders = [
     ".config/1Password"
-    ".local/share/Steam"
     ".config/spotify"
     ".config/anytype"
     ".config/Signal"

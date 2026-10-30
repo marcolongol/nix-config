@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-lib.mkIf config.profiles.desktopUser.enable {
+}: {
   programs.zen-browser = {
     enable = true;
     profiles.default = {};
