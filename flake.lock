@@ -465,11 +465,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1793326438,
-        "narHash": "sha256-9WVi9LO2TCxepnH99Zg7dxHk2qry0EVNuCgOMB76DL8=",
+        "lastModified": 1793328142,
+        "narHash": "sha256-WRnSmrQADzHC8PobSImiuJ6fQkwQ9+Glc26yp/qMAeo=",
         "owner": "marcolongol",
         "repo": "nixievim",
-        "rev": "8095a1472d156c83f896315fbcb5859f59bd2e27",
+        "rev": "d2ec99feb0d827d813cd180b4992647da83ef5b8",
         "type": "github"
       },
       "original": {
