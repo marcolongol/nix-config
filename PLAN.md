@@ -76,6 +76,8 @@ Verify: `drvs .` identical to base on all 5 hosts (reviewer variant v5b proved i
 
 **GATE 1:** Lucas reviews diff + drv evidence; decides whether this lands on `main` now (recommended: yes, it removes the trap regardless of migration).
 
+**Gate 1 outcome (2026-10-31):** approved; pushed to `main` (`86a1d1c`), comin deployed on nixos-lt, `sudo` prompts for password. Note: desktop drvs track `inputs.self` (wallpaper), so `scripts/migration-check.sh drvs` pins `stylix.image` to BASE's.
+
 ---
 
 ## Phase 2 — omninix upstream prep (in `../omninix`)
@@ -91,6 +93,8 @@ Note: the M1 fix makes nixos-vm (`initialPassword = ""`) fail the assertion → 
 Verify: `FAST=1 bash tests/run-all-tests.sh` passes; `nix flake metadata github:marcolongol/omninix` works unauthenticated (or with chosen token path) as root and from CI.
 
 **GATE 2:** omninix rev to pin is fixed; fetch works for comin/CI.
+
+**Gate 2 outcome (2026-10-31):** approved. omninix pushed and squashed to `90d210d` (tree identical to the tested `29c7249`). nixos-vm → **option A**: keep empty password, set `omninix.allowInsecureBootstrap = true` in Phase 5.
 
 ---
 
