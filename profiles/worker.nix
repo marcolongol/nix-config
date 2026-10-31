@@ -15,7 +15,7 @@
       simplescreenrecorder
     ];
 
-    persistentFolders = [
+    omninix.persistence.directories = [
       ".config/remmina"
       ".local/share/remmina"
     ];

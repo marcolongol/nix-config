@@ -79,7 +79,7 @@ in {
     fi
   '';
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".local/share/tmux"
   ];
 }

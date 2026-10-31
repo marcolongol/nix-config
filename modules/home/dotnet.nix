@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: lib.mkIf config.profiles.developer.enable {
+}:
+lib.mkIf config.profiles.developer.enable {
   home.packages = with pkgs.dotnetCorePackages; [
     sdk_10_0
   ];
@@ -13,7 +14,7 @@
     DOTNET_NOLOGO = "1";
   };
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".nuget"
     ".dotnet"
     ".local/share/NuGet"

@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: lib.mkIf config.profiles.developer.enable {
+}:
+lib.mkIf config.profiles.developer.enable {
   home.packages = with pkgs; [
     go
     gopls # LSP server
@@ -23,7 +24,7 @@
 
   home.sessionPath = ["${config.home.homeDirectory}/.local/share/go/bin"];
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".local/share/go" # GOPATH: modules, installed bins
     ".cache/go-build" # build cache
   ];

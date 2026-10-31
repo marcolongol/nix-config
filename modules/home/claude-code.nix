@@ -855,11 +855,11 @@ in {
     # ────────────────────────────────────────────
     # SECTION: Persistence
     # ────────────────────────────────────────────
-    persistentFolders = [
+    omninix.persistence.directories = [
       ".claude"
     ];
 
-    persistentFiles = [
+    omninix.persistence.files = [
       ".claude.json"
     ];
   };

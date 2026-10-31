@@ -25,7 +25,7 @@
       discord
     ];
 
-    persistentFolders = [
+    omninix.persistence.directories = [
       ".config/Discord"
       ".local/share/Steam"
     ];

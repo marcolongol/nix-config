@@ -32,7 +32,7 @@
     };
   };
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".cache/chromium"
     ".config/chromium"
   ];

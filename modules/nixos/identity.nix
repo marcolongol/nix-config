@@ -4,7 +4,7 @@
   users,
   ...
 }: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   # Gated on active users: wsl/livecd keep their upstream defaults.
   config = lib.mkIf (activeUsers != []) {

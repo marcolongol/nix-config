@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   system.stateVersion = "25.11";
 
@@ -40,8 +40,11 @@ in {
     };
   };
 
-  hostUsers = {
-    lucas.enable = true;
+  omninix.hostUsers = {
+    lucas = {
+      enable = true;
+      extraGroups = ["wheel" "networkmanager" "plugdev" "docker"];
+    };
   };
 
   # Networked printer at coworking space (driverless / IPP Everywhere).

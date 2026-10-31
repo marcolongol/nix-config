@@ -154,7 +154,7 @@
       enableZshIntegration = true;
     };
 
-    persistentFolders = [
+    omninix.persistence.directories = [
       ".config/direnv"
       ".config/github-copilot"
       ".copilot"

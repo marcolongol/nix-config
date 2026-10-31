@@ -18,12 +18,12 @@
           "/etc/NetworkManager/system-connections"
           "/etc/ssh"
         ]
-        ++ config.persistentFolders;
+        ++ config.omninix.persistence.directories;
       files =
         [
           "/etc/machine-id"
         ]
-        ++ config.persistentFiles;
+        ++ config.omninix.persistence.files;
     };
   };
 }

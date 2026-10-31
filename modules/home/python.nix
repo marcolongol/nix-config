@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: lib.mkIf config.profiles.developer.enable {
+}:
+lib.mkIf config.profiles.developer.enable {
   home.packages = with pkgs; [
     (python3.withPackages (ps:
       with ps; [

@@ -2,29 +2,22 @@
   config,
   lib,
   pkgs,
-  osConfig,
   secretsPath,
   ...
 }: {
   options.profiles.common.enable = lib.mkEnableOption "common home configuration";
 
   config = lib.mkIf config.profiles.common.enable {
-    home.persistence = lib.mkIf osConfig.roles.impermanent.enable {
-      "/persist" = {
-        directories =
-          [
-            "Pictures"
-            "Work"
-            "Personal"
-            ".ssh"
-            ".gnupg"
-            ".local/share/nvim"
-            ".local/state/nvim"
-          ]
-          ++ config.persistentFolders;
-        files = config.persistentFiles;
-      };
-    };
+    # omninix maps these into home.persistence on hosts with /persist.
+    omninix.persistence.directories = [
+      "Pictures"
+      "Work"
+      "Personal"
+      ".ssh"
+      ".gnupg"
+      ".local/share/nvim"
+      ".local/state/nvim"
+    ];
 
     xdg.enable = true;
 

@@ -12,7 +12,7 @@ lib.mkIf config.profiles.developer.enable {
     pkgs.npm-check-updates
   ];
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".local/share/pnpm"
     ".npm"
   ];
