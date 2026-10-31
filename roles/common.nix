@@ -5,10 +5,20 @@
   hostName,
   secretsPath,
   ...
-}: {
+}: let
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+in {
   options.roles.common.enable = lib.mkEnableOption "common system configuration";
 
   config = lib.mkIf config.roles.common.enable {
+    # Fails closed if anything re-introduces passwordless sudo on a host with repo users.
+    assertions = [
+      {
+        assertion = activeUsers == [] || config.security.sudo.wheelNeedsPassword;
+        message = "security.sudo.wheelNeedsPassword must be true on hosts with active users";
+      }
+    ];
+
     time.timeZone = "America/New_York";
 
     networking = {
@@ -158,9 +168,6 @@
     };
 
     hardware.gpgSmartcards.enable = true;
-
-    # Flipped to require auth when a user declares a YubiKey (modules/nixos/default.nix).
-    security.sudo.wheelNeedsPassword = lib.mkDefault false;
 
     sops = {
       age = {
