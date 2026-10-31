@@ -146,6 +146,8 @@ Verify:
 
 ## Phase 6 — Rename sweep + drop shims (drvPath-identical to Phase 5)
 
+**Merged into Phase 5 (2026-10-31, Lucas):** no compat modules; the swap commit uses the omninix option names directly. The renames produced the identical lt out path, so Phase 6 has no separate gate.
+
 `persistentFolders/Files` → `omninix.persistence.directories/files`, `hostUsers` → `omninix.hostUsers` at every site (hosts, roles/common assertion, roles/laptop, roles/nfs-client, roles/desktop, roles/docker, roles/impermanent, modules/nixos/amd, modules/home/*, profiles/*, users/lucas); delete both compat.nix.
 
 Verify: `drvs .` == Phase 5; `rg -n 'persistentFolders|persistentFiles|\bhostUsers' -g '*.nix' | rg -v omninix` empty.
