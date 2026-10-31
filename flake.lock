@@ -673,6 +673,38 @@
         "type": "github"
       }
     },
+    "omninix": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "home-manager": [
+          "home-manager"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "sops-nix": [
+          "sops-nix"
+        ],
+        "systems": [
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793407026,
+        "narHash": "sha256-M1fn0mno0wdhnmESiiGCyyVjp1EroHiWucTi4j7dVV0=",
+        "owner": "marcolongol",
+        "repo": "omninix",
+        "rev": "90d210dbe8f64db3c5789d3843e45fd3681f7349",
+        "type": "github"
+      },
+      "original": {
+        "owner": "marcolongol",
+        "repo": "omninix",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "claude-angular-skills": "claude-angular-skills",
@@ -689,6 +721,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_4",
+        "omninix": "omninix",
         "sops-nix": "sops-nix",
         "stylix": "stylix",
         "systems": "systems_4",
@@ -806,8 +839,10 @@
         "type": "github"
       },
       "original": {
-        "id": "systems",
-        "type": "indirect"
+        "owner": "nix-systems",
+        "ref": "future-26.11",
+        "repo": "default",
+        "type": "github"
       }
     },
     "tinted-kitty": {

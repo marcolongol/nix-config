@@ -13,11 +13,7 @@
       pkgs = import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;
-        overlays = let
-          lib = import ../../lib {inherit inputs;};
-        in [
-          (import ../../overlays lib)
-        ];
+        overlays = import ../../overlays;
       };
     };
 
