@@ -18,9 +18,7 @@ inputs: final: _: {
           pkgs = import inputs.nixpkgs {
             inherit system;
             config.allowUnfree = true;
-            overlays = [
-              (import ../overlays final)
-            ];
+            overlays = import ../overlays;
           };
           specialArgs =
             {

@@ -6,6 +6,19 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    systems.url = "github:nix-systems/default/future-26.11";
+
+    omninix = {
+      url = "github:marcolongol/omninix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        home-manager.follows = "home-manager";
+        sops-nix.follows = "sops-nix";
+        systems.follows = "systems";
+      };
+    };
+
     impermanence.url = "github:nix-community/impermanence";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
