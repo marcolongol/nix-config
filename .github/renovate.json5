@@ -14,7 +14,8 @@
 
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true,
+    // Paused during the omninix migration (PLAN.md).
+    "automerge": false,
     "postUpdateOptions": ["nixFlakeUpdate"],
     "schedule": ["at any time"],
   },
@@ -23,8 +24,9 @@
     {
       "matchManagers": ["nix"],
       "matchUpdateTypes": ["digest"],
-      "automerge": true,
-      "platformAutomerge": true
+      // Paused during the omninix migration (PLAN.md).
+      "automerge": false,
+      "platformAutomerge": false
     },
     {
       "matchUpdateTypes": ["patch", "minor"],
@@ -35,6 +37,12 @@
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "labels": ["dependencies", "major-update"]
+    },
+    {
+      // omninix builds every host as root via comin; always review by hand.
+      "matchDepNames": ["omninix"],
+      "automerge": false,
+      "platformAutomerge": false
     }
   ],
 
