@@ -33,8 +33,6 @@ in {
   };
 
   config = lib.mkIf (activeUsers != []) {
-    users.mutableUsers = false;
-
     sops.secrets = lib.mkMerge (map (userName: {
         "user-password-${userName}" = {
           sopsFile = secretsPath + "/users/${userName}.yaml";
@@ -51,25 +49,7 @@ in {
         ["wheel" "networkmanager" "plugdev"]
         ++ lib.optionals config.roles.docker.enable ["docker"];
       hashedPasswordFile = config.sops.secrets."user-password-${userName}".path;
-      openssh.authorizedKeys.keys = let
-        pubkeysPath = "${users.${userName}}/pubkeys.nix";
-      in
-        lib.optionals (users ? ${userName} && builtins.pathExists pubkeysPath)
-        [(import pubkeysPath).ssh.publicKey];
     });
-
-    # GPG auth subkey on YubiKey via pam_ssh_agent_auth, checked against authorized_keys.d; password is fallback.
-    security.pam.sshAgentAuth.enable = true;
-
-    security.pam.services = {
-      login.sshAgentAuth = true;
-      sudo.sshAgentAuth = true;
-      hyprlock.sshAgentAuth = true;
-      sddm.sshAgentAuth = true;
-    };
-
-    # sudo must run PAM for the touch-to-auth path.
-    security.sudo.wheelNeedsPassword = true;
 
     home-manager = {
       extraSpecialArgs = {

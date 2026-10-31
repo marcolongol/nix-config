@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.programs.surfshark;
 
   # GJS scripts need these typelibs: NM, GLib, GObject, Gio, Notify, Secret.
@@ -15,8 +14,7 @@ let
     pkgs.libsecret
     pkgs.gsettings-desktop-schemas
   ];
-in
-{
+in {
   options.programs.surfshark = {
     enable = lib.mkEnableOption "Surfshark VPN";
 
@@ -34,12 +32,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ cfg.package ];
+    environment.systemPackages = [cfg.package];
 
     networking.networkmanager.enable = true;
 
     networking.wireguard.enable = lib.mkDefault true;
-    boot.kernelModules = [ "wireguard" ];
+    boot.kernelModules = ["wireguard"];
 
     security.wrappers = lib.mkIf cfg.enableKillSwitch {
       iptables = {
@@ -61,7 +59,7 @@ in
     # The .js files use #!/usr/bin/gjs; invoke gjs explicitly since that path only exists in the FHS wrapper.
     systemd.services.surfsharkd2 = {
       description = "Surfshark System Daemon";
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = ["multi-user.target"];
       after = [
         "network.target"
         "NetworkManager.service"
@@ -84,7 +82,7 @@ in
 
     systemd.user.services.surfsharkd = {
       description = "Surfshark User Daemon";
-      wantedBy = [ "default.target" ];
+      wantedBy = ["default.target"];
 
       environment.GI_TYPELIB_PATH = giTypelibPath;
 
