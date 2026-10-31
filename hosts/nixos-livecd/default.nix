@@ -20,7 +20,7 @@ in {
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
-  # hostUsers stays empty: user accounts need SOPS passwords, which the live CD can't decrypt.
+  # omninix.hostUsers stays empty: user accounts need SOPS passwords, which the live CD can't decrypt.
   roles.common.enable = true;
 
   isoImage.squashfsCompression = "gzip -Xcompression-level 1";

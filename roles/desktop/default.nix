@@ -8,7 +8,7 @@
   sddm-astronaut = pkgs.sddm-astronaut.override {
     # embeddedTheme = "black_hole";
   };
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 
   # Wallpaper rotation: deterministic pick from ./wallpapers/ based on flake
   # lastModified. Each comin sync produces a new timestamp -> new index ->

@@ -2,11 +2,9 @@
   config,
   lib,
   ...
-}:
-let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
-in
-{
+}: let
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
+in {
   system.stateVersion = "25.11";
 
   roles = {
@@ -15,8 +13,11 @@ in
     desktop.enable = true;
   };
 
-  hostUsers = {
-    lucas.enable = true;
+  omninix.hostUsers = {
+    lucas = {
+      enable = true;
+      extraGroups = ["wheel" "networkmanager" "plugdev"];
+    };
   };
 
   services.qemuGuest.enable = true;
@@ -34,8 +35,11 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Passwordless on purpose (below); omninix fails closed without this.
+  omninix.allowInsecureBootstrap = true;
+
   # VM can't decrypt SOPS passwords (no host keys at build time); use empty ones.
-  users.users =  lib.genAttrs activeUsers (_: {
+  users.users = lib.genAttrs activeUsers (_: {
     initialPassword = lib.mkForce "";
     hashedPasswordFile = lib.mkForce null;
   });

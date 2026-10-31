@@ -24,7 +24,7 @@
     "tcp"
   ];
   nfsMounts = ["Backup" "Documents" "Downloads" "K8s" "Media" "Shared"];
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   options.roles.nfsClient.enable = lib.mkEnableOption "NFS client mounts";
 
@@ -34,7 +34,7 @@ in {
     boot.kernelModules = ["nfs"];
 
     # Persist NFS state for file locking and state monitoring
-    persistentFolders = ["/var/lib/nfs"];
+    omninix.persistence.directories = ["/var/lib/nfs"];
 
     fileSystems = builtins.listToAttrs (
       lib.flatten (

@@ -1,9 +1,12 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
 }: {
+  imports = [inputs.zen-browser.homeModules.beta];
+
   programs.zen-browser = {
     enable = true;
     profiles.default = {};
@@ -37,7 +40,7 @@
     "x-scheme-handler/https" = "zen-beta.desktop";
   };
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".config/zen"
   ];
 }

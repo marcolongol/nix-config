@@ -87,7 +87,7 @@ in {
 
   programs.spotify-player.enable = true;
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".config/1Password"
     ".config/spotify"
     ".config/anytype"
@@ -95,7 +95,7 @@ in {
   ];
 
   # Persist only cert.pem; per-tunnel credentials live in sops.
-  persistentFiles = [
+  omninix.persistence.files = [
     ".cloudflared/cert.pem"
   ];
 

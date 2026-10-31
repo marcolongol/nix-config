@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   system.stateVersion = "25.11";
 
@@ -21,8 +21,11 @@ in {
     docker.enable = true;
   };
 
-  hostUsers = {
-    lucas.enable = true;
+  omninix.hostUsers = {
+    lucas = {
+      enable = true;
+      extraGroups = ["wheel" "networkmanager" "plugdev" "docker"];
+    };
   };
 
   # DP-2: LG ULTRAGEAR 2560x1440, main monitor, max refresh (164.96Hz)

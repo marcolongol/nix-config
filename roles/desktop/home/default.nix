@@ -49,7 +49,7 @@
     # swayosd udev rule enabled in roles/desktop/default.nix.
     services.swayosd.enable = true;
 
-    persistentFolders = [
+    omninix.persistence.directories = [
       ".thunderbird"
       ".local/state/wireplumber"
       # Harmony SASE (Perimeter81) keeps its session/auth (Cookies, Local

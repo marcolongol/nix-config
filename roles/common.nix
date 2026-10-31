@@ -6,7 +6,7 @@
   secretsPath,
   ...
 }: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   options.roles.common.enable = lib.mkEnableOption "common system configuration";
 
@@ -169,17 +169,8 @@ in {
 
     hardware.gpgSmartcards.enable = true;
 
+    # Key paths, format and host file come from omninix.
     sops = {
-      age = {
-        sshKeyPaths =
-          if config.roles.impermanent.enable
-          then ["/persist/etc/ssh/ssh_host_ed25519_key"]
-          else ["/etc/ssh/ssh_host_ed25519_key"];
-      };
-
-      defaultSopsFormat = "yaml";
-      defaultSopsFile = secretsPath + "/${hostName}.yaml";
-
       secrets = {
         shared-secret = {
           sopsFile = secretsPath + "/shared.yaml";

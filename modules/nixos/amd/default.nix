@@ -66,7 +66,7 @@ in {
 
     users.users =
       genAttrs
-      (attrNames (filterAttrs (_: u: u.enable) config.hostUsers))
+      (attrNames (filterAttrs (_: u: u.enable) config.omninix.hostUsers))
       (_: {
         extraGroups =
           optionals cfg.enableOpenCL ["render" "video"]

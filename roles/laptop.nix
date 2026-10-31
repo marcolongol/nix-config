@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   options.roles.laptop.enable = lib.mkEnableOption "laptop power management";
 

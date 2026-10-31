@@ -24,22 +24,15 @@
     ];
   };
 
-  flake = let
-    lib = import ../../lib {inherit inputs;};
-    dirs = lib.mkDirMap {
-      hosts = ../../hosts;
-      roles = ../../roles;
-      users = ../../users;
-      profiles = ../../profiles;
-      nixosModules = ../../modules/nixos;
-      homeManagerModules = ../../modules/home;
-    };
-  in
-    {
-      inherit lib;
-      nixosConfigurations = lib.mkNixosConfigurations {
-        inherit (dirs) hosts roles nixosModules users profiles homeManagerModules;
-      };
-    }
-    // dirs;
+  flake = inputs.omninix.lib.omninix.mkFlake inputs {
+    hostsDir = ../../hosts;
+    rolesDir = ../../roles;
+    usersDir = ../../users;
+    profilesDir = ../../profiles;
+    nixosModulesDir = ../../modules/nixos;
+    homeManagerModulesDir = ../../modules/home;
+    overlaysDir = ../../overlays;
+    secretsPath = ../../secrets;
+    allowUnfree = true;
+  };
 }

@@ -134,11 +134,11 @@
     };
   };
 
-  persistentFiles = [
+  omninix.persistence.files = [
     ".zsh_history"
   ];
 
-  persistentFolders = [
+  omninix.persistence.directories = [
     ".local/share/atuin"
   ];
 }
