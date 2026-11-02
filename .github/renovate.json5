@@ -14,7 +14,7 @@
 
   "lockFileMaintenance": {
     "enabled": true,
-    // Paused during the omninix migration (PLAN.md).
+    // Bumps every input at once, omninix included; comin deploys main, so review by hand.
     "automerge": false,
     "postUpdateOptions": ["nixFlakeUpdate"],
     "schedule": ["at any time"],
@@ -24,9 +24,8 @@
     {
       "matchManagers": ["nix"],
       "matchUpdateTypes": ["digest"],
-      // Paused during the omninix migration (PLAN.md).
-      "automerge": false,
-      "platformAutomerge": false
+      "automerge": true,
+      "platformAutomerge": true
     },
     {
       "matchUpdateTypes": ["patch", "minor"],
