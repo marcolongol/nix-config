@@ -5,16 +5,14 @@
   hostName,
   secretsPath,
   ...
-}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
-in {
+}: {
   options.roles.common.enable = lib.mkEnableOption "common system configuration";
 
   config = lib.mkIf config.roles.common.enable {
     # Fails closed if anything re-introduces passwordless sudo on a host with repo users.
     assertions = [
       {
-        assertion = activeUsers == [] || config.security.sudo.wheelNeedsPassword;
+        assertion = config.omninix.activeUsers == [] || config.security.sudo.wheelNeedsPassword;
         message = "security.sudo.wheelNeedsPassword must be true on hosts with active users";
       }
     ];

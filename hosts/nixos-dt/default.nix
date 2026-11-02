@@ -2,9 +2,7 @@
   config,
   lib,
   ...
-}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
-in {
+}: {
   system.stateVersion = "25.11";
 
   imports = [
@@ -31,7 +29,7 @@ in {
   # DP-2: LG ULTRAGEAR 2560x1440, main monitor, max refresh (164.96Hz)
   # HDMI-A-1: Samsung U28H75x 4K, secondary, landscape, 30Hz max over HDMI (1.5 scale -> 2560x1440 logical)
   # Workspaces 1-5 on DP-2 (main), 6-10 on HDMI-A-1 (secondary)
-  home-manager.users = lib.genAttrs activeUsers (_: {
+  home-manager.users = lib.genAttrs config.omninix.activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
         "DP-2,2560x1440@164.96,0x0,1,bitdepth,10,cm,hdr,sdrbrightness,5,vrr,2"

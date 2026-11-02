@@ -2,9 +2,7 @@
   config,
   lib,
   ...
-}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
-in {
+}: {
   system.stateVersion = "25.11";
 
   imports = [
@@ -65,7 +63,7 @@ in {
   # ASUS VG278 1920x1080@144, secondary via HP USB-C dock DisplayPort, positioned to the left
   # Matched by description: the dock renumbers connectors per port (DP-2 was the dock HDMI path, DP-3 is DP)
   # Workspaces 1-5 on eDP-1 (primary), 6-10 on the VG278 (secondary)
-  home-manager.users = lib.genAttrs activeUsers (_: {
+  home-manager.users = lib.genAttrs config.omninix.activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
         "desc:ASUSTek COMPUTER INC VG278 J5LMQS064651,1920x1080@144,0x0,1"

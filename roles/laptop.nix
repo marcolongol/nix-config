@@ -3,9 +3,7 @@
   lib,
   pkgs,
   ...
-}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
-in {
+}: {
   options.roles.laptop.enable = lib.mkEnableOption "laptop power management";
 
   config = lib.mkIf config.roles.laptop.enable {
@@ -41,7 +39,7 @@ in {
     };
 
     # upower only acts at percentageAction; poweralertd turns warning levels into notifications.
-    home-manager.users = lib.genAttrs activeUsers (_: {
+    home-manager.users = lib.genAttrs config.omninix.activeUsers (_: {
       services.poweralertd = {
         enable = true;
         # -i line-power: ACAD alerts duplicate battery ones. -s: no state replay at login.

@@ -2,9 +2,7 @@
   config,
   lib,
   ...
-}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
-in {
+}: {
   system.stateVersion = "25.11";
 
   roles = {
@@ -39,7 +37,7 @@ in {
   omninix.allowInsecureBootstrap = true;
 
   # VM can't decrypt SOPS passwords (no host keys at build time); use empty ones.
-  users.users = lib.genAttrs activeUsers (_: {
+  users.users = lib.genAttrs config.omninix.activeUsers (_: {
     initialPassword = lib.mkForce "";
     hashedPasswordFile = lib.mkForce null;
   });

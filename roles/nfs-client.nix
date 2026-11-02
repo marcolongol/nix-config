@@ -24,7 +24,6 @@
     "tcp"
   ];
   nfsMounts = ["Backup" "Documents" "Downloads" "K8s" "Media" "Shared"];
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   options.roles.nfsClient.enable = lib.mkEnableOption "NFS client mounts";
 
@@ -49,7 +48,7 @@ in {
             })
             nfsMounts
         )
-        activeUsers
+        config.omninix.activeUsers
       )
     );
 

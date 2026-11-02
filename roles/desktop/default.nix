@@ -8,7 +8,6 @@
   sddm-astronaut = pkgs.sddm-astronaut.override {
     # embeddedTheme = "black_hole";
   };
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 
   # Wallpaper rotation: deterministic pick from ./wallpapers/ based on flake
   # lastModified. Each comin sync produces a new timestamp -> new index ->
@@ -52,7 +51,7 @@ in {
     programs._1password.enable = true;
     programs._1password-gui = {
       enable = true;
-      polkitPolicyOwners = activeUsers;
+      polkitPolicyOwners = config.omninix.activeUsers;
     };
 
     programs.surfshark.enable = true;
