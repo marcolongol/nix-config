@@ -6,10 +6,16 @@
 
     systems.url = "github:nix-systems/default/future-26.11";
 
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
     omninix = {
       url = "github:marcolongol/omninix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
         home-manager.follows = "home-manager";
         sops-nix.follows = "sops-nix";
         systems.follows = "systems";
@@ -103,21 +109,31 @@
   };
 
   outputs = {
+    flake-parts,
     omninix,
     systems,
     ...
   } @ inputs:
-    omninix.lib.omninix.mkFlake inputs {
-      hostsDir = ./hosts;
-      rolesDir = ./roles;
-      usersDir = ./users;
-      profilesDir = ./profiles;
-      nixosModulesDir = ./modules/nixos;
-      homeManagerModulesDir = ./modules/home;
-      overlaysDir = ./overlays;
-      packagesDir = ./packages;
-      secretsPath = ./secrets;
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [omninix.flakeModules.default];
+
       systems = import systems;
-      allowUnfree = true;
+
+      omninix = {
+        hostsDir = ./hosts;
+        rolesDir = ./roles;
+        usersDir = ./users;
+        profilesDir = ./profiles;
+        nixosModulesDir = ./modules/nixos;
+        homeManagerModulesDir = ./modules/home;
+        overlaysDir = ./overlays;
+        packagesDir = ./packages;
+        secretsPath = ./secrets;
+        allowUnfree = true;
+      };
+
+      perSystem = {pkgs, ...}: {
+        formatter = pkgs.alejandra;
+      };
     };
 }

@@ -38,8 +38,8 @@
       "labels": ["dependencies", "major-update"]
     },
     {
-      // omninix builds every host as root via comin; always review by hand.
-      "matchDepNames": ["omninix"],
+      // Both build every host via comin; review by hand.
+      "matchDepNames": ["omninix", "flake-parts"],
       "automerge": false,
       "platformAutomerge": false
     }

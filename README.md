@@ -17,7 +17,7 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 
 ```
 .
-├── flake.nix              # Inputs + one omninix mkFlake call
+├── flake.nix              # Inputs + flake-parts with omninix.flakeModules.default
 ├── hosts/                 # Host-specific configurations
 │   ├── nixos-lt/         # Laptop (default.nix + hardware-config.nix + disko-config.nix)
 │   ├── nixos-dt/         # Desktop (default.nix + hardware-config.nix + disko-config.nix)
@@ -64,7 +64,7 @@ This configuration demonstrates several organizational patterns:
 2. **User-Profile Separation**: Users enable profiles declaratively; profiles define environment config
 3. **Typed Options**: Roles and profiles use `mkEnableOption`, so misconfigured names are caught at eval time
 4. **Modular Architecture**: Reusable components that can be composed together
-5. **Thin Flake**: omninix discovers the directories; `flake.nix` is inputs plus one `mkFlake` call
+5. **Thin Flake**: omninix discovers the directories; `flake.nix` is inputs plus flake-parts importing `omninix.flakeModules.default`
 
 ### Example Usage Patterns
 
@@ -271,9 +271,7 @@ Create `hosts/<hostname>/default.nix` and `hosts/<hostname>/disko-config.nix`. S
 
 ```nix
 # hosts/<hostname>/default.nix
-{config, lib, ...}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
-in {
+{
   system.stateVersion = "25.11";
 
   imports = [
@@ -415,7 +413,7 @@ nix fmt
 
 This configuration uses a modular architecture:
 
-1. **[omninix](https://github.com/marcolongol/omninix) `mkFlake`** — builds `nixosConfigurations` and standalone `homeConfigurations`, plus `packages` from `packages/`
+1. **[omninix](https://github.com/marcolongol/omninix) `flakeModules.default`** (via flake-parts) — builds `nixosConfigurations` and standalone `homeConfigurations`, plus `packages` from `packages/`; `perSystem` adds the `nix fmt` formatter
 2. **Role-based system** — each role is a self-contained module with its own `mkEnableOption`
 3. **Profile-based user management** — same pattern for home-manager profiles
 4. **Host-specific overrides** — `default.nix` for identity, `hardware-config.nix` for hardware
