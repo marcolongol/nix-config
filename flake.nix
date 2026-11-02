@@ -4,15 +4,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-
     systems.url = "github:nix-systems/default/future-26.11";
 
     omninix = {
       url = "github:marcolongol/omninix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
         home-manager.follows = "home-manager";
         sops-nix.follows = "sops-nix";
         systems.follows = "systems";
@@ -91,17 +88,30 @@
   };
 
   outputs = {
-    self,
+    nixpkgs,
+    omninix,
     systems,
-    flake-parts,
     ...
-  } @ inputs:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  } @ inputs: let
+    out = omninix.lib.omninix.mkFlake inputs {
+      hostsDir = ./hosts;
+      rolesDir = ./roles;
+      usersDir = ./users;
+      profilesDir = ./profiles;
+      nixosModulesDir = ./modules/nixos;
+      homeManagerModulesDir = ./modules/home;
+      overlaysDir = ./overlays;
+      packagesDir = ./packages;
+      secretsPath = ./secrets;
       systems = import systems;
-      _module.args = {inherit inputs;};
-      imports = [
-        ./modules/flake
-      ];
-      flake = {inherit self;};
+      allowUnfree = true;
+    };
+  in
+    out
+    // {
+      formatter = nixpkgs.lib.genAttrs (import systems) (s: nixpkgs.legacyPackages.${s}.alejandra);
+      packages = nixpkgs.lib.recursiveUpdate out.packages {
+        x86_64-linux.livecd-iso = out.nixosConfigurations.nixos-livecd.config.system.build.isoImage;
+      };
     };
 }
