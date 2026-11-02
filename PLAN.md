@@ -184,7 +184,7 @@ Known gaps by design: no role home sides, no persistence, sops needs YubiKey GPG
 - Remove `flake.nix:88` (`_module.args.inputs`) and `:92` (`self` output).
 - Update README (structure, omninix usage, roles-with-home-side), memory notes that reference `hostUsers`/`persistentFolders`.
 - Optional: scope disko/stylix/comin into roles.
-- Delete `PLAN.md` and `scripts/migration-check.sh` (or keep the script as CI).
+- Delete `PLAN.md` and the `scripts/` folder (Lucas, 2026-11-01).
 
 **GATE 9:** done.
 
