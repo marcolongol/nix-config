@@ -15,7 +15,15 @@
     laptop.enable = true;
     desktop.enable = true;
     nfsClient.enable = true;
-    impermanent.enable = true;
+    impermanent = {
+      enable = true;
+      persistCoredumps = true;
+      wipe = {
+        enable = true;
+        acknowledgeDataLoss = true;
+        device = "/dev/disk/by-label/nixos";
+      };
+    };
     gaming.enable = true;
     docker.enable = true;
   };

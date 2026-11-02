@@ -130,6 +130,7 @@
         packagesDir = ./packages;
         secretsPath = ./secrets;
         allowUnfree = true;
+        extraRoles = {inherit (omninix.roles) impermanent;};
       };
 
       perSystem = {pkgs, ...}: {
