@@ -7,31 +7,27 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 - **Hosts ↔ Roles abstraction** - Separates "what a machine does" (roles) from "which machine it is" (hosts)
 - **Users ↔ Profiles abstraction** - Separates user identity from user environment configuration
 - **Typed module options** - Roles, profiles, and users are declared as `mkEnableOption` options, giving type-checking and `nix eval` introspection
-- **Flake-based configuration** with flake-parts for modularity
+- **Built on [omninix](https://github.com/marcolongol/omninix)** - directory discovery, host/user builders and persistence aggregation come from the library
 - **Home Manager** integration for declarative user-level configurations
 - **Impermanence** support with automatic persistence handling
 - **Secrets management** - Encrypted secrets with sops-nix for both system and user-level secrets
-- **Modular architecture** inspired by nixos-unified autowire concepts
+- **Roles with a home side** - a role can ship its Home Manager half via `sharedModules`, so one host flag drives both
 
 ## 📁 Repository Structure
 
 ```
 .
-├── flake.nix              # Main flake configuration
-├── lib/                   # Custom utility functions
-│   ├── default.nix        # Extends nixpkgs.lib
-│   ├── mkDirMap.nix       # Auto-discovery helpers
-│   └── mkNixosConfigurations.nix
+├── flake.nix              # Inputs + one omninix mkFlake call
 ├── hosts/                 # Host-specific configurations
 │   ├── nixos-lt/         # Laptop (default.nix + hardware-config.nix + disko-config.nix)
 │   ├── nixos-dt/         # Desktop (default.nix + hardware-config.nix + disko-config.nix)
-│   └── nixos-vm/         # Virtual machine configuration
+│   ├── nixos-vm/         # Virtual machine configuration
+│   └── nixos-wsl/        # Standalone WSL host
 ├── packages/              # Custom packages (flake outputs and pkgs.<name> via omninix)
 │   └── surfshark.nix     # Surfshark VPN client (FHS-wrapped .deb)
-├── modules/               # Custom modules
-│   ├── flake/            # Flake-specific modules
+├── modules/               # Imported into every host / every user
 │   ├── home/             # Home Manager modules (zsh, starship, tmux, etc.)
-│   └── nixos/            # NixOS system modules (amd, nvidia, surfshark)
+│   └── nixos/            # NixOS modules (identity, third-party inputs, amd, nvidia, surfshark)
 ├── roles/                 # System roles — each declares its own option
 │   ├── common.nix        # Base system config
 │   ├── desktop/          # Hyprland, SDDM, Pipewire, Stylix
@@ -47,7 +43,7 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 │   ├── developer.nix     # Dev tools, git, k8s, direnv
 │   └── worker.nix
 ├── users/                 # User-specific configurations
-│   └── lucas/
+│   └── lucas/            # default.nix + pubkeys.nix
 ├── secrets/               # Encrypted secrets (sops-nix)
 │   ├── shared.yaml
 │   ├── ${hostname}.yaml
@@ -68,7 +64,7 @@ This configuration demonstrates several organizational patterns:
 2. **User-Profile Separation**: Users enable profiles declaratively; profiles define environment config
 3. **Typed Options**: Roles and profiles use `mkEnableOption`, so misconfigured names are caught at eval time
 4. **Modular Architecture**: Reusable components that can be composed together
-5. **Flake Organization**: Using flake-parts and custom lib functions for maintainable flakes
+5. **Thin Flake**: omninix discovers the directories; `flake.nix` is inputs plus one `mkFlake` call
 
 ### Example Usage Patterns
 
@@ -104,11 +100,14 @@ sudo nixos-rebuild switch --flake .#your-hostname
     docker.enable = true;
   };
 
-  hostUsers.lucas.enable = true;
+  omninix.hostUsers.lucas = {
+    enable = true;
+    extraGroups = ["wheel" "networkmanager" "plugdev" "docker"];
+  };
 }
 ```
 
-Hardware-specific settings (boot loader, kernel modules, thermald) live in the host's `hardware-config.nix`, keeping `default.nix` as a clean identity declaration.
+Hardware-specific settings (boot loader, kernel modules, thermald) live in the host's `hardware-config.nix`, keeping `default.nix` as a clean identity declaration. Groups are granted per user on each host; omninix grants none by default.
 
 **Roles** define *what functionality* a machine should have. Each role declares its own option:
 - **common**: Base system config, SSH, nix settings, comin GitOps
@@ -143,7 +142,15 @@ This separation means you can:
 - **common**: Essential tools, ghostty, btop, nixievim, sops config
 - **developer**: Git, direnv, kubectl/helm/talosctl/k9s, lazygit, claude-code
 
-Roles with a user-facing side (`desktop`, `gaming`) ship it via `home-manager.sharedModules`, so every user on that host gets it — no matching profile to keep in sync.
+Roles with a user-facing side (`desktop`, `gaming`) ship it via `home-manager.sharedModules`, so every user on that host gets it — no matching profile to keep in sync:
+
+```nix
+# roles/gaming/default.nix
+config = lib.mkIf config.roles.gaming.enable {
+  home-manager.sharedModules = [./home.nix]; # MangoHud, Discord
+  programs.steam.enable = true;
+};
+```
 
 ### Key Components
 
@@ -265,7 +272,7 @@ Create `hosts/<hostname>/default.nix` and `hosts/<hostname>/disko-config.nix`. S
 ```nix
 # hosts/<hostname>/default.nix
 {config, lib, ...}: let
-  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.hostUsers);
+  activeUsers = lib.attrNames (lib.filterAttrs (_: u: u.enable) config.omninix.hostUsers);
 in {
   system.stateVersion = "25.11";
 
@@ -280,7 +287,10 @@ in {
     impermanent.enable = true;
   };
 
-  hostUsers.alice.enable = true;
+  omninix.hostUsers.alice = {
+    enable = true;
+    extraGroups = ["wheel"];
+  };
 }
 ```
 
@@ -324,7 +334,7 @@ comin will pick up the changes automatically.
 
 ### Adding New Roles
 
-Create a new file in `roles/`. The file auto-discovers via `mkDirMap` — no manual imports needed.
+Create a new file (or a directory with `default.nix`) in `roles/`. omninix discovers it — no manual imports needed.
 
 ```nix
 # roles/my-role.nix
@@ -380,7 +390,7 @@ User configurations live in `users/<username>/default.nix`. Each user specifies:
 - Which profiles to enable
 - Personal identity (git, SSH, GPG)
 - Personal packages
-- Persistent files and folders (for impermanence)
+- Persistent files and folders via `omninix.persistence.{directories,files}` (mapped to `/persist` on impermanent hosts)
 - SOPS secrets
 
 ## 🔄 Maintenance
@@ -405,13 +415,18 @@ nix fmt
 
 This configuration uses a modular architecture:
 
-1. **Flake-parts** for organizing flake outputs
-2. **`lib/`** — custom utilities split across focused files (`mkDirMap`, `mkNixosConfigurations`)
-3. **Role-based system** — each role is a self-contained module with its own `mkEnableOption`
-4. **Profile-based user management** — same pattern for home-manager profiles
-5. **Host-specific overrides** — `default.nix` for identity, `hardware-config.nix` for hardware
+1. **[omninix](https://github.com/marcolongol/omninix) `mkFlake`** — builds `nixosConfigurations` and standalone `homeConfigurations`, plus `packages` from `packages/`
+2. **Role-based system** — each role is a self-contained module with its own `mkEnableOption`
+3. **Profile-based user management** — same pattern for home-manager profiles
+4. **Host-specific overrides** — `default.nix` for identity, `hardware-config.nix` for hardware
+5. **Local glue only** — `modules/nixos/identity.nix` (authorized keys, YubiKey PAM, immutable users) and `modules/nixos/inputs.nix` (third-party modules)
 
-The `lib/mkDirMap.nix` utility auto-discovers all `.nix` files in `hosts/`, `roles/`, `profiles/`, `users/`, and `modules/` — adding a new role or profile is as simple as creating the file.
+omninix discovers every `.nix` file in `hosts/`, `roles/`, `profiles/`, `users/`, `modules/`, `packages/` and `overlays/` — adding a role, profile, package or overlay is as simple as creating the file. `packages/` also lands in `pkgs.<name>`.
+
+The same user file also builds standalone, for non-NixOS machines:
+```bash
+home-manager switch --flake .#lucas
+```
 
 ## 🙏 Acknowledgments
 
@@ -420,3 +435,4 @@ The `lib/mkDirMap.nix` utility auto-discovers all `.nix` files in `hosts/`, `rol
 - [Stylix](https://github.com/nix-community/stylix) for system theming
 - [Hyprland](https://hyprland.org/) for the beautiful desktop environment
 - [Impermanence](https://github.com/nix-community/impermanence) for stateless system support
+- [omninix](https://github.com/marcolongol/omninix) for discovery and the host/user builders
