@@ -88,12 +88,11 @@
   };
 
   outputs = {
-    nixpkgs,
     omninix,
     systems,
     ...
-  } @ inputs: let
-    out = omninix.lib.omninix.mkFlake inputs {
+  } @ inputs:
+    omninix.lib.omninix.mkFlake inputs {
       hostsDir = ./hosts;
       rolesDir = ./roles;
       usersDir = ./users;
@@ -105,10 +104,5 @@
       secretsPath = ./secrets;
       systems = import systems;
       allowUnfree = true;
-    };
-  in
-    out
-    // {
-      formatter = nixpkgs.lib.genAttrs (import systems) (s: nixpkgs.legacyPackages.${s}.alejandra);
     };
 }
