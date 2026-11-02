@@ -2,13 +2,25 @@
   description = "A very basic flake";
 
   inputs = {
+    # Base: everything else follows these.
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
     systems.url = "github:nix-systems/default/future-26.11";
 
+    # Followed by omninix and other inputs.
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     omninix = {
@@ -22,17 +34,13 @@
       };
     };
 
+    # Leaves on nixpkgs + home-manager.
     impermanence = {
       url = "github:nix-community/impermanence";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
       };
-    };
-
-    nixos-hardware = {
-      url = "github:NixOS/nixos-hardware/master";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     zen-browser = {
@@ -43,16 +51,7 @@
       };
     };
 
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    # Leaves on nixpkgs.
     comin = {
       url = "github:nlewo/comin";
       inputs = {
@@ -61,23 +60,28 @@
       };
     };
 
-    nixos-wsl = {
-      url = "github:nix-community/NixOS-WSL";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    home-manager = {
-      url = "github:nix-community/home-manager";
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixievim = {
       url = "github:marcolongol/nixievim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -87,13 +91,8 @@
     };
 
     # Claude Code plugins/skills: plain repos without flake.nix.
-    claude-ponytail = {
-      url = "github:DietrichGebert/ponytail";
-      flake = false;
-    };
-
-    claude-ui-ux-pro-max = {
-      url = "github:nextlevelbuilder/ui-ux-pro-max-skill";
+    claude-angular-skills = {
+      url = "github:oguzhan18/angular-ecosystem-skills";
       flake = false;
     };
 
@@ -102,8 +101,13 @@
       flake = false;
     };
 
-    claude-angular-skills = {
-      url = "github:oguzhan18/angular-ecosystem-skills";
+    claude-ponytail = {
+      url = "github:DietrichGebert/ponytail";
+      flake = false;
+    };
+
+    claude-ui-ux-pro-max = {
+      url = "github:nextlevelbuilder/ui-ux-pro-max-skill";
       flake = false;
     };
   };
