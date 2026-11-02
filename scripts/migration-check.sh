@@ -4,7 +4,7 @@
 set -euo pipefail
 
 BASE="${BASE:-git+file://$PWD?rev=9708c80e223759ec4d632cfff482d68f1b63de37}"
-HOSTS="${HOSTS:-nixos-dt nixos-lt nixos-vm nixos-wsl nixos-livecd}"
+HOSTS="${HOSTS:-nixos-dt nixos-lt nixos-vm nixos-wsl}"
 
 # Wallpaper comes from inputs.self, so every commit changes desktop drvs; pin it to BASE's.
 drvs() {
