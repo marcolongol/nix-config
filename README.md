@@ -25,7 +25,6 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 ├── hosts/                 # Host-specific configurations
 │   ├── nixos-lt/         # Laptop (default.nix + hardware-config.nix + disko-config.nix)
 │   ├── nixos-dt/         # Desktop (default.nix + hardware-config.nix + disko-config.nix)
-│   ├── nixos-livecd/     # Live CD / installer image
 │   └── nixos-vm/         # Virtual machine configuration
 ├── packages/              # Custom packages (exported as flake outputs)
 │   └── surfshark.nix     # Surfshark VPN client (FHS-wrapped .deb)
@@ -299,7 +298,7 @@ Commit and push so comin can pull the config on first boot.
 
 #### 3 — Install
 
-Boot from the [livecd](hosts/nixos-livecd/) image, clone the repo, then:
+Boot a NixOS installer ISO, clone the repo, then:
 
 ```bash
 sudo disko --mode disko hosts/<hostname>/disko-config.nix
