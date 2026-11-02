@@ -43,6 +43,9 @@ jobs:
 
       - run: nix flake check
 
+      - name: Check formatting
+        run: nix fmt -- --check .
+
       # flake check skips homeConfigurations.
       - name: Evaluate standalone home configurations
         run: |
