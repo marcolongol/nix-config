@@ -110,8 +110,5 @@
     out
     // {
       formatter = nixpkgs.lib.genAttrs (import systems) (s: nixpkgs.legacyPackages.${s}.alejandra);
-      packages = nixpkgs.lib.recursiveUpdate out.packages {
-        x86_64-linux.livecd-iso = out.nixosConfigurations.nixos-livecd.config.system.build.isoImage;
-      };
     };
 }

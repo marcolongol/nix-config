@@ -181,9 +181,9 @@ Known gaps by design: no role home sides, no persistence, sops needs YubiKey GPG
 
 ## Phase 8a — Drop flake-parts (added 2026-11-01, Lucas)
 
-`flake.nix` calls `omninix.lib.omninix.mkFlake` directly (with `packagesDir`, `systems = import systems`) and adds `formatter` + `packages.x86_64-linux.livecd-iso` by hand. Removes the `flake-parts` input, `modules/flake/`, `packages/default.nix`, and the `self` output.
+`flake.nix` calls `omninix.lib.omninix.mkFlake` directly (with `packagesDir`, `systems = import systems`) and adds `formatter` by hand. Removes the `flake-parts` input, `modules/flake/`, `packages/default.nix`, and the `self` output.
 
-Verified: all 5 host drvs identical to `dd7751c` (so the lt canary still covers it); `packages.x86_64-linux.*` drvs identical; `nix fmt` works; `flake check --no-build` passes; standalone HM evaluates. `livecd-iso` is now x86_64-only (was exported, as the same x86_64 image, for every system).
+Verified: all 5 host drvs identical to `dd7751c` (so the lt canary still covers it); `packages.x86_64-linux.*` drvs identical; `nix fmt` works; `flake check --no-build` passes; standalone HM evaluates. `livecd-iso` package output removed (Lucas); the ISO stays buildable via `.#nixosConfigurations.nixos-livecd.config.system.build.isoImage`.
 
 **GATE 8a.**
 
