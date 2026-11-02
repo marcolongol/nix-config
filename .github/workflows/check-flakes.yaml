@@ -42,3 +42,10 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - run: nix flake check
+
+      # flake check skips homeConfigurations.
+      - name: Evaluate standalone home configurations
+        run: |
+          for u in $(nix eval --json .#homeConfigurations --apply builtins.attrNames | jq -r '.[]'); do
+            nix eval --raw ".#homeConfigurations.$u.activationPackage.drvPath"
+          done
