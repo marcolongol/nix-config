@@ -32,7 +32,7 @@
       };
     };
 
-    # Shut down cleanly at critical battery; PowerOff over Hibernate (no resumeDevice set).
+    # Shut down cleanly at critical battery; PowerOff over Hibernate (systemd can hibernate without resumeDevice, but swap isn't set up for it).
     services.upower = {
       enable = true;
       criticalPowerAction = "PowerOff";

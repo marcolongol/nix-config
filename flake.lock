@@ -598,11 +598,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793628363,
-        "narHash": "sha256-3ZAIMAeN0tNF32g0694L/Y9dgjHQ/nDs49aSjArVAmc=",
+        "lastModified": 1793629171,
+        "narHash": "sha256-AKQo+qAXnPVzRchGbkAmpK7iFTKllxf2dJI/IIYSfzI=",
         "owner": "marcolongol",
         "repo": "omninix",
-        "rev": "b8918b0fa3ac5acf69e8e235c756e812edf77fdb",
+        "rev": "fada5c2675781cf80ad83205dd9039328f56a9c4",
         "type": "github"
       },
       "original": {

@@ -21,7 +21,6 @@
       wipe = {
         enable = true;
         acknowledgeDataLoss = true;
-        device = "/dev/disk/by-label/nixos";
       };
     };
     gaming.enable = true;
