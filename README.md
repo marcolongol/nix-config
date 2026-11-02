@@ -26,7 +26,7 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 │   ├── nixos-lt/         # Laptop (default.nix + hardware-config.nix + disko-config.nix)
 │   ├── nixos-dt/         # Desktop (default.nix + hardware-config.nix + disko-config.nix)
 │   └── nixos-vm/         # Virtual machine configuration
-├── packages/              # Custom packages (exported as flake outputs)
+├── packages/              # Custom packages (flake outputs and pkgs.<name> via omninix)
 │   └── surfshark.nix     # Surfshark VPN client (FHS-wrapped .deb)
 ├── modules/               # Custom modules
 │   ├── flake/            # Flake-specific modules
@@ -53,9 +53,7 @@ This is my personal, modular NixOS configuration using Nix Flakes, designed as a
 │   ├── ${hostname}.yaml
 │   └── users/${username}.yaml
 └── overlays/              # Nixpkgs overlays
-    ├── overrides.nix      # Package overrides (e.g. freecad boost fix)
-    ├── custom-packages.nix # Exposes packages/ into pkgs
-    └── patches.nix
+    └── overrides.nix      # Package overrides (e.g. freecad boost fix)
 ```
 
 ## 🚀 Using This Configuration
