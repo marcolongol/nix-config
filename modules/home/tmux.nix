@@ -8,8 +8,8 @@
 }: let
   cfg = config.shell.tmux;
   # Powerline glyphs (MesloLGS Nerd Font)
-  sep = ""; # U+E0B0 right-pointing filled
-  sep_l = ""; # U+E0B2 left-pointing filled
+  sep = ""; # U+E0B0 right-pointing filled
+  sep_l = ""; # U+E0B2 left-pointing filled
 
   weatherScript = w:
     pkgs.writeShellScript "tmux-weather" ''
