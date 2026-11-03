@@ -1,3 +1,7 @@
 .claude/
 result
 result-*
+
+# Working plans (kept local, never committed)
+plan.md
+PLAN.md
