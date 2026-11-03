@@ -22,7 +22,6 @@
       docker-client
       docker-compose
       fluxcd
-      gh
       github-copilot-cli
       gnumake
       go-task
@@ -57,6 +56,9 @@
       xz.dev
       zlib.dev
     ];
+
+    # gh plus its git credential helper for github.com
+    programs.gh.enable = true;
 
     programs.delta = {
       enable = true;

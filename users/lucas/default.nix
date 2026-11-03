@@ -118,5 +118,16 @@ in {
       '';
       mode = "0600";
     };
+    # gh login rendered from the PAT; don't use `gh auth login/logout`
+    templates.gh-hosts = {
+      path = "${config.home.homeDirectory}/.config/gh/hosts.yml";
+      content = ''
+        github.com:
+          user: marcolongol
+          oauth_token: ${config.sops.placeholder.github-pat}
+          git_protocol: https
+      '';
+      mode = "0600";
+    };
   };
 }
