@@ -181,10 +181,12 @@
       image: rancher/k3s:v1.31.5-k3s1
       servers: 1
       agents: 2
+      # Registry and ingress on loopback only: docker-published ports bypass
+      # the host firewall, so 0.0.0.0 would expose them to the LAN.
       registries:
         create:
           name: registry.localhost
-          host: "0.0.0.0"
+          host: "127.0.0.1"
           hostPort: "5000"
         config: |
           mirrors:
@@ -192,10 +194,10 @@
               endpoint:
                 - "http://registry.localhost:5000"
       ports:
-        - port: 80:80
+        - port: 127.0.0.1:80:80
           nodeFilters:
             - loadbalancer
-        - port: 443:443
+        - port: 127.0.0.1:443:443
           nodeFilters:
             - loadbalancer
     '';
