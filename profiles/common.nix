@@ -33,7 +33,11 @@
 
       xdg.enable = true;
       # XDG_DOWNLOAD_DIR etc., so apps agree on ~/Downloads, ~/Documents, ...
-      xdg.userDirs.enable = true;
+      xdg.userDirs = {
+        enable = true;
+        # Export XDG_DOWNLOAD_DIR etc. too (the pre-26.05 default).
+        setSessionVariables = true;
+      };
 
       programs = {
         home-manager.enable = true;

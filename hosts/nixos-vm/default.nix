@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 
   roles = {
     common.enable = true;
@@ -33,12 +33,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Passwordless on purpose (below); omninix fails closed without this.
-  omninix.allowInsecureBootstrap = true;
-
-  # VM can't decrypt SOPS passwords (no host keys at build time); use empty ones.
+  # VM can't decrypt SOPS passwords (no host keys at build time); use a
+  # throwaway password instead. Local test VM only.
   users.users = lib.genAttrs config.omninix.activeUsers (_: {
-    initialPassword = lib.mkForce "";
+    initialPassword = lib.mkForce "vm";
     hashedPasswordFile = lib.mkForce null;
   });
 }

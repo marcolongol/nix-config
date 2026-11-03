@@ -6,7 +6,7 @@
   pubKeys = import ./pubkeys.nix;
   gpgPubKey = pkgs.writeText "lucas-gpg-pubkey.asc" pubKeys.gpg.publicKey;
 in {
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
 
   profiles = {
     common.enable = true;
