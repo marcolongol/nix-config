@@ -20,6 +20,8 @@
     ];
 
     xdg.enable = true;
+    # XDG_DOWNLOAD_DIR etc., so apps agree on ~/Downloads, ~/Documents, ...
+    xdg.userDirs.enable = true;
 
     programs = {
       home-manager.enable = true;

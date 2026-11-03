@@ -5,8 +5,13 @@
   ...
 }:
 lib.mkIf config.profiles.developer.enable {
+  programs.go = {
+    enable = true;
+    env.GOPATH = "${config.home.homeDirectory}/.local/share/go";
+    telemetry.mode = "off";
+  };
+
   home.packages = with pkgs; [
-    go
     gopls # LSP server
     delve # debugger (dlv)
     (lib.lowPrio gotools) # goimports, etc.; lowPrio so sox wins `play` collision
@@ -16,11 +21,6 @@ lib.mkIf config.profiles.developer.enable {
     gotests
     impl
   ];
-
-  home.sessionVariables = {
-    GOPATH = "${config.home.homeDirectory}/.local/share/go";
-    GOTELEMETRY = "off";
-  };
 
   home.sessionPath = ["${config.home.homeDirectory}/.local/share/go/bin"];
 

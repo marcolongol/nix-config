@@ -49,8 +49,13 @@
     # swayosd udev rule enabled in roles/desktop/default.nix.
     services.swayosd.enable = true;
 
+    # Automount removable drives, with tray icon and notifications.
+    services.udiskie.enable = true;
+
     omninix.persistence.directories = [
       ".thunderbird"
+      # gnome-keyring: app secrets and Chromium's cookie/password key
+      ".local/share/keyrings"
       ".local/state/wireplumber"
       # Harmony SASE (Perimeter81) keeps its session/auth (Cookies, Local
       # Storage) here; without this the wiped-root impermanence setup forces a

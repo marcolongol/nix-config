@@ -4,10 +4,21 @@
   ...
 }: {
   home.packages = with pkgs; [
-    bottom
     dust
     procs
   ];
+
+  programs.bottom.enable = true;
+  programs.ripgrep.enable = true;
+  programs.fd.enable = true;
+  # tldr pages; cache refreshed by a systemd timer
+  programs.tealdeer.enable = true;
+  # Completions for 2000+ CLIs, shown through fzf-tab; bridges keep native ones for the rest
+  programs.carapace = {
+    enable = true;
+    enableZshIntegration = true;
+    environment.CARAPACE_BRIDGES = "zsh,bash";
+  };
 
   programs.zsh = {
     enable = true;
@@ -81,7 +92,8 @@
       bindkey '^[k' history-beginning-search-backward
       bindkey '^[j' history-beginning-search-forward
 
-      # fzf-tab
+      # fzf-tab; group labels enable switch-group
+      zstyle ':completion:*:descriptions' format '[%d]'
       zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
       zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath'
       zstyle ':fzf-tab:*' switch-group '<' '>'
@@ -139,6 +151,8 @@
   ];
 
   omninix.persistence.directories = [
+    ".cache/tealdeer"
     ".local/share/atuin"
+    ".local/share/zoxide"
   ];
 }
