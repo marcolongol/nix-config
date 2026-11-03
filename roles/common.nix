@@ -73,6 +73,9 @@
         };
         openssh = {
           enable = true;
+          # Keys only from users.users.<name>.openssh.authorizedKeys
+          # (/etc/ssh/authorized_keys.d), not from a writable ~/.ssh.
+          authorizedKeysInHomedir = lib.mkDefault false;
           settings = {
             PasswordAuthentication = false;
             PermitRootLogin = "no";
