@@ -29,18 +29,6 @@ in {
       networking.hostName = hostName;
       time.timeZone = "America/New_York";
 
-      # Dev port ranges stay open for LAN testing.
-      networking.firewall.allowedTCPPortRanges = [
-        {
-          from = 3000;
-          to = 3010;
-        }
-        {
-          from = 4200;
-          to = 4210;
-        }
-      ];
-
       # Announce this host on the LAN (<host>.local).
       services.avahi.publish = {
         enable = true;
@@ -105,13 +93,35 @@ in {
       };
     })
 
-    (lib.mkIf config.roles.docker.enable {
-      # Let Docker bridge networks (br+) reach host services (k3d pods -> Prefect UI :4200).
-      # Only takes effect with the nftables firewall (plan.md S1.3 fixes this).
-      networking.firewall.extraInputRules = ''
-        iifname "br*" accept
-      '';
-    })
+    (lib.mkIf config.roles.docker.enable (let
+      # Dev servers on the host that containers call back into (k3d pods ->
+      # Prefect UI :4200, …). Open only on docker bridges, not on the LAN.
+      devPorts = {
+        allowedTCPPortRanges = [
+          {
+            from = 3000;
+            to = 3010;
+          }
+          {
+            from = 4200;
+            to = 4210;
+          }
+        ];
+      };
+    in {
+      # br-+ is k3d's (user-defined) networks, docker0 the default bridge.
+      networking.firewall.interfaces = {
+        "br-+" = devPorts;
+        docker0 = devPorts;
+      };
+      assertions = [
+        {
+          # `+` is an iptables wildcard; the nftables firewall takes names literally.
+          assertion = !config.networking.nftables.enable;
+          message = "site.nix's docker bridge ports rely on the iptables firewall (br-+ wildcard)";
+        }
+      ];
+    }))
 
     (lib.mkIf config.roles.gaming.enable {
       roles.gaming.openFirewall = true;
