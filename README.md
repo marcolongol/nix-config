@@ -27,7 +27,7 @@ hosts/<name>/      one machine: roles, users, monitors, hardware, disko
 roles/             what a machine does (system side, some with a home side)
 users/lucas/       who I am: profiles, git/ssh/gpg, personal secrets, pubkeys.nix
 profiles/          what a user gets (common, developer, worker)
-modules/flake/     flake-parts config: portability checks, formatter
+modules/flake/     flake-parts config: formatter
 modules/nixos/     imported into every host (drivers, services)
 modules/nixos/internal/  this flake only: identity, site values (site.nix)
 modules/home/      imported for every user (zsh, starship, tmux, languages)
@@ -116,9 +116,9 @@ it Waybar, Rofi, MangoHud and so on. There's no matching profile to keep in sync
 
 The roles, profiles and modules here work in any [omninix](https://github.com/marcolongol/omninix)
 flake. They never read this flake's inputs, secrets or personal values; those
-live under `internal/` and in `users/lucas`. `nix flake check` proves it: the
-portability check evaluates every exported piece in a bare omninix host (see
-`modules/flake/default.nix`).
+live under `internal/` and in `users/lucas`. A piece that needs something you
+haven't brought (stylix for the desktop, a server for NFS) says so in an error
+when you enable it.
 
 They're opinionated (Hyprland, my keybinds, my tool picks), not personal.
 
@@ -244,6 +244,5 @@ nixos-rebuild build-vm --flake .#nixos-vm
 - **Deploys:** comin on each host pulls `main` and switches by itself.
 - **Updates:** Renovate opens PRs for flake inputs; nothing automerges, every
   bump is reviewed.
-- **CI:** on PRs and pushes to `main`: checks the flake (including the
-  portability checks) and formatting, evaluates the standalone Home Manager
-  config, and builds the WSL tarball.
+- **CI:** on PRs and pushes to `main`: checks the flake and formatting,
+  evaluates the standalone Home Manager config, and builds the WSL tarball.

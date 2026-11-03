@@ -15,15 +15,16 @@ in {
 
   config = lib.mkIf config.roles.desktop.enable (lib.mkMerge [
     {
-      assertions = [
+      omninix.requirements = [
         {
-          assertion = options ? stylix.image;
-          message = "roles.desktop needs the stylix NixOS module (inputs.stylix.nixosModules.stylix)";
+          by = "roles.desktop";
+          option = "stylix.image";
+          module = "stylix's NixOS module (inputs.stylix.nixosModules.stylix)";
         }
       ];
 
       # The home half themes through stylix too, so it only comes with it (a
-      # missing stylix then reports the assertion above, not an HM option error).
+      # missing stylix then reports the requirement above, not an HM option error).
       home-manager.sharedModules = lib.optional (options ? stylix.image) ./home;
 
       environment.systemPackages = [
