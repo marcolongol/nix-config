@@ -13,7 +13,9 @@ in {
     settings = {
       general = {
         hide_cursor = true;
-        grace = 2;
+        # No grace by default: locking before sleep must ask for the password
+        # on resume. Only the idle lock below gets a short grace.
+        grace = 0;
         ignore_empty_input = true;
       };
       background = [
@@ -96,7 +98,8 @@ in {
       listener = [
         {
           timeout = 300;
-          on-timeout = "loginctl lock-session";
+          # Move the mouse within 2s to cancel an idle lock.
+          on-timeout = "pidof hyprlock || hyprlock --grace 2";
         }
         {
           timeout = 330;
