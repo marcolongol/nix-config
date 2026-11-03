@@ -177,7 +177,7 @@ in {
       # ────────────────────────────────────────────
       # Attrset so plugin dir names stay stable
       plugins = {
-        # Lifecycle hooks need `node` on PATH (modules/home/nodejs.nix)
+        # Lifecycle hooks need `node` on PATH (modules/home/lang/nodejs.nix)
         ponytail = inputs.claude-ponytail;
 
         # Frontend UI/design plugins
