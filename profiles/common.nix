@@ -10,13 +10,13 @@
   config = lib.mkIf config.profiles.common.enable {
     # omninix maps these into home.persistence on hosts with /persist.
     omninix.persistence.directories = [
-      "Pictures"
-      "Work"
-      "Personal"
-      ".ssh"
       ".gnupg"
       ".local/share/nvim"
       ".local/state/nvim"
+      ".ssh"
+      "Personal"
+      "Pictures"
+      "Work"
     ];
 
     xdg.enable = true;

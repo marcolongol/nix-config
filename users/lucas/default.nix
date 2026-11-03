@@ -18,20 +18,15 @@ in {
     packages = with pkgs; [
       anytype
       keymapp
-      obsidian
+      qgis-ltr
       scrcpy
       signal-desktop
       spotify
       telegram-desktop
       tz
-      vim
-      qgis-ltr
     ];
 
-    sessionVariables = {
-      EDITOR = "vim";
-      TERMINAL = "ghostty";
-    };
+    sessionVariables.TERMINAL = "ghostty";
   };
 
   xdg.configFile."tz/conf.toml".text = ''
@@ -48,18 +43,26 @@ in {
     name = "India"
   '';
 
-  programs.gpg = {
-    enable = true;
-    publicKeys = [
-      {
-        source = gpgPubKey;
-        trust = "ultimate";
-      }
-    ];
-  };
+  programs = {
+    # vim-full with vim-sensible; also sets EDITOR
+    vim = {
+      enable = true;
+      defaultEditor = true;
+    };
 
-  programs.git = {
-    settings = {
+    obsidian.enable = true;
+
+    gpg = {
+      enable = true;
+      publicKeys = [
+        {
+          source = gpgPubKey;
+          trust = "ultimate";
+        }
+      ];
+    };
+
+    git.settings = {
       user = {
         name = "Lucas Marcolongo";
         email = "lucas@marcolongo.dev";
@@ -68,36 +71,35 @@ in {
       init.defaultBranch = "main";
       commit.gpgSign = true;
     };
-  };
 
-  programs.ssh = {
-    enableDefaultConfig = false;
-    # settings replaces matchBlocks; keys are upstream ssh_config directives.
-    settings = {
-      "*" = {
-        ServerAliveInterval = 60;
-        ServerAliveCountMax = 3;
-        Compression = true;
-      };
-      "github.com" = {
-        User = "git";
+    ssh = {
+      enableDefaultConfig = false;
+      # settings replaces matchBlocks; keys are upstream ssh_config directives.
+      settings = {
+        "*" = {
+          ServerAliveInterval = 60;
+          ServerAliveCountMax = 3;
+          Compression = true;
+        };
+        "github.com" = {
+          User = "git";
+        };
       };
     };
+
+    spotify-player.enable = true;
   };
 
-  programs.spotify-player.enable = true;
-
-  omninix.persistence.directories = [
-    ".config/1Password"
-    ".config/spotify"
-    ".config/anytype"
-    ".config/Signal"
-  ];
-
-  # Persist only cert.pem; per-tunnel credentials live in sops.
-  omninix.persistence.files = [
-    ".cloudflared/cert.pem"
-  ];
+  omninix.persistence = {
+    directories = [
+      ".config/1Password"
+      ".config/spotify"
+      ".config/anytype"
+      ".config/Signal"
+    ];
+    # Persist only cert.pem; per-tunnel credentials live in sops.
+    files = [".cloudflared/cert.pem"];
+  };
 
   sops = {
     secrets = {
@@ -105,29 +107,31 @@ in {
       dockerhub-auth = {};
       github-pat = {};
     };
-    templates.docker-config = {
-      path = "${config.home.homeDirectory}/.docker/config.json";
-      content = ''
-        {
-          "auths": {
-            "https://index.docker.io/v1/": {
-              "auth": "${config.sops.placeholder.dockerhub-auth}"
+    templates = {
+      docker-config = {
+        path = "${config.home.homeDirectory}/.docker/config.json";
+        content = ''
+          {
+            "auths": {
+              "https://index.docker.io/v1/": {
+                "auth": "${config.sops.placeholder.dockerhub-auth}"
+              }
             }
           }
-        }
-      '';
-      mode = "0600";
-    };
-    # gh login rendered from the PAT; don't use `gh auth login/logout`
-    templates.gh-hosts = {
-      path = "${config.home.homeDirectory}/.config/gh/hosts.yml";
-      content = ''
-        github.com:
-          user: marcolongol
-          oauth_token: ${config.sops.placeholder.github-pat}
-          git_protocol: https
-      '';
-      mode = "0600";
+        '';
+        mode = "0600";
+      };
+      # gh login rendered from the PAT; don't use `gh auth login/logout`
+      gh-hosts = {
+        path = "${config.home.homeDirectory}/.config/gh/hosts.yml";
+        content = ''
+          github.com:
+            user: marcolongol
+            oauth_token: ${config.sops.placeholder.github-pat}
+            git_protocol: https
+        '';
+        mode = "0600";
+      };
     };
   };
 }

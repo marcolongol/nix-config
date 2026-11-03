@@ -8,12 +8,14 @@
 
   config = lib.mkIf config.profiles.worker.enable {
     home.packages = with pkgs; [
-      remmina
-      webex
-      todoist
-      libreoffice
       simplescreenrecorder
+      todoist
+      webex
     ];
+
+    programs.libreoffice.enable = true;
+    # Remmina plus its tray service at login
+    services.remmina.enable = true;
 
     omninix.persistence.directories = [
       ".config/remmina"

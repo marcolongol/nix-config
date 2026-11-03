@@ -8,7 +8,6 @@
 
   config = lib.mkIf config.profiles.developer.enable {
     home.packages = with pkgs; [
-      aria2
       bzip2.dev
       cabextract
       cdrkit
@@ -16,13 +15,12 @@
       cilium-cli
       cmake
       curl
-      dbeaver-bin
       dig
       docker-buildx
       docker-client
       docker-compose
       fluxcd
-      github-copilot-cli
+      freetds
       gnumake
       go-task
       k3d
@@ -39,12 +37,11 @@
       pkg-config
       postgresql
       psqlodbc
-      sqlcmd
-      freetds
       readline.dev
       restic
       rsync
       sox
+      sqlcmd
       systemctl-tui
       talhelper
       talosctl
@@ -59,6 +56,9 @@
 
     # gh plus its git credential helper for github.com
     programs.gh.enable = true;
+    programs.aria2.enable = true;
+    programs.dbeaver.enable = true;
+    programs.github-copilot-cli.enable = true;
 
     programs.delta = {
       enable = true;
@@ -156,15 +156,6 @@
       enableZshIntegration = true;
     };
 
-    omninix.persistence.directories = [
-      ".config/direnv"
-      ".config/github-copilot"
-      ".copilot"
-      ".krew"
-      ".kube"
-      ".local/share/DBeaverData"
-    ];
-
     home.sessionPath = ["$HOME/.krew/bin"];
 
     # ----------------
@@ -203,5 +194,14 @@
       kn = "kubens";
       kx = "kubectx";
     };
+
+    omninix.persistence.directories = [
+      ".config/direnv"
+      ".config/github-copilot"
+      ".copilot"
+      ".krew"
+      ".kube"
+      ".local/share/DBeaverData"
+    ];
   };
 }
