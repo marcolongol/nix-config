@@ -169,7 +169,7 @@ omninix = {
 
 Not shared, under `internal/`: my identity and keys, site values (hostname,
 time zone, deploy, NAS, VPN agents, wallpaper rotation), harmony-sase,
-claude-code and the chromium DevTools service.
+and claude-code.
 
 Pin a revision through your lock. Breaking changes to shared pieces are `!`
 commits (`git log --grep '!:'`). Needs omninix with `extraNixosModules`/`internal/`

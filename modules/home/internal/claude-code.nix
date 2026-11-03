@@ -203,6 +203,20 @@ in {
           args = ["-y" "@upstash/context7-mcp@3.2.1"];
         };
 
+        # Launches its own headless chromium on demand (pipe, throwaway profile),
+        # so no DevTools port is left listening. Only where chromium is installed.
+        chrome-devtools = lib.mkIf config.programs.chromium.enable {
+          command = "${pkgs.nodejs}/bin/npx";
+          args = [
+            "-y"
+            "chrome-devtools-mcp@1.12.0"
+            "--executable-path"
+            "${config.programs.chromium.finalPackage}/bin/chromium"
+            "--headless"
+            "--isolated"
+          ];
+        };
+
         mcp-nixos = {
           command = "${lib.getExe pkgs.mcp-nixos}";
         };
