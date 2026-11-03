@@ -83,8 +83,9 @@
         };
         fwupd.enable = true;
         smartd.enable = true;
+        # Mounting is on request (udiskie on the desktop); no devmon, which
+        # mounts any drive as soon as it's plugged in, even while locked.
         udisks2.enable = true;
-        devmon.enable = true;
         pcscd.enable = true;
         # Cap journal size and retention (docker logs ship here too).
         journald.settings.Journal = {

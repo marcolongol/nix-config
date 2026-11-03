@@ -57,8 +57,13 @@
     # swayosd udev rule enabled in roles/desktop/default.nix.
     services.swayosd.enable = true;
 
-    # Automount removable drives, with tray icon and notifications.
-    services.udiskie.enable = true;
+    # Removable drives: tray icon and notifications.
+    services.udiskie = {
+      enable = true;
+      # Mount from the tray on click, not on plug-in (nothing is parsed while
+      # you're away or the screen is locked).
+      automount = false;
+    };
 
     omninix.persistence.directories = [
       ".thunderbird"
