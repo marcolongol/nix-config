@@ -2,11 +2,27 @@
 # roles leave to the flake using them. Set on upstream options where they exist.
 {
   config,
+  inputs,
   lib,
   hostName,
   secretsPath,
   ...
-}: {
+}: let
+  # Wallpaper rotation: deterministic pick from ./wallpapers/ based on flake
+  # lastModified. Each comin sync produces a new timestamp -> new index ->
+  # different wallpaper + theme. Pure-Nix friendly, no runtime daemon.
+  wallpaperDir = inputs.self + "/wallpapers";
+  wallpaperFiles = lib.pipe (builtins.readDir wallpaperDir) [
+    (lib.filterAttrs (n: t:
+      t
+      == "regular"
+      && builtins.any (ext: lib.hasSuffix ext (lib.toLower n)) [".jpg" ".jpeg" ".png" ".webp"]))
+    lib.attrNames
+    (builtins.sort builtins.lessThan)
+  ];
+  wallpaperIndex = lib.mod inputs.self.lastModified (builtins.length wallpaperFiles);
+  selectedWallpaper = wallpaperDir + "/${builtins.elemAt wallpaperFiles wallpaperIndex}";
+in {
   config = lib.mkMerge [
     (lib.mkIf config.roles.common.enable {
       networking.hostName = hostName;
@@ -46,6 +62,28 @@
 
       # Key paths, format and host file come from omninix.
       sops.secrets.shared-secret.sopsFile = secretsPath + "/shared.yaml";
+    })
+
+    (lib.mkIf config.roles.desktop.enable {
+      stylix.image = selectedWallpaper;
+
+      # VPN agents for these machines.
+      programs.surfshark.enable = true;
+      programs.harmony-sase.enable = true;
+      # TEMPORARY: same posture-check spoof as nixos-lt — macOS-only server-side
+      # profile hits Linux too. Remove once the admin-console profile is corrected.
+      programs.harmony-sase.spoofDpcFiles = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
+
+      # Let the 1Password extension in zen talk to the desktop app.
+      environment.etc = {
+        "1password/custom_allowed_browsers" = {
+          text = ''
+            .zen-wrapped
+            zen
+          '';
+          mode = "0755";
+        };
+      };
     })
 
     (lib.mkIf config.roles.nfsClient.enable {

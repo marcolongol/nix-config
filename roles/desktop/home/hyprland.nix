@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  options,
   pkgs,
   ...
 }: {
@@ -25,7 +26,11 @@
       "$mod" = "SUPER";
       "$terminal" = "ghostty";
       "$filemanager" = "nautilus";
-      "$browser" = "zen-beta";
+      # zen when its module is imported (browser.nix), else the chromium installed here.
+      "$browser" =
+        if options ? programs.zen-browser
+        then "zen-beta"
+        else "chromium";
       "$menu" = "rofi -show drun -show-icons";
       general = {
         gaps_in = 5;

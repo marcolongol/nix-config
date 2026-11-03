@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ./themes.nix
     ./hyprland.nix
@@ -13,6 +17,9 @@
 
   # Home side of roles.desktop, applied to every user via home-manager.sharedModules.
   config = {
+    # $terminal in hyprland.nix.
+    programs.ghostty.enable = lib.mkDefault true;
+
     home.packages = with pkgs; [
       file-roller
       filezilla

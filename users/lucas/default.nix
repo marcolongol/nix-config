@@ -52,6 +52,13 @@ in {
 
     obsidian.enable = true;
 
+    # Applies where the desktop role enables zen.
+    zen-browser.policies.Homepage = {
+      URL = "https://homepage.marcolongo.dev";
+      Locked = true;
+      StartPage = "homepage";
+    };
+
     gpg = {
       enable = true;
       publicKeys = [
