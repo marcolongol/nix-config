@@ -119,7 +119,7 @@
     ...
   } @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [omninix.flakeModules.default];
+      imports = [omninix.flakeModules.default ./modules/flake];
 
       systems = import systems;
 
@@ -152,10 +152,6 @@
           nixievim = inputs.nixievim.homeManagerModules.default;
           zen-browser = inputs.zen-browser.homeModules.beta;
         };
-      };
-
-      perSystem = {pkgs, ...}: {
-        formatter = pkgs.alejandra;
       };
     };
 }

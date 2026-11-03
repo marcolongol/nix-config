@@ -1,12 +1,14 @@
+# NFSv4 automounts of one export's shares into every active user's home
+# (/home/<user>/<share>), over AUTH_SYS.
 {
   config,
   lib,
   pkgs,
   ...
 }: let
-  device = "10.0.0.4:/volume1";
+  cfg = config.roles.nfsClient;
   fsType = "nfs";
-  options = [
+  mountOptions = [
     "x-systemd.automount"
     "noauto"
     "x-systemd.idle-timeout=600"
@@ -23,11 +25,31 @@
     "async"
     "tcp"
   ];
-  nfsMounts = ["Backup" "Documents" "Downloads" "K8s" "Media" "Shared"];
 in {
-  options.roles.nfsClient.enable = lib.mkEnableOption "NFS client mounts";
+  options.roles.nfsClient = {
+    enable = lib.mkEnableOption "NFS client mounts";
+    server = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "nas.local:/volume1";
+      description = "NFS export the shares live under (`host:/path`).";
+    };
+    shares = lib.mkOption {
+      type = lib.types.listOf (lib.types.strMatching "^[A-Za-z0-9._-]+$");
+      default = [];
+      example = ["Documents" "Media"];
+      description = "Shares under `server`, each mounted at /home/<user>/<share>.";
+    };
+  };
 
-  config = lib.mkIf config.roles.nfsClient.enable {
+  config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.server != null;
+        message = "roles.nfsClient.server must be set (e.g. \"nas.local:/volume1\")";
+      }
+    ];
+
     services.rpcbind.enable = true;
     boot.supportedFilesystems = ["nfs"];
     boot.kernelModules = ["nfs"];
@@ -42,11 +64,12 @@ in {
             map (name: {
               name = "/home/${userName}/${name}";
               value = {
-                inherit options fsType;
-                device = "${device}/${name}";
+                inherit fsType;
+                options = mountOptions;
+                device = "${cfg.server}/${name}";
               };
             })
-            nfsMounts
+            cfg.shares
         )
         config.omninix.activeUsers
       )

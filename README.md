@@ -27,8 +27,9 @@ hosts/<name>/      one machine: roles, users, monitors, hardware, disko
 roles/             what a machine does (system side, some with a home side)
 users/lucas/       who I am: profiles, git/ssh/gpg, personal secrets, pubkeys.nix
 profiles/          what a user gets (common, developer, worker)
+modules/flake/     flake-parts config: portability checks, formatter
 modules/nixos/     imported into every host (drivers, services)
-modules/nixos/internal/  this flake only: identity
+modules/nixos/internal/  this flake only: identity, site values (site.nix)
 modules/home/      imported for every user (zsh, starship, tmux, languages)
 modules/home/internal/   this flake only: claude-code
 packages/          own packages, available as pkgs.<name> (surfshark, harmony-sase)
