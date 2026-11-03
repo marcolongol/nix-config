@@ -73,6 +73,17 @@ in {
       # TEMPORARY: same posture-check spoof as nixos-lt — macOS-only server-side
       # profile hits Linux too. Remove once the admin-console profile is corrected.
       programs.harmony-sase.spoofDpcFiles = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
+      # Harmony SASE (Perimeter81) keeps its session/auth (Cookies, Local
+      # Storage) here; without this the wiped root forces a re-login on every
+      # boot. Both the legacy and rebranded config dir names are persisted.
+      home-manager.sharedModules = [
+        {
+          omninix.persistence.directories = [
+            ".config/Perimeter81"
+            ".config/Harmony SASE"
+          ];
+        }
+      ];
 
       # Let the 1Password extension in zen talk to the desktop app.
       environment.etc = {

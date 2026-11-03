@@ -1,4 +1,4 @@
-# Language toolchains; each file keeps its own gate.
+# Language toolchains: lang.<name>.enable each (set by the profiles).
 {
   imports = [
     ./dotnet.nix

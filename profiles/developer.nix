@@ -4,9 +4,19 @@
   pkgs,
   ...
 }: {
+  # Relative import: the profile works without the flake's homeModules.
+  imports = [../modules/home/lang];
+
   options.profiles.developer.enable = lib.mkEnableOption "developer tools and CLI configuration";
 
   config = lib.mkIf config.profiles.developer.enable {
+    lang = {
+      dotnet.enable = true;
+      go.enable = true;
+      nodejs.enable = true;
+      python.enable = true;
+    };
+
     home.packages = with pkgs; [
       bzip2.dev
       cabextract
@@ -131,6 +141,8 @@
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
+      # extraConfig needs a default host block; merges with any the user adds.
+      settings."*" = {};
       extraConfig = ''
         AddKeysToAgent yes
       '';

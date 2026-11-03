@@ -3,17 +3,17 @@
   # Proves the exported roles, profiles and modules work in other flakes.
   omninix.checks.portable = {
     enable = true;
-    # Not converted yet (plan.md, phases 6–7b).
+    # Not converted yet (plan.md, phase 7b).
     exclude = [
-      "profiles.common"
-      "homeModules.lang"
-      "homeModules.tmux"
-      "homeModules.starship"
-      "homeModules.zsh"
       "nixosModules.cloudflare-tunnel"
     ];
     # What a consumer must bring for each piece.
     requires.roles.desktop = [inputs.stylix.nixosModules.stylix];
+    scenarios.base.home.profiles = {
+      common.enable = true;
+      developer.enable = true;
+      worker.enable = true;
+    };
     scenarios.base.nixos = {
       roles.common.enable = true;
       roles.nfsClient = {

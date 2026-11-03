@@ -3,17 +3,20 @@
   lib,
   pkgs,
   ...
-}:
-lib.mkIf config.profiles.developer.enable {
-  home.packages = [
-    pkgs.nodejs
-    pkgs.pnpm
-    pkgs.yarn
-    pkgs.npm-check-updates
-  ];
+}: {
+  options.lang.nodejs.enable = lib.mkEnableOption "Node.js toolchain";
 
-  omninix.persistence.directories = [
-    ".local/share/pnpm"
-    ".npm"
-  ];
+  config = lib.mkIf config.lang.nodejs.enable {
+    home.packages = [
+      pkgs.nodejs
+      pkgs.pnpm
+      pkgs.yarn
+      pkgs.npm-check-updates
+    ];
+
+    omninix.persistence.directories = [
+      ".local/share/pnpm"
+      ".npm"
+    ];
+  };
 }

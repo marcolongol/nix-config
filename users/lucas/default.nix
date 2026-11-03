@@ -29,6 +29,16 @@ in {
     sessionVariables.TERMINAL = "ghostty";
   };
 
+  shell.tmux = {
+    autoAttach = true;
+    weather = {
+      latitude = "43.1566";
+      longitude = "-77.6088";
+      timezone = "America/New_York";
+      unit = "fahrenheit";
+    };
+  };
+
   xdg.configFile."tz/conf.toml".text = ''
     [[zones]]
     id = "America/Los_Angeles"
@@ -99,6 +109,9 @@ in {
 
   omninix.persistence = {
     directories = [
+      "Personal"
+      "Pictures"
+      "Work"
       ".config/1Password"
       ".config/spotify"
       ".config/anytype"
@@ -109,6 +122,9 @@ in {
   };
 
   sops = {
+    # Decrypt with the YubiKey's GPG key; the file is omninix's default
+    # (secrets/users/lucas.yaml).
+    gnupg.home = "${config.home.homeDirectory}/.gnupg";
     secrets = {
       user-secret = {};
       dockerhub-auth = {};
