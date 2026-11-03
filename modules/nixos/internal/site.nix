@@ -97,6 +97,18 @@ in {
       };
     })
 
+    (lib.mkIf config.roles.docker.enable {
+      # Let Docker bridge networks (br+) reach host services (k3d pods -> Prefect UI :4200).
+      # Only takes effect with the nftables firewall (plan.md S1.3 fixes this).
+      networking.firewall.extraInputRules = ''
+        iifname "br*" accept
+      '';
+    })
+
+    (lib.mkIf config.roles.gaming.enable {
+      roles.gaming.openFirewall = true;
+    })
+
     (lib.mkIf config.roles.nfsClient.enable {
       roles.nfsClient = {
         server = "10.0.0.4:/volume1";

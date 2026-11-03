@@ -15,6 +15,7 @@ in {
     package = mkOption {
       type = types.package;
       default = config.boot.kernelPackages.nvidiaPackages.stable;
+      defaultText = lib.literalExpression "config.boot.kernelPackages.nvidiaPackages.stable";
       description = "NVIDIA driver package to use";
     };
 

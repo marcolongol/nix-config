@@ -20,16 +20,23 @@ in {
 
     tunnelId = lib.mkOption {
       type = lib.types.str;
+      description = "UUID returned by `cloudflared tunnel create <name>`.";
+    };
+
+    credentialsFile = lib.mkOption {
+      type = lib.types.str;
+      example = "/run/secrets/cloudflared-credentials";
       description = ''
-        UUID returned by `cloudflared tunnel create <name>`. The matching
-        credentials JSON must be stored under the `cloudflared-credentials`
-        sops key in this host's secrets file.
+        Runtime path of the tunnel's credentials JSON (from
+        `cloudflared tunnel create`), readable by the `cloudflared` user,
+        e.g. a sops-nix or agenix secret. Never a Nix path: that would copy
+        the secret into the world-readable store.
       '';
     };
 
     domain = lib.mkOption {
       type = lib.types.str;
-      example = "nixos-lt.marcolongo.dev";
+      example = "demo.example.com";
       description = ''
         Base domain. Each app is served at `<name>.<domain>`. A wildcard
         `*.<domain>` CNAME pointing at `<tunnelId>.cfargotunnel.com` must
@@ -47,7 +54,9 @@ in {
       description = ''
         Demo apps to expose. Each entry `name = port` maps
         `<name>.<domain>` to `http://127.0.0.1:<port>`. Unmatched
-        subdomains return 404.
+        subdomains return 404. Apps are public with no authentication
+        (put Cloudflare Access in front if they need it), and any local
+        user can serve on an app's port while that app is down.
       '';
     };
 
@@ -60,6 +69,13 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = !(lib.hasPrefix builtins.storeDir cfg.credentialsFile);
+        message = "services.cloudflare-tunnel.credentialsFile is in the Nix store, so the tunnel secret is world-readable; use a runtime secret path";
+      }
+    ];
+
     # DynamicUser users don't exist at sops-nix activation; declare statically so chown resolves.
     users.users.cloudflared = {
       isSystemUser = true;
@@ -73,16 +89,10 @@ in {
       Group = "cloudflared";
     };
 
-    sops.secrets.cloudflared-credentials = {
-      mode = "0400";
-      owner = "cloudflared";
-      group = "cloudflared";
-    };
-
     services.cloudflared = {
       enable = true;
       tunnels.${cfg.tunnelId} = {
-        credentialsFile = config.sops.secrets.cloudflared-credentials.path;
+        inherit (cfg) credentialsFile;
         ingress = {
           "*.${cfg.domain}" = "http://localhost:${toString caddyPort}";
         };

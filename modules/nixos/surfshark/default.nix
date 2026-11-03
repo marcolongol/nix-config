@@ -20,7 +20,9 @@ in {
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.surfshark;
+      # Its own package file, so the module works without this flake's pkgs.
+      default = pkgs.callPackage ../../../packages/surfshark.nix {};
+      defaultText = lib.literalExpression "pkgs.callPackage <nix-config>/packages/surfshark.nix {}";
       description = "The Surfshark package to use.";
     };
 

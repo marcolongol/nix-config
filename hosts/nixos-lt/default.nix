@@ -38,6 +38,7 @@
   services.cloudflare-tunnel = {
     enable = true;
     tunnelId = "93fec6bb-b9db-43d3-a290-953d830d1ace";
+    credentialsFile = config.sops.secrets.cloudflared-credentials.path;
     domain = "nixos-lt.marcolongo.dev";
     whoami.enable = false;
     apps = {
@@ -96,6 +97,12 @@
       host-secret = {
         owner = "lucas";
         mode = "0400";
+      };
+      # Tunnel credentials JSON (services.cloudflare-tunnel).
+      cloudflared-credentials = {
+        mode = "0400";
+        owner = "cloudflared";
+        group = "cloudflared";
       };
     };
   };

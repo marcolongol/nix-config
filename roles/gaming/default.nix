@@ -4,7 +4,10 @@
   pkgs,
   ...
 }: {
-  options.roles.gaming.enable = lib.mkEnableOption "Steam and gaming support";
+  options.roles.gaming = {
+    enable = lib.mkEnableOption "Steam and gaming support";
+    openFirewall = lib.mkEnableOption "Steam's remote play, dedicated server and LAN game transfer ports";
+  };
 
   config = lib.mkIf config.roles.gaming.enable {
     home-manager.sharedModules = [./home.nix];
@@ -20,9 +23,9 @@
           __VK_LAYER_NV_optimus = "NVIDIA_only";
         };
       });
-      remotePlay.openFirewall = true;
-      dedicatedServer.openFirewall = true;
-      localNetworkGameTransfers.openFirewall = true;
+      remotePlay.openFirewall = config.roles.gaming.openFirewall;
+      dedicatedServer.openFirewall = config.roles.gaming.openFirewall;
+      localNetworkGameTransfers.openFirewall = config.roles.gaming.openFirewall;
       gamescopeSession = {
         enable = true;
         args = ["--hdr-enabled" "--hdr-itm-enable"];

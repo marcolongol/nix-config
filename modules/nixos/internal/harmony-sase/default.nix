@@ -42,7 +42,7 @@ in {
     spoofDpcFiles = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [];
-      example = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
+      example = ["/dev/null/MacOS_Prohibited_on_Corp_VPN"];
       description = ''
         TEMPORARY workaround. File paths for which the agent's Device Posture
         Check (osquery file-existence rules) should report a match, forcing
