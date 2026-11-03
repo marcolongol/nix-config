@@ -4,6 +4,7 @@
   config,
   inputs,
   lib,
+  pkgs,
   hostName,
   secretsPath,
   ...
@@ -48,17 +49,24 @@ in {
 
       programs.nh.flake = "/home/lucas/Personal/nix-config";
 
-      # GitOps: comin pulls main and switches this host.
+      # GitOps: comin pulls main and switches this host, as root, so it only
+      # deploys commits signed by my YubiKey key.
       services.comin = {
         enable = true;
+        gpgPublicKeyPaths = ["${pkgs.writeText "lucas-gpg.asc" (import ../../../users/lucas/pubkeys.nix).gpg.publicKey}"];
         remotes = [
           {
             name = "origin";
             url = "https://github.com/marcolongol/nix-config";
             branches.main.name = "main";
+            # No testing-<host> branch: pushing one would deploy it too.
+            branches.testing.name = "";
           }
         ];
       };
+      # Last deployed commit: comin's guard against rollbacks and rewritten
+      # history, which the root wipe would otherwise reset on every boot.
+      omninix.persistence.directories = ["/var/lib/comin"];
 
       # Key paths, format and host file come from omninix.
       sops.secrets.shared-secret.sopsFile = secretsPath + "/shared.yaml";
