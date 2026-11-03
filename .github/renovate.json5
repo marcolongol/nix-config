@@ -22,15 +22,17 @@
 
   "packageRules": [
     {
+      // Paused for the sharing migration (plan.md): each phase must compare
+      // against its parent commit without input bumps landing in between.
       "matchManagers": ["nix"],
       "matchUpdateTypes": ["digest"],
-      "automerge": true,
-      "platformAutomerge": true
+      "automerge": false,
+      "platformAutomerge": false
     },
     {
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true,
-      "platformAutomerge": true
+      "automerge": false,
+      "platformAutomerge": false
     },
     {
       "matchUpdateTypes": ["major"],

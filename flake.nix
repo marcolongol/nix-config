@@ -134,7 +134,24 @@
         packagesDir = ./packages;
         secretsPath = ./secrets;
         allowUnfree = true;
-        extraRoles = {inherit (omninix.roles) impermanent;};
+        # Picked by name, so roles omninix adds later don't appear here unasked.
+        extraRoles = {
+          impermanent = omninix.roles.impermanent;
+        };
+        # Third-party modules, imported into every host / every user. They're
+        # inert until configured. impermanence must be on every host: omninix
+        # maps omninix.persistence into its home.persistence for all users.
+        extraNixosModules = {
+          disko = inputs.disko.nixosModules.disko;
+          impermanence = inputs.impermanence.nixosModules.impermanence;
+          stylix = inputs.stylix.nixosModules.stylix;
+          comin = inputs.comin.nixosModules.comin;
+          nix-index = inputs.nix-index-database.nixosModules.nix-index;
+        };
+        extraHomeManagerModules = {
+          nixievim = inputs.nixievim.homeManagerModules.default;
+          zen-browser = inputs.zen-browser.homeModules.beta;
+        };
       };
 
       perSystem = {pkgs, ...}: {

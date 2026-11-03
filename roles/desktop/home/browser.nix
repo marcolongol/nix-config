@@ -1,12 +1,10 @@
+# zen's HM module is imported for every user via extraHomeManagerModules (flake.nix).
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
 }: {
-  imports = [inputs.zen-browser.homeModules.beta];
-
   programs.zen-browser = {
     enable = true;
     profiles.default = {};

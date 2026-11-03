@@ -27,8 +27,10 @@ hosts/<name>/      one machine: roles, users, monitors, hardware, disko
 roles/             what a machine does (system side, some with a home side)
 users/lucas/       who I am: profiles, git/ssh/gpg, personal secrets, pubkeys.nix
 profiles/          what a user gets (common, developer, worker)
-modules/nixos/     imported into every host (identity, third-party inputs, drivers, services)
-modules/home/      imported for every user (zsh, starship, tmux, languages, claude-code)
+modules/nixos/     imported into every host (drivers, services)
+modules/nixos/internal/  this flake only: identity
+modules/home/      imported for every user (zsh, starship, tmux, languages)
+modules/home/internal/   this flake only: claude-code
 packages/          own packages, available as pkgs.<name> (surfshark, harmony-sase)
 overlays/          nixpkgs overrides (overrides.nix)
 secrets/           sops files: shared.yaml, <host>.yaml, users/<user>.yaml
@@ -36,7 +38,11 @@ wallpapers/        stylix wallpapers
 ```
 
 Every `.nix` file in these directories is picked up automatically. Adding a role,
-profile, package or overlay means adding the file, nothing else.
+profile, package or overlay means adding the file, nothing else. Files under an
+`internal/` folder are used here but not exported for other flakes: they read this
+flake's inputs or hold values specific to these machines. Third-party modules (disko,
+impermanence, stylix, comin, nix-index, nixievim, zen) are listed once in `flake.nix`
+as `extraNixosModules` / `extraHomeManagerModules`.
 
 ## How it fits together
 
@@ -120,7 +126,7 @@ at login through the YubiKey. Without the key plugged in they stay empty until
 `systemctl --user start sops-nix.service`.
 
 Login also accepts the YubiKey's SSH key through `pam_ssh_agent_auth`
-(`modules/nixos/identity.nix`); the password is the fallback. Users are immutable
+(`modules/nixos/internal/identity.nix`); the password is the fallback. Users are immutable
 (`users.mutableUsers = false`) on every host with repo users.
 
 ## Impermanence
