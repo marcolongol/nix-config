@@ -4,6 +4,8 @@
   pkgs,
   ...
 }: {
+  imports = [../session-path.nix];
+
   options.lang.go.enable = lib.mkEnableOption "Go toolchain";
 
   config = lib.mkIf config.lang.go.enable {
@@ -24,7 +26,7 @@
       impl
     ];
 
-    home.sessionPath = ["${config.home.homeDirectory}/.local/share/go/bin"];
+    home.sessionPathAppend = ["${config.home.homeDirectory}/.local/share/go/bin"];
 
     omninix.persistence.directories = [
       ".local/share/go" # GOPATH: modules, installed bins

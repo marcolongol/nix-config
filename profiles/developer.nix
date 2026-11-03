@@ -5,7 +5,7 @@
   ...
 }: {
   # Relative import: the profile works without the flake's homeModules.
-  imports = [../modules/home/lang];
+  imports = [../modules/home/lang ../modules/home/session-path.nix];
 
   options.profiles.developer.enable = lib.mkEnableOption "developer tools and CLI configuration";
 
@@ -168,7 +168,7 @@
       enableZshIntegration = true;
     };
 
-    home.sessionPath = ["$HOME/.krew/bin"];
+    home.sessionPathAppend = ["$HOME/.krew/bin"];
 
     # ----------------
     # SECTION: k3d

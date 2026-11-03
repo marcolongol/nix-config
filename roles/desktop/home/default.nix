@@ -4,6 +4,7 @@
   ...
 }: {
   imports = [
+    ../../../modules/home/session-path.nix
     ./themes.nix
     ./hyprland.nix
     ./waybar.nix
@@ -35,7 +36,7 @@
       wl-clipboard
     ];
 
-    home.sessionPath = ["$HOME/.local/bin"];
+    home.sessionPathAppend = ["$HOME/.local/bin"];
 
     home.file.".local/bin/" = {
       source = ./scripts;
