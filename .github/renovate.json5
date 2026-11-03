@@ -22,8 +22,7 @@
 
   "packageRules": [
     {
-      // Paused for the sharing migration (plan.md): each phase must compare
-      // against its parent commit without input bumps landing in between.
+      // No automerge: comin deploys main as root, so every bump is reviewed.
       "matchManagers": ["nix"],
       "matchUpdateTypes": ["digest"],
       "automerge": false,

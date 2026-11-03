@@ -112,6 +112,69 @@ it Waybar, Rofi, MangoHud and so on. There's no matching profile to keep in sync
 | `developer` | git, direnv, Kubernetes tooling, lazygit/lazydocker, claude-code |
 | `worker` | work apps (Remmina, Webex, LibreOffice, …) |
 
+## Reuse my roles ♻️
+
+The roles, profiles and modules here work in any [omninix](https://github.com/marcolongol/omninix)
+flake. They never read this flake's inputs, secrets or personal values; those
+live under `internal/` and in `users/lucas`. `nix flake check` proves it: the
+portability check evaluates every exported piece in a bare omninix host (see
+`modules/flake/default.nix`).
+
+They're opinionated (Hyprland, my keybinds, my tool picks), not personal.
+
+```nix
+# your flake.nix
+inputs.nix-config = {
+  url = "github:marcolongol/nix-config";
+  inputs = {
+    nixpkgs.follows = "nixpkgs";
+    home-manager.follows = "home-manager";
+    omninix.follows = "omninix";
+  };
+};
+
+omninix = {
+  # Pick pieces by name; your own roles/, profiles/ and modules win on a clash.
+  extraRoles = {inherit (nix-config.roles) common desktop;};
+  extraProfiles = {inherit (nix-config.profiles) developer;};
+  extraHomeManagerModules = {inherit (nix-config.homeModules) tmux;};
+};
+```
+
+```nix
+# hosts/box/default.nix
+{inputs, ...}: {
+  imports = [inputs.stylix.nixosModules.stylix];
+  roles.common.enable = true;
+  roles.desktop.enable = true;
+  stylix.image = ./wallpaper.png;
+  networking.hostName = "box";
+}
+```
+
+| Piece | You bring |
+|---|---|
+| `roles.common` | nothing; set your hostname, time zone and any extra ports yourself. comma is on if you import nix-index-database |
+| `roles.desktop` | stylix's NixOS module and `stylix.image`. zen is used if you import its HM module, chromium otherwise |
+| `roles.nfsClient` | `server` and `shares` |
+| `roles.gaming` | nothing (`openFirewall` opens Steam's ports) |
+| `roles.docker`, `roles.laptop` | nothing (laptop assumes Intel) |
+| `profiles.common` | nothing; nixievim if you import its HM module. Brings zsh, tmux, starship and the Nix tools |
+| `profiles.developer` | nothing (it brings its language toolchains) |
+| `profiles.worker` | `allowUnfree` |
+| `nixosModules.surfshark` | `allowUnfree` (the package itself is included) |
+| `nixosModules.cloudflare-tunnel` | `tunnelId`, `domain`, and a runtime `credentialsFile` |
+| `homeModules.zsh` | nothing; note that it aliases cat, top, du and ps |
+| `homeModules.tmux` | nothing; `weather` and `autoAttach` are optional |
+
+Not shared, under `internal/`: my identity and keys, site values (hostname,
+time zone, deploy, NAS, VPN agents, wallpaper rotation), harmony-sase,
+claude-code and the chromium DevTools service.
+
+Pin a revision through your lock. Breaking changes to shared pieces are `!`
+commits (`git log --grep '!:'`). Needs omninix with `extraNixosModules`/`internal/`
+support (2026-11-03 or later).
+
 ## Secrets 🔐
 
 sops-nix, wired by omninix from `secrets/`:
@@ -179,7 +242,8 @@ nixos-rebuild build-vm --flake .#nixos-vm
 ```
 
 - **Deploys:** comin on each host pulls `main` and switches by itself.
-- **Updates:** Renovate opens PRs for flake inputs. Single-input bumps automerge.
-  Lock maintenance, major updates, omninix and flake-parts wait for review.
-- **CI:** checks the flake and formatting, evaluates the standalone Home Manager
+- **Updates:** Renovate opens PRs for flake inputs; nothing automerges, every
+  bump is reviewed.
+- **CI:** on PRs and pushes to `main`: checks the flake (including the
+  portability checks) and formatting, evaluates the standalone Home Manager
   config, and builds the WSL tarball.

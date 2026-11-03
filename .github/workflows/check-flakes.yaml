@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+  # Direct pushes too: comin deploys main, so it must pass the same checks.
+  push:
+    branches:
+      - main
 
 env:
   OP_CONNECT_HOST: ${{ secrets.OP_CONNECT_HOST }}
