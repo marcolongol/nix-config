@@ -5,10 +5,26 @@
   lib,
   pkgs,
   ...
-}: {
-  options.shell.zsh.enable = lib.mkEnableOption "zsh with completion, history and CLI tools";
+}: let
+  cfg = config.shell.zsh;
+in {
+  options.shell.zsh = {
+    enable = lib.mkEnableOption "zsh with completion, history and CLI tools";
 
-  config = lib.mkIf config.shell.zsh.enable {
+    icons = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Show file icons in eza listings. Needs a Nerd Font in the terminal.";
+    };
+
+    prettybat = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install prettybat, which bundles formatters for every language it supports (about 3 GB).";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       dust
       procs
@@ -38,8 +54,6 @@
         top = "btm";
         du = "dust";
         ps = "procs";
-        scrcpy = "scrcpy --no-audio --stay-awake --turn-screen-off";
-        scrcpy-wifi = "scrcpy --no-audio --stay-awake --turn-screen-off --tcpip";
       };
       history = {
         append = true;
@@ -127,7 +141,7 @@
     programs.eza = {
       enable = true;
       enableZshIntegration = true;
-      icons = "always";
+      icons = lib.mkIf cfg.icons "always";
       git = true;
     };
 
@@ -141,12 +155,13 @@
 
     programs.bat = {
       enable = true;
-      extraPackages = with pkgs.bat-extras; [
-        batdiff
-        batman
-        # batgrep
-        prettybat
-      ];
+      extraPackages = with pkgs.bat-extras;
+        [
+          batdiff
+          batman
+          # batgrep
+        ]
+        ++ lib.optional cfg.prettybat prettybat;
       config = {
         pager = "less -FR";
       };

@@ -54,6 +54,11 @@ in {
   '';
 
   programs = {
+    zsh.shellAliases = {
+      scrcpy = "scrcpy --no-audio --stay-awake --turn-screen-off";
+      scrcpy-wifi = "scrcpy --no-audio --stay-awake --turn-screen-off --tcpip";
+    };
+
     # vim-full with vim-sensible; also sets EDITOR
     vim = {
       enable = true;

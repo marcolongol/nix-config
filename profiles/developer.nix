@@ -5,11 +5,21 @@
   ...
 }: {
   # Relative import: the profile works without the flake's homeModules.
-  imports = [../modules/home/lang ../modules/home/session-path.nix];
+  imports = [
+    ../modules/home/direnv.nix
+    ../modules/home/git.nix
+    ../modules/home/lang
+    ../modules/home/session-path.nix
+  ];
 
   options.profiles.developer.enable = lib.mkEnableOption "developer tools and CLI configuration";
 
   config = lib.mkIf config.profiles.developer.enable {
+    shell = {
+      direnv.enable = true;
+      git.enable = true;
+    };
+
     lang = {
       dotnet.enable = true;
       go.enable = true;
@@ -70,44 +80,7 @@
     programs.dbeaver.enable = true;
     programs.github-copilot-cli.enable = true;
 
-    programs.delta = {
-      enable = true;
-      enableGitIntegration = true;
-      options = {
-        navigate = true;
-        line-numbers = true;
-      };
-    };
-
-    programs.git = {
-      enable = true;
-      settings = {
-        core.editor = "nvim";
-        pull.rebase = true;
-
-        # Security & Performance
-        push.autoSetupRemote = true;
-        fetch.prune = true;
-        rebase.autoStash = true;
-        rerere.enabled = true;
-
-        # Better Diffs & Merges
-        diff.algorithm = "histogram";
-        diff.colorMoved = "default";
-        diff.colorMovedWS = "allow-indentation-change";
-        merge.conflictStyle = "zdiff3";
-
-        # Branch Management
-        branch.sort = "-committerdate";
-        tag.sort = "version:refname";
-      };
-    };
-
-    programs.direnv = {
-      enable = true;
-      enableZshIntegration = true;
-      nix-direnv.enable = true;
-    };
+    programs.git.settings.core.editor = "nvim";
 
     programs.jq = {
       enable = true;
@@ -210,7 +183,6 @@
     };
 
     omninix.persistence.directories = [
-      ".config/direnv"
       ".config/github-copilot"
       ".copilot"
       ".krew"
