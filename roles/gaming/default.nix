@@ -12,49 +12,51 @@
   config = lib.mkIf config.roles.gaming.enable {
     home-manager.sharedModules = [./home.nix];
 
-    programs.steam = {
-      enable = true;
-      # PRIME offload hosts: render games on dGPU, not iGPU
-      package = lib.mkIf config.hardware.nvidia.prime.offload.enable (pkgs.steam.override {
-        extraEnv = {
-          __NV_PRIME_RENDER_OFFLOAD = "1";
-          __NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
-          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-          __VK_LAYER_NV_optimus = "NVIDIA_only";
-        };
-      });
-      remotePlay.openFirewall = config.roles.gaming.openFirewall;
-      dedicatedServer.openFirewall = config.roles.gaming.openFirewall;
-      localNetworkGameTransfers.openFirewall = config.roles.gaming.openFirewall;
-      gamescopeSession = {
+    programs = {
+      steam = {
         enable = true;
-        args = ["--hdr-enabled" "--hdr-itm-enable"];
+        # PRIME offload hosts: render games on dGPU, not iGPU
+        package = lib.mkIf config.hardware.nvidia.prime.offload.enable (pkgs.steam.override {
+          extraEnv = {
+            __NV_PRIME_RENDER_OFFLOAD = "1";
+            __NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
+            __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+            __VK_LAYER_NV_optimus = "NVIDIA_only";
+          };
+        });
+        remotePlay.openFirewall = config.roles.gaming.openFirewall;
+        dedicatedServer.openFirewall = config.roles.gaming.openFirewall;
+        localNetworkGameTransfers.openFirewall = config.roles.gaming.openFirewall;
+        gamescopeSession = {
+          enable = true;
+          args = ["--hdr-enabled" "--hdr-itm-enable"];
+        };
+        protontricks.enable = true;
+
+        extraCompatPackages = with pkgs; [
+          proton-ge-bin
+        ];
       };
-      protontricks.enable = true;
 
-      extraCompatPackages = with pkgs; [
-        proton-ge-bin
-      ];
-    };
-
-    programs.gamemode = {
-      enable = true;
-      settings = {
-        general = {
-          renice = 10;
-          ioprio = 7;
-          inhibit_screensaver = 1;
-          desiredgov = "performance";
-          defaultgov = "powersave";
-        };
-        gpu = {
-          apply_gpu_optimisations = "accept-responsibility";
-          gpu_device = 0;
-          amd_performance_level = "high";
-        };
-        custom = {
-          start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
-          end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+      gamemode = {
+        enable = true;
+        settings = {
+          general = {
+            renice = 10;
+            ioprio = 7;
+            inhibit_screensaver = 1;
+            desiredgov = "performance";
+            defaultgov = "powersave";
+          };
+          gpu = {
+            apply_gpu_optimisations = "accept-responsibility";
+            gpu_device = 0;
+            amd_performance_level = "high";
+          };
+          custom = {
+            start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
+            end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+          };
         };
       };
     };

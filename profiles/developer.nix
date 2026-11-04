@@ -74,71 +74,80 @@
       zlib.dev
     ];
 
-    # gh plus its git credential helper for github.com
-    programs.gh.enable = true;
-    programs.aria2.enable = true;
-    programs.dbeaver.enable = true;
-    programs.github-copilot-cli.enable = true;
+    programs = {
+      # gh plus its git credential helper for github.com
+      gh.enable = true;
+      aria2.enable = true;
+      dbeaver.enable = true;
+      github-copilot-cli.enable = true;
 
-    programs.git.settings.core.editor = "nvim";
+      git.settings.core.editor = "nvim";
 
-    programs.jq = {
-      enable = true;
-    };
-
-    programs.lazygit = {
-      enable = true;
-      settings = {
-        git.diffRenderers = [
-          {
-            colorArg = "always";
-            command = "delta --color-only --dark --paging=never";
-          }
-        ];
-        customCommands = [
-          {
-            key = "<c-g>";
-            context = "files";
-            description = "Generate AI commit message (copies to clipboard)";
-            command = ''git diff --staged | claude -p --setting-sources "" --system-prompt "You are a git commit message generator. You receive a staged diff on stdin and output ONLY the raw commit message (Conventional Commits: subject line plus optional body). No markdown, no code blocks, no backticks, no preamble, no explanation, no trailing commentary. Plain text commit message only." | wl-copy && echo "Commit message copied to clipboard."'';
-            output = "terminal";
-          }
-        ];
+      jq = {
+        enable = true;
       };
-    };
 
-    programs.lazydocker = {
-      enable = true;
-    };
+      lazygit = {
+        enable = true;
+        settings = {
+          git.diffRenderers = [
+            {
+              colorArg = "always";
+              command = "delta --color-only --dark --paging=never";
+            }
+          ];
+          customCommands = [
+            {
+              key = "<c-g>";
+              context = "files";
+              description = "Generate AI commit message (copies to clipboard)";
+              command = ''git diff --staged | claude -p --setting-sources "" --system-prompt "You are a git commit message generator. You receive a staged diff on stdin and output ONLY the raw commit message (Conventional Commits: subject line plus optional body). No markdown, no code blocks, no backticks, no preamble, no explanation, no trailing commentary. Plain text commit message only." | wl-copy && echo "Commit message copied to clipboard."'';
+              output = "terminal";
+            }
+          ];
+        };
+      };
 
-    programs.ssh = {
-      enable = true;
-      enableDefaultConfig = false;
-      # extraConfig needs a default host block; merges with any the user adds.
-      settings."*" = {};
-      extraConfig = ''
-        AddKeysToAgent yes
-      '';
-    };
+      lazydocker = {
+        enable = true;
+      };
 
-    programs.kubecolor = {
-      enable = true;
-      enableAlias = true;
-      enableZshIntegration = true;
-    };
+      ssh = {
+        enable = true;
+        enableDefaultConfig = false;
+        # extraConfig needs a default host block; merges with any the user adds.
+        settings."*" = {};
+        extraConfig = ''
+          AddKeysToAgent yes
+        '';
+      };
 
-    programs.kubeswitch = {
-      enable = true;
-      enableZshIntegration = true;
-    };
+      kubecolor = {
+        enable = true;
+        enableAlias = true;
+        enableZshIntegration = true;
+      };
 
-    programs.k9s = {
-      enable = true;
-    };
+      kubeswitch = {
+        enable = true;
+        enableZshIntegration = true;
+      };
 
-    programs.mise = {
-      enable = true;
-      enableZshIntegration = true;
+      k9s = {
+        enable = true;
+      };
+
+      mise = {
+        enable = true;
+        enableZshIntegration = true;
+      };
+
+      zsh.shellAliases = {
+        k3d-dev = "k3d cluster create --config ~/.config/k3d/dev-cluster.yaml --kubeconfig-update-default";
+        k = "kubectl";
+        kn = "kubens";
+        kx = "kubectx";
+      };
     };
 
     home.sessionPathAppend = ["$HOME/.krew/bin"];
@@ -174,13 +183,6 @@
           nodeFilters:
             - loadbalancer
     '';
-
-    programs.zsh.shellAliases = {
-      k3d-dev = "k3d cluster create --config ~/.config/k3d/dev-cluster.yaml --kubeconfig-update-default";
-      k = "kubectl";
-      kn = "kubens";
-      kx = "kubectx";
-    };
 
     omninix.persistence.directories = [
       ".config/github-copilot"

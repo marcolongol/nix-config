@@ -121,18 +121,17 @@
         auto-optimise-store = true;
       };
 
-      # nh clean replaces nix.gc; don't enable both.
-      programs.nh = {
-        enable = true;
-        clean = {
-          enable = true;
-          extraArgs = "--keep-since 7d --keep 5";
-        };
-      };
-
       users.defaultUserShell = pkgs.zsh;
 
       programs = {
+        # nh clean replaces nix.gc; don't enable both.
+        nh = {
+          enable = true;
+          clean = {
+            enable = true;
+            extraArgs = "--keep-since 7d --keep 5";
+          };
+        };
         gnupg.agent = {
           enable = true;
           enableSSHSupport = true;

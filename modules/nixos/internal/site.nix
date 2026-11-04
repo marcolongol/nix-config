@@ -63,12 +63,15 @@ in {
     (lib.mkIf config.roles.desktop.enable {
       stylix.image = selectedWallpaper;
 
-      # VPN agents for these machines.
-      programs.surfshark.enable = true;
-      programs.harmony-sase.enable = true;
-      # TEMPORARY: same posture-check spoof as nixos-lt — macOS-only server-side
-      # profile hits Linux too. Remove once the admin-console profile is corrected.
-      programs.harmony-sase.spoofDpcFiles = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
+      programs = {
+        # VPN agents for these machines.
+        surfshark.enable = true;
+        harmony-sase.enable = true;
+        # TEMPORARY: same posture-check spoof as nixos-lt — macOS-only server-side
+        # profile hits Linux too. Remove once the admin-console profile is corrected.
+        harmony-sase.spoofDpcFiles = ["/dev/null/MacOS_Prohibited_on_TEOCO_VPN"];
+      };
+
       # Harmony SASE (Perimeter81) keeps its session/auth (Cookies, Local
       # Storage) here; without this the wiped root forces a re-login on every
       # boot. Both the legacy and rebranded config dir names are persisted.

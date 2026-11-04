@@ -58,8 +58,10 @@ in {
 
     # Agent binaries are unpatched pkg ELFs (patchelf corrupts them); nix-ld runs them,
     # including p81daemonhelper spawned directly by the GUI.
-    programs.nix-ld.enable = true;
-    programs.nix-ld.libraries = cfg.package.runtimeLibs;
+    programs.nix-ld = {
+      enable = true;
+      libraries = cfg.package.runtimeLibs;
+    };
 
     # Agent drives VPN links via NetworkManager.
     networking.networkmanager.enable = true;

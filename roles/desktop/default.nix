@@ -34,23 +34,27 @@ in {
         pkgs.seahorse
       ];
 
-      programs.hyprland = {
-        enable = true;
-        xwayland.enable = true;
-        withUWSM = true;
-      };
+      programs = {
+        hyprland = {
+          enable = true;
+          xwayland.enable = true;
+          withUWSM = true;
+        };
 
-      programs.hyprlock.enable = true;
+        hyprlock.enable = true;
+
+        _1password.enable = true;
+        _1password-gui = {
+          enable = true;
+          polkitPolicyOwners = config.omninix.activeUsers;
+        };
+
+        solaar.enable = true; # was hardware.logitech.wireless.enableGraphical
+      };
 
       # udev rule so swayosd-server (user session) can write /sys/class/backlight
       # for the brightness OSD without root.
       services.udev.packages = [pkgs.swayosd];
-
-      programs._1password.enable = true;
-      programs._1password-gui = {
-        enable = true;
-        polkitPolicyOwners = config.omninix.activeUsers;
-      };
 
       services = {
         # Secret Service daemon (org.freedesktop.secrets). Apps like Anytype
@@ -127,7 +131,6 @@ in {
       hardware.graphics.enable = true;
       hardware.keyboard.zsa.enable = true;
       hardware.logitech.wireless.enable = true;
-      programs.solaar.enable = true; # was hardware.logitech.wireless.enableGraphical
 
       # MX Master 3: thumb gesture button (CID 0xc3) -> workspace switching.
       # Emits Super+Ctrl+Left/Right, bound in hyprland.nix.
