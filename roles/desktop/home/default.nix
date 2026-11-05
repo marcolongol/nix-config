@@ -14,6 +14,7 @@
     ./clipboard.nix
     ./notifications.nix
     ./chromium.nix
+    ./sops.nix
   ];
 
   # Home side of roles.desktop, applied to every user via home-manager.sharedModules.
