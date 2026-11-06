@@ -31,6 +31,7 @@
         home-manager.follows = "home-manager";
         sops-nix.follows = "sops-nix";
         systems.follows = "systems";
+        nix-darwin.follows = "";
       };
     };
 

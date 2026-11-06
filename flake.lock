@@ -587,6 +587,7 @@
         "home-manager": [
           "home-manager"
         ],
+        "nix-darwin": [],
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -598,11 +599,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793720847,
-        "narHash": "sha256-p6RLJ5HZC9/WHymSMBLzvVi6+Q9IDx9u3EWU++if2G4=",
+        "lastModified": 1793992364,
+        "narHash": "sha256-3JSioGNuAjeT2LSd8G+ED0GtmuUCqCxkHTE35V5shKA=",
         "owner": "marcolongol",
         "repo": "omninix",
-        "rev": "8011a0c5e9d6482be0d93cea68fb37175ae7b75b",
+        "rev": "df20dd8b139f53c8dfe82f50c3abaad6b3f883fc",
         "type": "github"
       },
       "original": {
