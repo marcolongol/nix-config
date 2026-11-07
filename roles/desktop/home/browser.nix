@@ -10,7 +10,10 @@
   config = lib.optionalAttrs (options ? programs.zen-browser) {
     programs.zen-browser = {
       enable = true;
-      profiles.default = {};
+      profiles.default.settings = {
+        "dom.webgpu.enabled" = true;
+        "gfx.webgpu.ignore-blocklist" = true;
+      };
       nativeMessagingHosts = [pkgs.firefoxpwa];
       policies = let
         mkExtensionSettings = builtins.mapAttrs (_: pluginId: {

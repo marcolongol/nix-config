@@ -4,6 +4,7 @@
     commandLineArgs = [
       "--no-first-run"
       "--no-default-browser-check"
+      "--enable-unsafe-webgpu"
     ];
   };
 
