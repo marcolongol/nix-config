@@ -1,54 +1,49 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":dependencyDashboard",
-    ":semanticCommits"
-  ],
+  "extends": ["config:recommended", ":semanticCommits"],
+  // comin deploys main as root: nothing merges without review.
   "automerge": false,
   "platformAutomerge": false,
 
-  "nix": {
-    "enabled": true
-  },
+  "nix": {"enabled": true},
 
-  "lockFileMaintenance": {
-    "enabled": true,
-    // Bumps every input at once, omninix included; comin deploys main, so review by hand.
-    "automerge": false,
-    "postUpdateOptions": ["nixFlakeUpdate"],
-    "schedule": ["at any time"],
-  },
+  // One weekly PR bumps every flake input.
+  "lockFileMaintenance": {"enabled": true},
 
   "packageRules": [
     {
-      // No automerge: comin deploys main as root, so every bump is reviewed.
+      // Per-input PRs duplicate lockFileMaintenance; omninix keeps its own.
       "matchManagers": ["nix"],
-      "matchUpdateTypes": ["digest"],
-      "automerge": false,
-      "platformAutomerge": false
+      "matchDepNames": ["!omninix"],
+      "enabled": false,
     },
     {
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": false,
-      "platformAutomerge": false
+      "matchManagers": ["github-actions", "npm", "custom.regex"],
+      "minimumReleaseAge": "14 days",
+    },
+    {
+      "matchDepNames": ["renovate"],
+      "schedule": ["on the first day of the month"],
     },
     {
       "matchUpdateTypes": ["major"],
-      "automerge": false,
-      "labels": ["dependencies", "major-update"]
+      "addLabels": ["major-update"],
     },
-    {
-      // Both build every host via comin; review by hand.
-      "matchDepNames": ["omninix", "flake-parts"],
-      "automerge": false,
-      "platformAutomerge": false
-    }
   ],
 
-  "timezone": "America/Los_Angeles",
+  "customManagers": [
+    {
+      // Self-update the pinned Renovate version in the workflow.
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/renovate\\.ya?ml$/"],
+      "matchStrings": ["npx --yes renovate@(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "renovate",
+    },
+  ],
+
+  "timezone": "America/New_York",
   "labels": ["dependencies"],
-  "branchPrefix": "renovate/",
   "prHourlyLimit": 0,
-  "prConcurrentLimit": 0
+  "prConcurrentLimit": 0,
 }

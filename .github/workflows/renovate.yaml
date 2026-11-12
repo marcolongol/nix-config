@@ -68,6 +68,7 @@ jobs:
           RENOVATE_CONFIG_FILE: .github/renovate.json5
           RENOVATE_AUTODISCOVER: true
           RENOVATE_AUTODISCOVER_FILTER: "${{ github.repository }}"
-          RENOVATE_DRY_RUN: "${{ inputs.dryRun }}"
+          # Renovate takes extract|lookup|full; empty means a normal run.
+          RENOVATE_DRY_RUN: "${{ inputs.dryRun && 'full' || '' }}"
           RENOVATE_INTERNAL_CHECKS_FILTER: strict
           RENOVATE_PLATFORM_COMMIT: enabled
