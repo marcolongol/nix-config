@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Lucas's NixOS hosts and Home Manager config, built on omninix";
 
   inputs = {
     # Base: everything else follows these.

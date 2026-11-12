@@ -134,7 +134,7 @@ in {
       ];
     in [
       {
-        users = ["ALL"];
+        groups = ["wheel"];
         commands =
           [
             {

@@ -61,7 +61,7 @@ jobs:
             access-tokens = github.com=${{ steps.app-token.outputs.token }}
 
       - name: Run Renovate
-        run: npx --yes renovate
+        run: npx --yes renovate@44.192.2
         env:
           LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
           RENOVATE_TOKEN: "${{ steps.app-token.outputs.token }}"
