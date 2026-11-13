@@ -67,6 +67,8 @@ in {
 
     obsidian.enable = true;
 
+    nixievim.ai.apiKeyFile = config.sops.secrets.anthropic-api-key.path;
+
     # Applies where the desktop role enables zen.
     zen-browser.policies.Homepage = {
       URL = "https://homepage.marcolongo.dev";
@@ -134,6 +136,7 @@ in {
       user-secret = {};
       dockerhub-auth = {};
       github-pat = {};
+      anthropic-api-key = {};
     };
     templates = {
       docker-config = {
