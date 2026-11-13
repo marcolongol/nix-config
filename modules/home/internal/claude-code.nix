@@ -215,6 +215,7 @@ in {
             "${config.programs.chromium.finalPackage}/bin/chromium"
             "--headless"
             "--isolated"
+            "--acceptInsecureCerts"
           ];
         };
 
