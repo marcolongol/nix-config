@@ -24,14 +24,12 @@
     };
 
     omninix = {
-      url = "github:marcolongol/omninix";
+      # The rewrite, until it lands on main at release.
+      url = "github:marcolongol/omninix/rewrite";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
-        home-manager.follows = "home-manager";
-        sops-nix.follows = "sops-nix";
         systems.follows = "systems";
-        nix-darwin.follows = "";
       };
     };
 
@@ -130,7 +128,7 @@
         usersDir = ./users;
         profilesDir = ./profiles;
         nixosModulesDir = ./modules/nixos;
-        homeManagerModulesDir = ./modules/home;
+        homeModulesDir = ./modules/home;
         overlaysDir = ./overlays;
         packagesDir = ./packages;
         secretsPath = ./secrets;
@@ -149,7 +147,7 @@
           comin = inputs.comin.nixosModules.comin;
           nix-index = inputs.nix-index-database.nixosModules.nix-index;
         };
-        extraHomeManagerModules = {
+        extraHomeModules = {
           nixievim = inputs.nixievim.homeManagerModules.default;
           zen-browser = inputs.zen-browser.homeModules.beta;
         };

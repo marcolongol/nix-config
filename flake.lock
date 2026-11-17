@@ -584,30 +584,24 @@
         "flake-parts": [
           "flake-parts"
         ],
-        "home-manager": [
-          "home-manager"
-        ],
-        "nix-darwin": [],
         "nixpkgs": [
           "nixpkgs"
-        ],
-        "sops-nix": [
-          "sops-nix"
         ],
         "systems": [
           "systems"
         ]
       },
       "locked": {
-        "lastModified": 1793992364,
-        "narHash": "sha256-3JSioGNuAjeT2LSd8G+ED0GtmuUCqCxkHTE35V5shKA=",
+        "lastModified": 1794878362,
+        "narHash": "sha256-si30RSEfr1EVFUBRjzWYm+LjyinFhZ3mcfnYq3E8GbA=",
         "owner": "marcolongol",
         "repo": "omninix",
-        "rev": "df20dd8b139f53c8dfe82f50c3abaad6b3f883fc",
+        "rev": "d90becb1cfe36faa67978cb9449837ab10673823",
         "type": "github"
       },
       "original": {
         "owner": "marcolongol",
+        "ref": "rewrite",
         "repo": "omninix",
         "type": "github"
       }

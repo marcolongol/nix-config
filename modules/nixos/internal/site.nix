@@ -6,7 +6,6 @@
   lib,
   pkgs,
   hostName,
-  secretsPath,
   ...
 }: let
   # Wallpaper rotation: deterministic pick from ./wallpapers/ based on flake
@@ -56,8 +55,7 @@ in {
       # history, which the root wipe would otherwise reset on every boot.
       omninix.persistence.directories = ["/var/lib/comin"];
 
-      # Key paths, format and host file come from omninix.
-      sops.secrets.shared-secret.sopsFile = secretsPath + "/shared.yaml";
+      # Key paths, the host file and shared.yaml's secrets come from omninix.
     })
 
     (lib.mkIf config.roles.desktop.enable {

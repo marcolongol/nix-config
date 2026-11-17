@@ -1,7 +1,7 @@
 {
   config,
+  inputs,
   lib,
-  users,
   ...
 }: {
   # Gated on active users: wsl keeps its upstream defaults.
@@ -10,9 +10,9 @@
 
     users.users = lib.genAttrs config.omninix.activeUsers (userName: {
       openssh.authorizedKeys.keys = let
-        pubkeysPath = "${users.${userName}}/pubkeys.nix";
+        pubkeysPath = inputs.self + "/users/${userName}/pubkeys.nix";
       in
-        lib.optionals (users ? ${userName} && builtins.pathExists pubkeysPath)
+        lib.optionals (builtins.pathExists pubkeysPath)
         [(import pubkeysPath).ssh.publicKey];
     });
 
