@@ -43,7 +43,7 @@ profile, package or overlay means adding the file, nothing else. Files under an
 `internal/` folder are used here but not exported for other flakes: they read this
 flake's inputs or hold values specific to these machines. Third-party modules (disko,
 impermanence, stylix, comin, nix-index, nixievim, zen) are listed once in `flake.nix`
-as `extraNixosModules` / `extraHomeManagerModules`.
+as `extraNixosModules` / `extraHomeModules`.
 
 ## How it fits together
 
@@ -137,7 +137,7 @@ omninix = {
   # Pick pieces by name; your own roles/, profiles/ and modules win on a clash.
   extraRoles = {inherit (nix-config.roles) common desktop;};
   extraProfiles = {inherit (nix-config.profiles) developer;};
-  extraHomeManagerModules = {inherit (nix-config.homeModules) tmux;};
+  extraHomeModules = {inherit (nix-config.homeModules) tmux;};
 };
 ```
 

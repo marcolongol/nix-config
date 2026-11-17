@@ -6,8 +6,6 @@
 }: {
   # Gated on active users: wsl keeps its upstream defaults.
   config = lib.mkIf (config.omninix.activeUsers != []) {
-    users.mutableUsers = false;
-
     users.users = lib.genAttrs config.omninix.activeUsers (userName: {
       openssh.authorizedKeys.keys = let
         pubkeysPath = inputs.self + "/users/${userName}/pubkeys.nix";

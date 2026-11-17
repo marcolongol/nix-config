@@ -138,8 +138,7 @@
           impermanent = omninix.roles.impermanent;
         };
         # Third-party modules, imported into every host / every user. They're
-        # inert until configured. impermanence must be on every host: omninix
-        # maps omninix.persistence into its home.persistence for all users.
+        # inert until configured.
         extraNixosModules = {
           disko = inputs.disko.nixosModules.disko;
           impermanence = inputs.impermanence.nixosModules.impermanence;

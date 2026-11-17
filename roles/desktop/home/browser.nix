@@ -1,5 +1,5 @@
 # zen, configured only when its HM module is imported (zen-browser's
-# homeModules; this flake does it via extraHomeManagerModules).
+# homeModules; this flake does it via extraHomeModules).
 {
   lib,
   options,

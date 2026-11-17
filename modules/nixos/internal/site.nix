@@ -5,7 +5,6 @@
   inputs,
   lib,
   pkgs,
-  hostName,
   ...
 }: let
   # Wallpaper rotation: deterministic pick from ./wallpapers/ based on flake
@@ -25,7 +24,6 @@
 in {
   config = lib.mkMerge [
     (lib.mkIf config.roles.common.enable {
-      networking.hostName = hostName;
       time.timeZone = "America/New_York";
 
       # Announce this host on the LAN (<host>.local).
