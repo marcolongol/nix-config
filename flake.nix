@@ -24,8 +24,7 @@
     };
 
     omninix = {
-      # The rewrite, until it lands on main at release.
-      url = "github:marcolongol/omninix/rewrite";
+      url = "github:marcolongol/omninix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
