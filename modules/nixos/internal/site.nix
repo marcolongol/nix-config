@@ -27,9 +27,9 @@ in {
       time.timeZone = "America/New_York";
 
       # Announce this host on the LAN (<host>.local).
-      services.avahi.publish = {
-        enable = true;
-        addresses = true;
+      services.avahi.settings.publish = {
+        disable-publishing = false;
+        publish-addresses = true;
       };
 
       programs.nh.flake = "/home/lucas/Personal/nix-config";

@@ -78,7 +78,8 @@ in {
           enable = true;
           alsa.enable = true;
           pulse.enable = true;
-          jack.enable = true;
+          # No jack.enable: deprecated (it sets LD_LIBRARY_PATH globally).
+          # Run a JACK app with `pw-jack <app>` from pipewire.jack instead.
         };
         displayManager = {
           defaultSession = "hyprland-uwsm";
