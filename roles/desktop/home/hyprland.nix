@@ -169,9 +169,9 @@ in {
       hl.layer_rule({ name = "blur-swaync-control-center", match = { namespace = "swaync-control-center" }, blur = true, ignore_alpha = 0.5 })
 
       -- Last so a hyprbars load failure only drops the buttons. Render right-to-left.
-      hl.plugin.hyprbars.add_button({ bg_color = "rgb(f38ba8)", size = 13, icon = "", action = "hyprctl dispatch 'hl.dsp.window.close()'" })
-      hl.plugin.hyprbars.add_button({ bg_color = "rgb(f9e2af)", size = 13, icon = "", action = [[hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })']] })
-      hl.plugin.hyprbars.add_button({ bg_color = "rgb(a6e3a1)", size = 13, icon = "", action = [[hyprctl dispatch 'hl.dsp.window.move({ workspace = "special:minimized", follow = false })']] })
+      hl.plugin.hyprbars.add_button({ bg_color = "rgb(f38ba8)", fg_color = "rgb(1e1e2e)", size = 13, icon = "", action = "hyprctl dispatch 'hl.dsp.window.close()'" })
+      hl.plugin.hyprbars.add_button({ bg_color = "rgb(f9e2af)", fg_color = "rgb(1e1e2e)", size = 13, icon = "", action = [[hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })']] })
+      hl.plugin.hyprbars.add_button({ bg_color = "rgb(a6e3a1)", fg_color = "rgb(1e1e2e)", size = 13, icon = "", action = [[hyprctl dispatch 'hl.dsp.window.move({ workspace = "special:minimized", follow = false })']] })
     '';
   };
 }
