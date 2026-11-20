@@ -30,7 +30,7 @@ confirm() {
 case "$action" in
   Lock)     hyprlock & disown ;;
   Suspend)  systemctl suspend ;;
-  Logout)   confirm "Quit Hyprland?" && hyprctl dispatch exit ;;
+  Logout)   confirm "Quit Hyprland?" && hyprctl dispatch 'hl.dsp.exit()' ;;
   Reboot)   confirm "Reboot?"        && systemctl reboot ;;
   Shutdown) confirm "Shutdown?"      && systemctl poweroff ;;
   "")       exit 0 ;;

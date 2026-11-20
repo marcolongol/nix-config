@@ -72,23 +72,30 @@
   # Matched by description: the dock renumbers connectors per port (DP-2 was the dock HDMI path, DP-3 is DP)
   # Workspaces 1-5 on eDP-1 (primary), 6-10 on the VG278 (secondary)
   home-manager.users = lib.genAttrs config.omninix.activeUsers (_: {
-    wayland.windowManager.hyprland.settings = {
+    wayland.windowManager.hyprland.settings = let
+      vg278 = "desc:ASUSTek COMPUTER INC VG278 J5LMQS064651";
+    in {
       monitor = [
-        "desc:ASUSTek COMPUTER INC VG278 J5LMQS064651,1920x1080@144,0x0,1"
-        "eDP-1,1920x1080@144,1920x0,1"
+        {
+          output = vg278;
+          mode = "1920x1080@144";
+          position = "0x0";
+          scale = 1;
+        }
+        {
+          output = "eDP-1";
+          mode = "1920x1080@144";
+          position = "1920x0";
+          scale = 1;
+        }
       ];
-      workspace = [
-        "1, monitor:eDP-1"
-        "2, monitor:eDP-1"
-        "3, monitor:eDP-1"
-        "4, monitor:eDP-1"
-        "5, monitor:eDP-1"
-        "6, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
-        "7, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
-        "8, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
-        "9, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
-        "10, monitor:desc:ASUSTek COMPUTER INC VG278 J5LMQS064651"
-      ];
+      workspace_rule = map (i: {
+        workspace = toString i;
+        monitor =
+          if i <= 5
+          then "eDP-1"
+          else vg278;
+      }) (lib.range 1 10);
     };
   });
 

@@ -4,7 +4,13 @@
   options,
   pkgs,
   ...
-}: {
+}: let
+  # zen when its module is imported (browser.nix), else the chromium installed here.
+  browser =
+    if options ? programs.zen-browser
+    then "zen-beta"
+    else "chromium";
+in {
   services.hyprpaper = {
     settings = {
       splash = false;
@@ -13,7 +19,8 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    configType = "hyprlang";
+    # 0.57 dropped hyprlang; hyprland.conf is ignored.
+    configType = "lua";
     # uwsm owns the session. HM's hyprland-session.target stop cascades into uwsm's
     # graphical-session and kills Hyprland ~2s after login.
     systemd.enable = false;
@@ -22,16 +29,8 @@
       # hyprspace doesn't build against hyprland 0.56; re-add with $mod+Tab and plugin.overview below once it does.
       # pkgs.hyprlandPlugins.hyprspace
     ];
-    settings = {
-      "$mod" = "SUPER";
-      "$terminal" = "ghostty";
-      "$filemanager" = "nautilus";
-      # zen when its module is imported (browser.nix), else the chromium installed here.
-      "$browser" =
-        if options ? programs.zen-browser
-        then "zen-beta"
-        else "chromium";
-      "$menu" = "rofi -show drun -show-icons";
+    # Rendered as hl.config({...}); stylix merges its colors in here too.
+    settings.config = {
       general = {
         gaps_in = 5;
         gaps_out = 20;
@@ -44,23 +43,7 @@
         disable_splash_rendering = true;
         disable_hyprland_logo = true;
       };
-      animations = {
-        enabled = true;
-        bezier = [
-          "easeOutQuint, 0.23, 1, 0.32, 1"
-          "easeInOutCubic, 0.65, 0.05, 0.36, 1"
-          "linear, 0, 0, 1, 1"
-        ];
-        animation = [
-          "windows, 1, 4, easeOutQuint"
-          "windowsIn, 1, 4, easeOutQuint, popin 87%"
-          "windowsOut, 1, 3, easeOutQuint, popin 87%"
-          "border, 1, 6, linear"
-          "fade, 1, 4, easeInOutCubic"
-          "workspaces, 1, 5, easeOutQuint, slide"
-          "specialWorkspace, 1, 5, easeOutQuint, slidevert"
-        ];
-      };
+      animations.enabled = true;
       decoration = {
         rounding = 10;
         active_opacity = 1.0;
@@ -77,80 +60,6 @@
           vibrancy = 0.1696;
         };
       };
-      bind = [
-        "$mod, Return, exec, $terminal"
-        "$mod, F, exec, $browser"
-        "$mod, E, exec, $filemanager"
-        "$mod, C, killactive"
-        "$mod, M, exit"
-        "$mod, V, togglefloating"
-        "$mod, space, exec, $menu"
-        # "$mod, Tab, exec, hyprctl dispatch overview:toggle"
-
-        "$mod, h, movefocus, l"
-        "$mod, j, movefocus, d"
-        "$mod, k, movefocus, u"
-        "$mod, l, movefocus, r"
-
-        "$mod CTRL, h, resizeactive, -20 0"
-        "$mod CTRL, j, resizeactive, 0 20"
-        "$mod CTRL, k, resizeactive, 0 -20"
-        "$mod CTRL, l, resizeactive, 20 0"
-
-        "$mod SHIFT, h, movewindow, l"
-        "$mod SHIFT, j, movewindow, d"
-        "$mod SHIFT, k, movewindow, u"
-        "$mod SHIFT, l, movewindow, r"
-
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 8, workspace, 8"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 10"
-
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
-        "$mod SHIFT, 5, movetoworkspace, 5"
-        "$mod SHIFT, 6, movetoworkspace, 6"
-        "$mod SHIFT, 7, movetoworkspace, 7"
-        "$mod SHIFT, 8, movetoworkspace, 8"
-        "$mod SHIFT, 9, movetoworkspace, 9"
-        "$mod SHIFT, 0, movetoworkspace, 10"
-
-        "$mod, S, togglespecialworkspace, magic"
-        "$mod, D, togglespecialworkspace, minimized"
-        "$mod SHIFT, S, movetoworkspace, special:magic"
-
-        "$mod, P, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-
-        "$mod, N, exec, swaync-client -t -sw"
-
-        # Rofi launchers
-        "$mod, X, exec, rofi-power.sh"
-        "$mod, W, exec, rofi-wifi.sh"
-        "$mod, B, exec, rofi-bluetooth.sh"
-        "$mod, semicolon, exec, rofi -show emoji"
-        "$mod, equal, exec, rofi -show calc -no-show-match -no-sort"
-        "$mod SHIFT, Tab, exec, rofi -show window"
-
-        "CTRL ALT, S, exec, grim -g \"$(slurp)\" - | wl-copy"
-
-        # Workspace prev/next (also emitted by MX Master gesture button via logiops)
-        "$mod CTRL, right, workspace, e+1"
-        "$mod CTRL, left, workspace, e-1"
-
-        "$mod, comma, focusmonitor, -1"
-        "$mod, period, focusmonitor, +1"
-        "$mod SHIFT, comma, movewindow, mon:-1"
-        "$mod SHIFT, period, movewindow, mon:+1"
-      ];
       plugin = {
         # overview = {
         #   centerAligned = true;
@@ -169,74 +78,100 @@
           bar_text_size = 11;
           bar_part_of_window = true;
           bar_precedence_over_border = true;
-          # buttons render right-to-left
-          "hyprbars-button" = [
-            "rgb(f38ba8), 13, , hyprctl dispatch killactive"
-            "rgb(f9e2af), 13, , hyprctl dispatch fullscreen 1"
-            "rgb(a6e3a1), 13, , hyprctl dispatch movetoworkspacesilent special:minimized"
-          ];
         };
       };
-      bindel = [
-        ",XF86AudioRaiseVolume, exec, swayosd-client --output-volume raise"
-        ",XF86AudioLowerVolume, exec, swayosd-client --output-volume lower"
-        ",XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
-        ",XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
-        ",XF86MonBrightnessUp, exec, swayosd-client --brightness raise"
-        ",XF86MonBrightnessDown, exec, swayosd-client --brightness lower"
-      ];
     };
-    # 0.53+ `windowrule` blocks need `name` first, so they're raw text (Nix attr sorting breaks order).
     extraConfig = ''
-      windowrule {
-        name = float-center-pavucontrol
-        match:class = ^(org.pulseaudio.pavucontrol)$
-        float = true
-        center = true
-      }
-      windowrule {
-        name = float-center-blueman
-        match:class = ^(\.blueman-manager-wrapped)$
-        float = true
-        center = true
-      }
-      windowrule {
-        name = nautilus-opacity
-        match:class = ^(org.gnome.Nautilus)$
-        opacity = 0.90 0.82
-      }
-      windowrule {
-        name = float-nautilus-props
-        match:class = ^(org.gnome.Nautilus)$
-        match:title = ^(.*Properties.*)$
-        float = true
-      }
-      windowrule {
-        name = float-center-1password
-        match:class = ^(1password)$
-        float = true
-        center = true
-      }
-      windowrule {
-        name = pip
-        match:title = ^(Picture-in-Picture)$
-        float = true
-        pin = true
-        keep_aspect_ratio = true
-      }
-      windowrule {
-        name = idleinhibit-fullscreen
-        match:class = ^(.*)$
-        idle_inhibit = fullscreen
-      }
+      local mod = "SUPER"
+      local terminal = "ghostty"
+      local filemanager = "nautilus"
+      local browser = "${browser}"
+      local menu = "rofi -show drun -show-icons"
 
-      # Blur behind the translucent swaync control center; ignore_alpha skips transparent gaps.
-      layerrule {
-        name = blur-swaync-control-center
-        match:namespace = swaync-control-center
-        blur = true
-        ignore_alpha = 0.5
-      }
+      hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1} } })
+      hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1} } })
+      hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1} } })
+
+      hl.animation({ leaf = "windows",          enabled = true, speed = 4, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "windowsIn",        enabled = true, speed = 4, bezier = "easeOutQuint", style = "popin 87%" })
+      hl.animation({ leaf = "windowsOut",       enabled = true, speed = 3, bezier = "easeOutQuint", style = "popin 87%" })
+      hl.animation({ leaf = "border",           enabled = true, speed = 6, bezier = "linear" })
+      hl.animation({ leaf = "fade",             enabled = true, speed = 4, bezier = "easeInOutCubic" })
+      hl.animation({ leaf = "workspaces",       enabled = true, speed = 5, bezier = "easeOutQuint", style = "slide" })
+      hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 5, bezier = "easeOutQuint", style = "slidevert" })
+
+      hl.bind(mod .. " + Return", hl.dsp.exec_cmd(terminal))
+      hl.bind(mod .. " + F", hl.dsp.exec_cmd(browser))
+      hl.bind(mod .. " + E", hl.dsp.exec_cmd(filemanager))
+      hl.bind(mod .. " + C", hl.dsp.window.close())
+      hl.bind(mod .. " + M", hl.dsp.exit())
+      hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind(mod .. " + space", hl.dsp.exec_cmd(menu))
+      -- hl.bind(mod .. " + Tab", hl.dsp.exec_cmd("hyprctl dispatch overview:toggle"))
+
+      local dirs = { h = "left", j = "down", k = "up", l = "right" }
+      local resize = { h = { -20, 0 }, j = { 0, 20 }, k = { 0, -20 }, l = { 20, 0 } }
+      for key, dir in pairs(dirs) do
+        hl.bind(mod .. " + " .. key, hl.dsp.focus({ direction = dir }))
+        hl.bind(mod .. " + CTRL + " .. key, hl.dsp.window.resize({ x = resize[key][1], y = resize[key][2], relative = true }))
+        hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ direction = dir }))
+      end
+
+      for i = 1, 10 do
+        local key = i % 10
+        hl.bind(mod .. " + " .. key, hl.dsp.focus({ workspace = i }))
+        hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
+      end
+
+      hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"))
+      hl.bind(mod .. " + D", hl.dsp.workspace.toggle_special("minimized"))
+      hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+
+      hl.bind(mod .. " + P", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
+      hl.bind(mod .. " + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
+
+      -- Rofi launchers
+      hl.bind(mod .. " + X", hl.dsp.exec_cmd("rofi-power.sh"))
+      hl.bind(mod .. " + W", hl.dsp.exec_cmd("rofi-wifi.sh"))
+      hl.bind(mod .. " + B", hl.dsp.exec_cmd("rofi-bluetooth.sh"))
+      hl.bind(mod .. " + semicolon", hl.dsp.exec_cmd("rofi -show emoji"))
+      hl.bind(mod .. " + equal", hl.dsp.exec_cmd("rofi -show calc -no-show-match -no-sort"))
+      hl.bind(mod .. " + SHIFT + Tab", hl.dsp.exec_cmd("rofi -show window"))
+
+      hl.bind("CTRL + ALT + S", hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy]]))
+
+      -- Workspace prev/next (also emitted by MX Master gesture button via logiops)
+      hl.bind(mod .. " + CTRL + right", hl.dsp.focus({ workspace = "e+1" }))
+      hl.bind(mod .. " + CTRL + left", hl.dsp.focus({ workspace = "e-1" }))
+
+      hl.bind(mod .. " + comma", hl.dsp.focus({ monitor = "-1" }))
+      hl.bind(mod .. " + period", hl.dsp.focus({ monitor = "+1" }))
+      hl.bind(mod .. " + SHIFT + comma", hl.dsp.window.move({ monitor = "-1" }))
+      hl.bind(mod .. " + SHIFT + period", hl.dsp.window.move({ monitor = "+1" }))
+
+      local media = { locked = true, repeating = true }
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume raise"), media)
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume lower"), media)
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), media)
+      hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"), media)
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness raise"), media)
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness lower"), media)
+
+      hl.window_rule({ name = "float-center-pavucontrol", match = { class = "^(org.pulseaudio.pavucontrol)$" }, float = true, center = true })
+      hl.window_rule({ name = "float-center-blueman", match = { class = "^(\\.blueman-manager-wrapped)$" }, float = true, center = true })
+      hl.window_rule({ name = "nautilus-opacity", match = { class = "^(org.gnome.Nautilus)$" }, opacity = "0.90 0.82" })
+      hl.window_rule({ name = "float-nautilus-props", match = { class = "^(org.gnome.Nautilus)$", title = "^(.*Properties.*)$" }, float = true })
+      hl.window_rule({ name = "float-center-1password", match = { class = "^(1password)$" }, float = true, center = true })
+      hl.window_rule({ name = "pip", match = { title = "^(Picture-in-Picture)$" }, float = true, pin = true, keep_aspect_ratio = true })
+      hl.window_rule({ name = "idleinhibit-fullscreen", match = { class = "^(.*)$" }, idle_inhibit = "fullscreen" })
+
+      -- Blur behind the translucent swaync control center; ignore_alpha skips transparent gaps.
+      hl.layer_rule({ name = "blur-swaync-control-center", match = { namespace = "swaync-control-center" }, blur = true, ignore_alpha = 0.5 })
+
+      -- Last so a hyprbars load failure only drops the buttons. Render right-to-left.
+      hl.plugin.hyprbars.add_button({ bg_color = "rgb(f38ba8)", size = 13, icon = "", action = "hyprctl dispatch 'hl.dsp.window.close()'" })
+      hl.plugin.hyprbars.add_button({ bg_color = "rgb(f9e2af)", size = 13, icon = "", action = [[hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })']] })
+      hl.plugin.hyprbars.add_button({ bg_color = "rgb(a6e3a1)", size = 13, icon = "", action = [[hyprctl dispatch 'hl.dsp.window.move({ workspace = "special:minimized", follow = false })']] })
     '';
   };
 }

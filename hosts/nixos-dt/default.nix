@@ -39,21 +39,30 @@
   home-manager.users = lib.genAttrs config.omninix.activeUsers (_: {
     wayland.windowManager.hyprland.settings = {
       monitor = [
-        "DP-2,2560x1440@164.96,0x0,1,bitdepth,10,cm,hdr,sdrbrightness,5,vrr,2"
-        "HDMI-A-1,3840x2160@30,2560x0,1.5"
+        {
+          output = "DP-2";
+          mode = "2560x1440@164.96";
+          position = "0x0";
+          scale = 1;
+          bitdepth = 10;
+          cm = "hdr";
+          sdrbrightness = 5;
+          vrr = 2;
+        }
+        {
+          output = "HDMI-A-1";
+          mode = "3840x2160@30";
+          position = "2560x0";
+          scale = 1.5;
+        }
       ];
-      workspace = [
-        "1, monitor:DP-2"
-        "2, monitor:DP-2"
-        "3, monitor:DP-2"
-        "4, monitor:DP-2"
-        "5, monitor:DP-2"
-        "6, monitor:HDMI-A-1"
-        "7, monitor:HDMI-A-1"
-        "8, monitor:HDMI-A-1"
-        "9, monitor:HDMI-A-1"
-        "10, monitor:HDMI-A-1"
-      ];
+      workspace_rule = map (i: {
+        workspace = toString i;
+        monitor =
+          if i <= 5
+          then "DP-2"
+          else "HDMI-A-1";
+      }) (lib.range 1 10);
     };
   });
 }
