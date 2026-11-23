@@ -106,6 +106,10 @@ in {
       hl.bind(mod .. " + C", hl.dsp.window.close())
       hl.bind(mod .. " + M", hl.dsp.exit())
       hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
+      hl.bind(mod .. " + CTRL + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+      hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+      hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
       hl.bind(mod .. " + space", hl.dsp.exec_cmd(menu))
       -- hl.bind(mod .. " + Tab", hl.dsp.exec_cmd("hyprctl dispatch overview:toggle"))
 

@@ -52,6 +52,9 @@ in {
         solaar.enable = true; # was hardware.logitech.wireless.enableGraphical
       };
 
+      # Native Wayland for Electron/Chromium apps instead of XWayland.
+      environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
       # udev rule so swayosd-server (user session) can write /sys/class/backlight
       # for the brightness OSD without root.
       services.udev.packages = [pkgs.swayosd];

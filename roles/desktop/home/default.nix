@@ -47,6 +47,9 @@
 
     services.blueman-applet.enable = true;
 
+    # Password prompts for polkit (pkexec, 1Password system auth, privileged mounts).
+    services.hyprpolkitagent.enable = true;
+
     # Long-running MPRIS dispatcher. Waybar's mpris module polls a player
     # name on D-Bus; without playerctld answering, every poll logs
     # "Unable to replace properties on 0". With it active, the module is
