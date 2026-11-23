@@ -14,7 +14,7 @@
       rofi-emoji
       rofi-calc
     ];
-    theme = ./rofi/glass.rasi;
+    theme = ./glass.rasi;
     settings = {
       modi = "drun,run,window,emoji,calc";
       show-icons = true;

@@ -7,8 +7,8 @@
     ../../../modules/home/session-path.nix
     ./themes.nix
     ./hyprland.nix
-    ./waybar.nix
-    ./rofi.nix
+    ./waybar
+    ./rofi
     ./browser.nix
     ./lock.nix
     ./clipboard.nix
