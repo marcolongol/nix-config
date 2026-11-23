@@ -162,6 +162,7 @@ in {
       hl.window_rule({ name = "nautilus-opacity", match = { class = "^(org.gnome.Nautilus)$" }, opacity = "0.90 0.82" })
       hl.window_rule({ name = "float-nautilus-props", match = { class = "^(org.gnome.Nautilus)$", title = "^(.*Properties.*)$" }, float = true })
       hl.window_rule({ name = "float-center-1password", match = { class = "^(1password)$" }, float = true, center = true })
+      hl.window_rule({ name = "float-portal-filechooser", match = { class = "^(xdg-desktop-portal-gtk)$" }, float = true, size = "monitor_w*0.6 monitor_h*0.6", center = true })
       hl.window_rule({ name = "pip", match = { title = "^(Picture-in-Picture)$" }, float = true, pin = true, keep_aspect_ratio = true })
       hl.window_rule({ name = "idleinhibit-fullscreen", match = { class = "^(.*)$" }, idle_inhibit = "fullscreen" })
 
