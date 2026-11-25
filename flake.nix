@@ -94,8 +94,8 @@
       flake = false;
     };
 
-    claude-code-upstream = {
-      url = "github:anthropics/claude-code";
+    claude-plugins-official = {
+      url = "github:anthropics/claude-plugins-official";
       flake = false;
     };
 

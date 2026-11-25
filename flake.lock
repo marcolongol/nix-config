@@ -84,19 +84,19 @@
         "type": "github"
       }
     },
-    "claude-code-upstream": {
+    "claude-plugins-official": {
       "flake": false,
       "locked": {
-        "lastModified": 1795201734,
-        "narHash": "sha256-uFSiCkTeBhuV4av4S0h4RJCS3l2mrwIzp2sJU710Hao=",
+        "lastModified": 1795554885,
+        "narHash": "sha256-4o4BbW198W0HFRLfD22Cld6h2xP2jJj/8kwoql/XH+Y=",
         "owner": "anthropics",
-        "repo": "claude-code",
-        "rev": "7f35b96cb92c9ddf62b5e3261fbac5deb2483003",
+        "repo": "claude-plugins-official",
+        "rev": "6985b2d88dc08b4a0d202f5f0301f02e360b9cb1",
         "type": "github"
       },
       "original": {
         "owner": "anthropics",
-        "repo": "claude-code",
+        "repo": "claude-plugins-official",
         "type": "github"
       }
     },
@@ -608,7 +608,7 @@
     "root": {
       "inputs": {
         "claude-angular-skills": "claude-angular-skills",
-        "claude-code-upstream": "claude-code-upstream",
+        "claude-plugins-official": "claude-plugins-official",
         "claude-ponytail": "claude-ponytail",
         "claude-ui-ux-pro-max": "claude-ui-ux-pro-max",
         "comin": "comin",

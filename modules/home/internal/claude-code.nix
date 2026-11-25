@@ -5,8 +5,8 @@
   pkgs,
   ...
 }: let
-  # Lives in a subdir of the claude-code monorepo
-  frontendDesign = "${inputs.claude-code-upstream}/plugins/frontend-design";
+  # Lives in a subdir of the official plugins monorepo
+  frontendDesign = "${inputs.claude-plugins-official}/plugins/frontend-design";
 
   # Upstream ships bare skills/ without a plugin manifest; wrap it
   angularEcosystem = pkgs.runCommand "angular-ecosystem-plugin" {} ''
@@ -18,6 +18,13 @@ in {
   config = lib.mkIf config.profiles.developer.enable {
     # Sandbox deps; without them claude-code runs Bash unsandboxed
     home.packages = [pkgs.bubblewrap pkgs.socat];
+
+    # Plugins whose manifest paths (hooks, skills) go through top-level entries: link the whole dir,
+    # since programs.claude-code.plugins symlinks per-entry and Claude rejects paths resolving outside the plugin.
+    home.file = lib.mapAttrs' (name: src: lib.nameValuePair "${config.programs.claude-code.configDir}/skills/${name}" {source = src;}) {
+      ponytail = inputs.claude-ponytail; # lifecycle hooks need `node` on PATH (modules/home/lang/nodejs.nix)
+      ui-ux-pro-max = inputs.claude-ui-ux-pro-max; # design-system generator (50+ styles, palettes, font pairings)
+    };
 
     programs.claude-code = {
       enable = true;
@@ -178,11 +185,7 @@ in {
       # ────────────────────────────────────────────
       # Attrset so plugin dir names stay stable
       plugins = {
-        # Lifecycle hooks need `node` on PATH (modules/home/lang/nodejs.nix)
-        ponytail = inputs.claude-ponytail;
-
         # Frontend UI/design plugins
-        ui-ux-pro-max = inputs.claude-ui-ux-pro-max; # design-system generator (50+ styles, palettes, font pairings)
         frontend-design = frontendDesign; # official Anthropic: deliberate aesthetic before any CSS
         angular-ecosystem = angularEcosystem; # Angular + Nx ecosystem skills
       };
