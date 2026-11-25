@@ -229,6 +229,24 @@ in {
         mcp-nixos = {
           command = "${lib.getExe pkgs.mcp-nixos}";
         };
+
+        # Jira/Confluence/Bitbucket; OAuth on first use via /mcp
+        atlassian = {
+          type = "http";
+          url = "https://mcp.atlassian.com/v1/mcp";
+        };
+
+        # Work DBs; sources/read-only rules in ~/Work/dbhub.toml, passwords injected by op
+        dbhub = {
+          command = "${pkgs.writeShellScript "dbhub-mcp-wrapper" ''
+            case "$PWD/" in
+              "$HOME/Work/"*) ;;
+              *) echo "dbhub: only enabled under ~/Work" >&2; exit 1 ;;
+            esac
+            exec op run --env-file "$HOME/Work/.env.op" -- \
+              ${pkgs.nodejs}/bin/npx -y @bytebase/dbhub@2.1.0 --transport stdio --config "$HOME/Work/dbhub.toml"
+          ''}";
+        };
       };
 
       # ────────────────────────────────────────────
